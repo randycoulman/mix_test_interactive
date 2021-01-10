@@ -4,7 +4,7 @@ defmodule MixTestInteractive.CommandProcessorTest do
   alias MixTestInteractive.{CommandProcessor, Config}
 
   defp process_command(command, config \\ Config.new([])) do
-    CommandProcessor.process_command(command, config)
+    CommandProcessor.call(command, config)
   end
 
   describe "commands" do
