@@ -1,0 +1,3 @@
+%{
+  "temporary_env": {:hex, :temporary_env, "2.0.1", "d4b5e031837e5619485e1f23af7cba7e897b8fd546eaaa8b10c812d642ec4546", [:mix], [], "hexpm", "f9420044742b5f0479a7f8243e86b048b6a2d4878bce026a3615065b11199c27"},
+}
