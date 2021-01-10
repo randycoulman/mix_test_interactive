@@ -13,12 +13,13 @@ jobs:
       - checkout
       - restore_cache:
           keys:
+            - v1-mix-deps-<< parameters.elixir >>-{{checksum "mix.lock"}}
             - v1-mix-deps-<< parameters.elixir >>
       - run: mix local.hex --force
       - run: mix local.rebar --force
       - run: mix do deps.get --only test, deps.compile, compile
       - save_cache:
-          key: v1-mix-deps-<< parameters.elixir >>
+          key: v1-mix-deps-<< parameters.elixir >>-{{checksum "mix.lock"}}
           paths:
             - _build
             - deps
