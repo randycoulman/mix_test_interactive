@@ -3,20 +3,38 @@ defmodule MixTestInteractive.CommandProcessorTest do
 
   alias MixTestInteractive.{CommandProcessor, Config}
 
-  defp process_command(command) do
-    config = Config.new([])
+  defp process_command(command, config \\ Config.new([])) do
     CommandProcessor.process_command(command, config)
   end
 
-  test "returns :quit on :eof" do
-    assert :quit = process_command(:eof)
+  describe "commands" do
+    test "returns :quit on :eof" do
+      assert :quit = process_command(:eof)
+    end
+
+    test "returns :quit on q command" do
+      assert :quit = process_command("q")
+    end
+
+    test "returns ok tuple on Enter" do
+      config = Config.new([])
+      assert {:ok, ^config} = process_command("", config)
+    end
+
+    test "trims whitespace from commands" do
+      assert :quit = process_command("\t  q   \n   \t")
+    end
   end
 
-  test "returns :quit for q command" do
-    assert :quit = process_command("q")
-  end
+  describe "usage information" do
+    test "usage describes all commands" do
+      expected = """
+      Usage
+      › Press Enter to trigger a test run.
+      › Press q to quit.
+      """
 
-  test "trims whitespace from commands" do
-    assert :quit = process_command("\t  q   \n   \t")
+      assert CommandProcessor.usage() == expected
+    end
   end
 end
