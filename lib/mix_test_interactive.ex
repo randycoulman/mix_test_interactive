@@ -3,6 +3,8 @@ defmodule MixTestInteractive do
   Interactively run your Elixir project's tests.
   """
 
+  alias MixTestInteractive.Runner
+
   @spec run([String.t()]) :: no_return()
   def run(args \\ []) when is_list(args) do
     Mix.env(:test)
@@ -11,6 +13,7 @@ defmodule MixTestInteractive do
   end
 
   defp loop do
+    Runner.run()
     cmd = IO.getn("")
 
     unless cmd == "q" do
