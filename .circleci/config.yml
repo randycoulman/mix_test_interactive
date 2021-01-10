@@ -1,0 +1,35 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: circleci/elixir:<< parameters.elixir >>
+        environment:
+          MIX_ENV: test
+    parameters:
+      elixir:
+        type: string
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-mix-deps-<< parameters.elixir >>
+      - run: mix local.hex --force
+      - run: mix local.rebar --force
+      - run: mix do deps.get --only test, deps.compile, compile
+      - save_cache:
+          key: v1-mix-deps-<< parameters.elixir >>
+          paths:
+            - _build
+            - deps
+            - ~/.mix
+      - run: mix format --check-formatted
+      - run: mix test
+
+workflows:
+  all-tests:
+    jobs:
+      - test:
+          matrix:
+            parameters:
+              elixir: ["1.8", "1.9", "1.10", "1.11"]
