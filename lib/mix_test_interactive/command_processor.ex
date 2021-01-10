@@ -13,6 +13,14 @@ defmodule MixTestInteractive.CommandProcessor do
     |> do_process_command(config)
   end
 
+  def usage do
+    """
+    Usage
+    › Press Enter to trigger a test run.
+    › Press q to quit.
+    """
+  end
+
   defp do_process_command("q", _config), do: :quit
   defp do_process_command("", config), do: {:ok, config}
   defp do_process_command(_unknown_command, _config), do: :unknown

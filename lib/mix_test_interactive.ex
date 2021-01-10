@@ -10,7 +10,7 @@ defmodule MixTestInteractive do
     Mix.env(:test)
     config = Config.new(args)
     :ok = Application.ensure_started(:mix_test_interactive)
-    Runner.run(config)
+    run_tests(config)
     loop(config)
   end
 
@@ -19,7 +19,7 @@ defmodule MixTestInteractive do
 
     case CommandProcessor.process_command(command, config) do
       {:ok, new_config} ->
-        Runner.run(new_config)
+        run_tests(new_config)
         loop(new_config)
 
       :unknown ->
@@ -28,5 +28,15 @@ defmodule MixTestInteractive do
       :quit ->
         :ok
     end
+  end
+
+  defp run_tests(config) do
+    Runner.run(config)
+    show_usage()
+  end
+
+  defp show_usage() do
+    IO.puts("")
+    IO.puts(CommandProcessor.usage())
   end
 end
