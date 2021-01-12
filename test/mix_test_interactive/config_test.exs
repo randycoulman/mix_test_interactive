@@ -87,7 +87,7 @@ defmodule MixTestInteractive.ConfigTest do
       assert Config.cli_args(config) == []
     end
 
-    test "restricts to provided files" do
+    test "filters to provided files" do
       config =
         Config.new(["provided"])
         |> Config.only_files(["file1", "file2:42"])
@@ -95,13 +95,49 @@ defmodule MixTestInteractive.ConfigTest do
       assert Config.cli_args(config) == ["provided", "file1", "file2:42"]
     end
 
-    test "clears restricted files" do
+    test "clears file filters" do
       config =
         Config.new()
         |> Config.only_files(["restricted"])
-        |> Config.all_files()
+        |> Config.clear_filters()
 
       assert Config.cli_args(config) == []
+    end
+
+    test "restricts to stale files" do
+      config =
+        Config.new(["provided"])
+        |> Config.only_stale()
+
+      assert Config.cli_args(config) == ["provided", "--stale"]
+    end
+
+    test "stale flag retains file filters" do
+      config =
+        Config.new()
+        |> Config.only_files(["file"])
+        |> Config.only_stale()
+
+      assert Config.cli_args(config) == ["--stale", "file"]
+    end
+
+    test "removes stale flag" do
+      config =
+        Config.new()
+        |> Config.only_stale()
+        |> Config.clear_flags()
+
+      assert Config.cli_args(config) == []
+    end
+
+    test "removing stale flag retains file filters" do
+      config =
+        Config.new()
+        |> Config.only_files(["file"])
+        |> Config.only_stale()
+        |> Config.clear_flags()
+
+      assert Config.cli_args(config) == ["file"]
     end
   end
 end

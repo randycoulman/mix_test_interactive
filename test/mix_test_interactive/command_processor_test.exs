@@ -21,7 +21,7 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^config} = process_command("", config)
     end
 
-    test "p restricts files to provided list" do
+    test "p filters files to provided list" do
       config = Config.new()
       files = ["file1", "file2"]
       expected = Config.only_files(config, files)
@@ -29,11 +29,25 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("p file1 file2")
     end
 
-    test "c clears file restrictions" do
-      config = Config.new() |> Config.only_files("file")
-      expected = Config.all_files(config)
+    test "c clears file filters" do
+      {:ok, config} = process_command("p file", Config.new())
+      expected = Config.clear_filters(config)
 
       assert {:ok, ^expected} = process_command("c")
+    end
+
+    test "s runs only stale files" do
+      config = Config.new()
+      expected = Config.only_stale(config)
+
+      assert {:ok, ^expected} = process_command("s")
+    end
+
+    test "a runs all files" do
+      {:ok, config} = process_command("s", Config.new())
+      expected = Config.clear_flags(config)
+
+      assert {:ok, ^expected} = process_command("a")
     end
 
     test "trims whitespace from commands" do
@@ -47,6 +61,8 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert usage =~ ~r/^Usage/
       assert usage =~ ~r/^› p/m
       assert usage =~ ~r/^› c/m
+      assert usage =~ ~r/^› s/m
+      assert usage =~ ~r/^› a/m
       assert usage =~ ~r/^› Enter/m
       assert usage =~ ~r/^› q/m
     end
