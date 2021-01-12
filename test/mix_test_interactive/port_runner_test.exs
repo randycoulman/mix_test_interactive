@@ -5,7 +5,7 @@ defmodule MixTestInteractive.PortRunnerTest do
 
   describe "build_tasks_cmds/1" do
     test "appends commandline arguments from passed config" do
-      config = %Config{cli_args: ["--exclude", "integration"]}
+      config = Config.new(["--exclude", "integration"])
 
       expected =
         "MIX_ENV=test mix do run -e " <>
@@ -25,7 +25,7 @@ defmodule MixTestInteractive.PortRunnerTest do
     end
 
     test "respect no-start commandline argument from passed config" do
-      config = %Config{cli_args: ["--exclude", "integration", "--no-start"]}
+      config = Config.new(["--exclude", "integration", "--no-start"])
 
       expected =
         "MIX_ENV=test mix do run --no-start -e " <>

@@ -38,10 +38,11 @@ defmodule MixTestInteractive.PortRunner do
   end
 
   defp task_command(task, config) do
-    args = Enum.join(config.cli_args, " ")
+    cli_args = Config.cli_args(config)
+    args = Enum.join(cli_args, " ")
 
     ansi =
-      case Enum.member?(config.cli_args, "--no-start") do
+      case Enum.member?(cli_args, "--no-start") do
         true -> "run --no-start -e 'Application.put_env(:elixir, :ansi_enabled, true);'"
         false -> "run -e 'Application.put_env(:elixir, :ansi_enabled, true);'"
       end

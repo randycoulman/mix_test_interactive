@@ -45,12 +45,12 @@ defmodule MixTestInteractive.ConfigTest do
 
   test "new/1 passes cli_args" do
     config = Config.new(["hello", "world"])
-    assert config.cli_args == ["hello", "world"]
+    assert Config.cli_args(config) == ["hello", "world"]
   end
 
   test "new/1 default cli_args to empty list" do
     config = Config.new()
-    assert config.cli_args == []
+    assert Config.cli_args(config) == []
   end
 
   test "new/1 takes :clear from the env" do

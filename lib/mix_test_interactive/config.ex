@@ -12,14 +12,14 @@ defmodule MixTestInteractive.Config do
   @default_extra_extensions []
   @default_cli_executable "mix"
 
-  defstruct tasks: @default_tasks,
-            clear: @default_clear,
-            timestamp: @default_timestamp,
-            runner: @default_runner,
+  defstruct clear: @default_clear,
+            cli_executable: @default_cli_executable,
             exclude: @default_exclude,
             extra_extensions: @default_extra_extensions,
-            cli_executable: @default_cli_executable,
-            cli_args: []
+            initial_cli_args: [],
+            runner: @default_runner,
+            tasks: @default_tasks,
+            timestamp: @default_timestamp
 
   @spec new([String.t()]) :: %__MODULE__{}
   @doc """
@@ -27,16 +27,18 @@ defmodule MixTestInteractive.Config do
   """
   def new(cli_args \\ []) do
     %__MODULE__{
-      tasks: get_tasks(),
       clear: get_clear(),
-      timestamp: get_timestamp(),
-      runner: get_runner(),
-      exclude: get_excluded(),
       cli_executable: get_cli_executable(),
-      cli_args: cli_args,
-      extra_extensions: get_extra_extensions()
+      exclude: get_excluded(),
+      extra_extensions: get_extra_extensions(),
+      initial_cli_args: cli_args,
+      runner: get_runner(),
+      tasks: get_tasks(),
+      timestamp: get_timestamp()
     }
   end
+
+  def cli_args(%__MODULE__{initial_cli_args: cli_args}), do: cli_args
 
   defp get_runner do
     Application.get_env(@application, :runner, @default_runner)
