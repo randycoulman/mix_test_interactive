@@ -4,73 +4,104 @@ defmodule MixTestInteractive.ConfigTest do
 
   alias MixTestInteractive.Config
 
-  test "new/1 takes :tasks from the env" do
-    TemporaryEnv.put :mix_test_interactive, :tasks, :env_tasks do
+  describe "creation" do
+    test "takes :tasks from the env" do
+      TemporaryEnv.put :mix_test_interactive, :tasks, :env_tasks do
+        config = Config.new()
+        assert config.tasks == :env_tasks
+      end
+    end
+
+    test ~s(defaults :tasks to ["test"]) do
+      TemporaryEnv.delete :mix_test_interactive, :tasks do
+        config = Config.new()
+        assert config.tasks == ["test"]
+      end
+    end
+
+    test "takes :exclude from the env" do
+      TemporaryEnv.put :mix_test_interactive, :exclude, [~r/migration_.*/] do
+        config = Config.new()
+        assert config.exclude == [~r/migration_.*/]
+      end
+    end
+
+    test ":exclude contains common editor temp/swap files by default" do
       config = Config.new()
-      assert config.tasks == :env_tasks
+      # Emacs lock symlink
+      assert ~r/\.#/ in config.exclude
+    end
+
+    test "excludes default Phoenix migrations directory by default" do
+      config = Config.new()
+      assert ~r{priv/repo/migrations} in config.exclude
+    end
+
+    test "takes :extra_extensions from the env" do
+      TemporaryEnv.put :mix_test_interactive, :extra_extensions, [".haml"] do
+        config = Config.new()
+        assert config.extra_extensions == [".haml"]
+      end
+    end
+
+    test "passes cli_args" do
+      config = Config.new(["hello", "world"])
+      assert Config.cli_args(config) == ["hello", "world"]
+    end
+
+    test "default cli_args to empty list" do
+      config = Config.new()
+      assert Config.cli_args(config) == []
+    end
+
+    test "takes :clear from the env" do
+      TemporaryEnv.put :mix_test_interactive, :clear, true do
+        config = Config.new()
+        assert config.clear
+      end
+    end
+
+    test "takes :timestamp from the env" do
+      TemporaryEnv.put :mix_test_interactive, :timestamp, true do
+        config = Config.new()
+        assert config.timestamp
+      end
+    end
+
+    test "takes :shell_prefix from the env" do
+      TemporaryEnv.put :mix_test_interactive, :cli_executable, "iex -S" do
+        config = Config.new()
+        assert config.cli_executable == "iex -S"
+      end
     end
   end
 
-  test ~s(new/1 defaults :tasks to ["test"]) do
-    TemporaryEnv.delete :mix_test_interactive, :tasks do
-      config = Config.new()
-      assert config.tasks == ["test"]
+  describe "command line arguments" do
+    test "passes on provided arguments" do
+      config = Config.new(["hello", "world"])
+      assert Config.cli_args(config) == ["hello", "world"]
     end
-  end
 
-  test "new/1 takes :exclude from the env" do
-    TemporaryEnv.put :mix_test_interactive, :exclude, [~r/migration_.*/] do
+    test "passes no arguments by default" do
       config = Config.new()
-      assert config.exclude == [~r/migration_.*/]
+      assert Config.cli_args(config) == []
     end
-  end
 
-  test ":exclude contains common editor temp/swap files by default" do
-    config = Config.new()
-    # Emacs lock symlink
-    assert ~r/\.#/ in config.exclude
-  end
+    test "restricts to provided files" do
+      config =
+        Config.new(["provided"])
+        |> Config.only_files(["file1", "file2:42"])
 
-  test ":exclude contains default Phoenix migrations directory by default" do
-    config = Config.new()
-    assert ~r{priv/repo/migrations} in config.exclude
-  end
-
-  test "new/1 takes :extra_extensions from the env" do
-    TemporaryEnv.put :mix_test_interactive, :extra_extensions, [".haml"] do
-      config = Config.new()
-      assert config.extra_extensions == [".haml"]
+      assert Config.cli_args(config) == ["provided", "file1", "file2:42"]
     end
-  end
 
-  test "new/1 passes cli_args" do
-    config = Config.new(["hello", "world"])
-    assert config.cli_args == ["hello", "world"]
-  end
+    test "clears restricted files" do
+      config =
+        Config.new()
+        |> Config.only_files(["restricted"])
+        |> Config.all_files()
 
-  test "new/1 default cli_args to empty list" do
-    config = Config.new()
-    assert config.cli_args == []
-  end
-
-  test "new/1 takes :clear from the env" do
-    TemporaryEnv.put :mix_test_interactive, :clear, true do
-      config = Config.new()
-      assert config.clear
-    end
-  end
-
-  test "new/1 takes :timestamp from the env" do
-    TemporaryEnv.put :mix_test_interactive, :timestamp, true do
-      config = Config.new()
-      assert config.timestamp
-    end
-  end
-
-  test "new/1 takes :shell_prefix from the env" do
-    TemporaryEnv.put :mix_test_interactive, :cli_executable, "iex -S" do
-      config = Config.new()
-      assert config.cli_executable == "iex -S"
+      assert Config.cli_args(config) == []
     end
   end
 end
