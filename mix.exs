@@ -15,13 +15,14 @@ defmodule MixTestInteractive.MixProject do
 
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :file_system],
       mod: {MixTestInteractive.Application, []}
     ]
   end
 
   defp deps do
     [
+      {:file_system, "~> 0.2"},
       {:temporary_env, "~> 2.0", only: :test}
     ]
   end

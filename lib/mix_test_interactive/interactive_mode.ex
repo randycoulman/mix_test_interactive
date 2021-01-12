@@ -7,6 +7,11 @@ defmodule MixTestInteractive.InteractiveMode do
     loop(config)
   end
 
+  def run_tests(config) do
+    Runner.run(config)
+    show_usage()
+  end
+
   defp loop(config) do
     command = IO.gets("")
 
@@ -22,11 +27,6 @@ defmodule MixTestInteractive.InteractiveMode do
       :quit ->
         :ok
     end
-  end
-
-  defp run_tests(config) do
-    Runner.run(config)
-    show_usage()
   end
 
   defp show_usage() do
