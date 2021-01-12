@@ -1,7 +1,8 @@
 defmodule MixTestInteractive.InteractiveMode do
-  alias MixTestInteractive.{CommandProcessor, Runner}
+  alias MixTestInteractive.{CommandProcessor, ConfigStore, Runner}
 
   def start(config) do
+    ConfigStore.store(config)
     run_tests(config)
     loop(config)
   end
@@ -11,6 +12,7 @@ defmodule MixTestInteractive.InteractiveMode do
 
     case CommandProcessor.call(command, config) do
       {:ok, new_config} ->
+        ConfigStore.store(new_config)
         run_tests(new_config)
         loop(new_config)
 

@@ -3,9 +3,11 @@ defmodule MixTestInteractive.Application do
 
   use Application
 
+  alias MixTestInteractive.{Config, ConfigStore}
+
   @impl Application
   def start(_type, _args) do
-    children = []
+    children = [{ConfigStore, config: %Config{}}]
 
     opts = [strategy: :one_for_one, name: MixTestInteractive.Supervisor]
     Supervisor.start_link(children, opts)
