@@ -16,6 +16,7 @@ defmodule MixTestInteractive.Config do
             cli_executable: @default_cli_executable,
             exclude: @default_exclude,
             extra_extensions: @default_extra_extensions,
+            files: [],
             initial_cli_args: [],
             runner: @default_runner,
             tasks: @default_tasks,
@@ -31,6 +32,7 @@ defmodule MixTestInteractive.Config do
       cli_executable: get_cli_executable(),
       exclude: get_excluded(),
       extra_extensions: get_extra_extensions(),
+      files: [],
       initial_cli_args: cli_args,
       runner: get_runner(),
       tasks: get_tasks(),
@@ -38,7 +40,15 @@ defmodule MixTestInteractive.Config do
     }
   end
 
-  def cli_args(%__MODULE__{initial_cli_args: cli_args}), do: cli_args
+  def cli_args(%__MODULE__{files: files, initial_cli_args: cli_args}), do: cli_args ++ files
+
+  def all_files(config) do
+    %{config | files: []}
+  end
+
+  def only_files(config, files) do
+    %{config | files: files}
+  end
 
   defp get_runner do
     Application.get_env(@application, :runner, @default_runner)
