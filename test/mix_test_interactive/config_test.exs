@@ -121,7 +121,7 @@ defmodule MixTestInteractive.ConfigTest do
       assert Config.cli_args(config) == ["--stale", "file"]
     end
 
-    test "removes stale flag" do
+    test "clearing flags removes stale flag" do
       config =
         Config.new()
         |> Config.only_stale()
@@ -130,11 +130,39 @@ defmodule MixTestInteractive.ConfigTest do
       assert Config.cli_args(config) == []
     end
 
-    test "removing stale flag retains file filters" do
+    test "restricts to failed files" do
+      config =
+        Config.new(["provided"])
+        |> Config.only_failed()
+
+      assert Config.cli_args(config) == ["provided", "--failed"]
+    end
+
+    test "failed flag omits stale flag and files" do
       config =
         Config.new()
         |> Config.only_files(["file"])
         |> Config.only_stale()
+        |> Config.only_failed()
+
+      assert Config.cli_args(config) == ["--failed"]
+    end
+
+    test "clearing flags clears failed flag" do
+      config =
+        Config.new()
+        |> Config.only_failed()
+        |> Config.clear_flags()
+
+      assert Config.cli_args(config) == []
+    end
+
+    test "clearing flags retains file filters" do
+      config =
+        Config.new()
+        |> Config.only_files(["file"])
+        |> Config.only_stale()
+        |> Config.only_failed()
         |> Config.clear_flags()
 
       assert Config.cli_args(config) == ["file"]

@@ -19,8 +19,9 @@ defmodule MixTestInteractive.CommandProcessor do
     Usage
     › p <files> to run only the specified test files.
     › c to clear any file filters.
-    › s to run only stale files.
-    › a to run all files.
+    › s to run only stale tests.
+    › f to run only failed tests.
+    › a to run all (filtered) tests.
     › Enter to trigger a test run.
     › q to quit.
     """
@@ -32,6 +33,10 @@ defmodule MixTestInteractive.CommandProcessor do
 
   defp process_command("c", _args, config) do
     {:ok, Config.clear_filters(config)}
+  end
+
+  defp process_command("f", _args, config) do
+    {:ok, Config.only_failed(config)}
   end
 
   defp process_command("p", files, config) do

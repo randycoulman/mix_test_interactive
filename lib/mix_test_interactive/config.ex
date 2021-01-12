@@ -16,6 +16,7 @@ defmodule MixTestInteractive.Config do
             cli_executable: @default_cli_executable,
             exclude: @default_exclude,
             extra_extensions: @default_extra_extensions,
+            failed?: false,
             files: [],
             initial_cli_args: [],
             runner: @default_runner,
@@ -44,12 +45,16 @@ defmodule MixTestInteractive.Config do
     initial_args ++ args_from_settings(config)
   end
 
+  def only_files(config, files) do
+    %{config | files: files}
+  end
+
   def clear_filters(config) do
     %{config | files: []}
   end
 
-  def only_files(config, files) do
-    %{config | files: files}
+  def only_failed(config) do
+    %{config | failed?: true}
   end
 
   def only_stale(config) do
@@ -57,7 +62,12 @@ defmodule MixTestInteractive.Config do
   end
 
   def clear_flags(config) do
-    %{config | stale?: false}
+    %{config | failed?: false, stale?: false}
+  end
+
+  defp args_from_settings(%__MODULE__{failed?: true}) do
+    # --failed doesn't work with --stale or with any filenames
+    ["--failed"]
   end
 
   defp args_from_settings(%__MODULE__{files: files, stale?: stale?}) do
