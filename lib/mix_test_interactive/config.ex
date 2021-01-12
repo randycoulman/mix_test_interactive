@@ -19,6 +19,7 @@ defmodule MixTestInteractive.Config do
             files: [],
             initial_cli_args: [],
             runner: @default_runner,
+            stale?: false,
             tasks: @default_tasks,
             timestamp: @default_timestamp
 
@@ -32,7 +33,6 @@ defmodule MixTestInteractive.Config do
       cli_executable: get_cli_executable(),
       exclude: get_excluded(),
       extra_extensions: get_extra_extensions(),
-      files: [],
       initial_cli_args: cli_args,
       runner: get_runner(),
       tasks: get_tasks(),
@@ -40,14 +40,32 @@ defmodule MixTestInteractive.Config do
     }
   end
 
-  def cli_args(%__MODULE__{files: files, initial_cli_args: cli_args}), do: cli_args ++ files
+  def cli_args(%__MODULE__{initial_cli_args: initial_args} = config) do
+    initial_args ++ args_from_settings(config)
+  end
 
-  def all_files(config) do
+  def clear_filters(config) do
     %{config | files: []}
   end
 
   def only_files(config, files) do
     %{config | files: files}
+  end
+
+  def only_stale(config) do
+    %{config | stale?: true}
+  end
+
+  def clear_flags(config) do
+    %{config | stale?: false}
+  end
+
+  defp args_from_settings(%__MODULE__{files: files, stale?: stale?}) do
+    if stale? do
+      ["--stale" | files]
+    else
+      files
+    end
   end
 
   defp get_runner do
