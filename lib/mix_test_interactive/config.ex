@@ -29,13 +29,18 @@ defmodule MixTestInteractive.Config do
   Create a new config struct, taking values from the ENV
   """
   def new(cli_args \\ []) do
+    {failed?, args} = delete_if_present(cli_args, "--failed")
+    {stale?, args} = delete_if_present(args, "--stale")
+
     %__MODULE__{
       clear: get_clear(),
       cli_executable: get_cli_executable(),
       exclude: get_excluded(),
       extra_extensions: get_extra_extensions(),
-      initial_cli_args: cli_args,
+      failed?: failed?,
+      initial_cli_args: args,
       runner: get_runner(),
+      stale?: stale?,
       tasks: get_tasks(),
       timestamp: get_timestamp()
     }
@@ -63,6 +68,10 @@ defmodule MixTestInteractive.Config do
 
   def clear_flags(config) do
     %{config | failed?: false, stale?: false}
+  end
+
+  defp delete_if_present(list, element) do
+    {Enum.member?(list, element), List.delete(list, element)}
   end
 
   defp args_from_settings(%__MODULE__{failed?: true}) do
