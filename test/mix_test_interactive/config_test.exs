@@ -44,16 +44,6 @@ defmodule MixTestInteractive.ConfigTest do
       end
     end
 
-    test "passes cli_args" do
-      config = Config.new(["hello", "world"])
-      assert Config.cli_args(config) == ["hello", "world"]
-    end
-
-    test "default cli_args to empty list" do
-      config = Config.new()
-      assert Config.cli_args(config) == []
-    end
-
     test "takes :clear from the env" do
       TemporaryEnv.put :mix_test_interactive, :clear, true do
         config = Config.new()
@@ -85,6 +75,18 @@ defmodule MixTestInteractive.ConfigTest do
     test "passes no arguments by default" do
       config = Config.new()
       assert Config.cli_args(config) == []
+    end
+
+    test "initializes stale flag from arguments" do
+      config = Config.new(["hello", "--stale", "world"])
+      assert config.stale?
+      assert config.initial_cli_args == ["hello", "world"]
+    end
+
+    test "initializes failed flag from arguments" do
+      config = Config.new(["hello", "--failed", "world"])
+      assert config.failed?
+      assert config.initial_cli_args == ["hello", "world"]
     end
 
     test "filters to provided files" do
