@@ -1,6 +1,6 @@
 # mix test.interactive
 
-[![Build Status](https://circleci.com/gh/randycoulman/mix_test_interactive.svg?style=sheild)](https://app.circleci.com/pipelines/github/randycoulman/mix_test_interactive)
+[![Build Status](https://circleci.com/gh/randycoulman/mix_test_interactive.svg?style=shield)](https://app.circleci.com/pipelines/github/randycoulman/mix_test_interactive)
 
 Interactive watch mode for Elixir's mix test.
 
