@@ -70,6 +70,15 @@ defmodule MixTestInteractive.Config do
     %{config | failed?: false, stale?: false}
   end
 
+  def summary(config) do
+    cond do
+      config.failed? -> "Ran only failed tests"
+      !Enum.empty?(config.files) -> "Ran only specified file(s)"
+      config.stale? -> "Ran only stale tests"
+      true -> "Ran all tests"
+    end
+  end
+
   defp delete_if_present(list, element) do
     {Enum.member?(list, element), List.delete(list, element)}
   end

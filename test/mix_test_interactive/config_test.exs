@@ -170,4 +170,36 @@ defmodule MixTestInteractive.ConfigTest do
       assert Config.cli_args(config) == ["file"]
     end
   end
+
+  describe "summary" do
+    test "ran all tests" do
+      config = Config.new()
+
+      assert Config.summary(config) == "Ran all tests"
+    end
+
+    test "ran failed tests" do
+      config = Config.new() |> Config.only_failed()
+
+      assert Config.summary(config) == "Ran only failed tests"
+    end
+
+    test "ran stale tests" do
+      config = Config.new() |> Config.only_stale()
+
+      assert Config.summary(config) == "Ran only stale tests"
+    end
+
+    test "ran specific files" do
+      config = Config.new() |> Config.only_files(["file"])
+
+      assert Config.summary(config) == "Ran only specified file(s)"
+    end
+
+    test "ran specific files with stale flag" do
+      config = Config.new() |> Config.only_stale() |> Config.only_files(["file"])
+
+      assert Config.summary(config) == "Ran only specified file(s)"
+    end
+  end
 end
