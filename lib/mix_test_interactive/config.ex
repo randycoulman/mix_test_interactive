@@ -51,30 +51,26 @@ defmodule MixTestInteractive.Config do
   end
 
   def only_files(config, files) do
-    %{config | files: files}
-  end
-
-  def clear_filters(config) do
-    %{config | files: []}
+    %{config | failed?: false, files: files, stale?: false}
   end
 
   def only_failed(config) do
-    %{config | failed?: true}
+    %{config | failed?: true, files: [], stale?: false}
   end
 
   def only_stale(config) do
-    %{config | stale?: true}
+    %{config | failed?: false, files: [], stale?: true}
   end
 
-  def clear_flags(config) do
-    %{config | failed?: false, stale?: false}
+  def all_tests(config) do
+    %{config | failed?: false, files: [], stale?: false}
   end
 
   def summary(config) do
     cond do
       config.failed? -> "Ran only failed tests"
-      !Enum.empty?(config.files) -> "Ran only specified file(s)"
       config.stale? -> "Ran only stale tests"
+      !Enum.empty?(config.files) -> "Ran only specified file(s)"
       true -> "Ran all tests"
     end
   end

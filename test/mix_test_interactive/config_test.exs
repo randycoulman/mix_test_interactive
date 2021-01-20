@@ -88,48 +88,15 @@ defmodule MixTestInteractive.ConfigTest do
       assert config.failed?
       assert config.initial_cli_args == ["hello", "world"]
     end
+  end
 
+  describe "filtering tests" do
     test "filters to provided files" do
       config =
         Config.new(["provided"])
         |> Config.only_files(["file1", "file2:42"])
 
       assert Config.cli_args(config) == ["provided", "file1", "file2:42"]
-    end
-
-    test "clears file filters" do
-      config =
-        Config.new()
-        |> Config.only_files(["restricted"])
-        |> Config.clear_filters()
-
-      assert Config.cli_args(config) == []
-    end
-
-    test "restricts to stale files" do
-      config =
-        Config.new(["provided"])
-        |> Config.only_stale()
-
-      assert Config.cli_args(config) == ["provided", "--stale"]
-    end
-
-    test "stale flag retains file filters" do
-      config =
-        Config.new()
-        |> Config.only_files(["file"])
-        |> Config.only_stale()
-
-      assert Config.cli_args(config) == ["--stale", "file"]
-    end
-
-    test "clearing flags removes stale flag" do
-      config =
-        Config.new()
-        |> Config.only_stale()
-        |> Config.clear_flags()
-
-      assert Config.cli_args(config) == []
     end
 
     test "restricts to failed files" do
@@ -140,34 +107,93 @@ defmodule MixTestInteractive.ConfigTest do
       assert Config.cli_args(config) == ["provided", "--failed"]
     end
 
-    test "failed flag omits stale flag and files" do
+    test "restricts to stale files" do
+      config =
+        Config.new(["provided"])
+        |> Config.only_stale()
+
+      assert Config.cli_args(config) == ["provided", "--stale"]
+    end
+
+    test "file filter clears failed flag" do
+      config =
+        Config.new()
+        |> Config.only_failed()
+        |> Config.only_files(["file"])
+
+      assert Config.cli_args(config) == ["file"]
+    end
+
+    test "file filter clears stale flag" do
+      config =
+        Config.new()
+        |> Config.only_stale()
+        |> Config.only_files(["file"])
+
+      assert Config.cli_args(config) == ["file"]
+    end
+
+    test "failed flag clears file filters" do
       config =
         Config.new()
         |> Config.only_files(["file"])
+        |> Config.only_failed()
+
+      assert Config.cli_args(config) == ["--failed"]
+    end
+
+    test "failed flag clears stale flag" do
+      config =
+        Config.new()
         |> Config.only_stale()
         |> Config.only_failed()
 
       assert Config.cli_args(config) == ["--failed"]
     end
 
-    test "clearing flags clears failed flag" do
-      config =
-        Config.new()
-        |> Config.only_failed()
-        |> Config.clear_flags()
-
-      assert Config.cli_args(config) == []
-    end
-
-    test "clearing flags retains file filters" do
+    test "stale flag clears file filters" do
       config =
         Config.new()
         |> Config.only_files(["file"])
         |> Config.only_stale()
-        |> Config.only_failed()
-        |> Config.clear_flags()
 
-      assert Config.cli_args(config) == ["file"]
+      assert Config.cli_args(config) == ["--stale"]
+    end
+
+    test "stale flag clears failed flag" do
+      config =
+        Config.new()
+        |> Config.only_failed()
+        |> Config.only_stale()
+
+      assert Config.cli_args(config) == ["--stale"]
+    end
+
+    test "all tests clears file filters" do
+      config =
+        Config.new()
+        |> Config.only_files(["restricted"])
+        |> Config.all_tests()
+
+      assert Config.cli_args(config) == []
+    end
+
+    test "all tests removes stale flag" do
+      config =
+        Config.new()
+        |> Config.only_stale()
+        |> Config.all_tests()
+
+      assert Config.cli_args(config) == []
+    end
+
+    test "all tests removes failed flag" do
+      config =
+        Config.new()
+        |> Config.only_failed()
+        |> Config.all_tests()
+
+      assert Config.cli_args(config) == []
     end
   end
 
@@ -192,12 +218,6 @@ defmodule MixTestInteractive.ConfigTest do
 
     test "ran specific files" do
       config = Config.new() |> Config.only_files(["file"])
-
-      assert Config.summary(config) == "Ran only specified file(s)"
-    end
-
-    test "ran specific files with stale flag" do
-      config = Config.new() |> Config.only_stale() |> Config.only_files(["file"])
 
       assert Config.summary(config) == "Ran only specified file(s)"
     end
