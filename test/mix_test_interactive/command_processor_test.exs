@@ -56,15 +56,48 @@ defmodule MixTestInteractive.CommandProcessorTest do
   end
 
   describe "usage information" do
-    test "usage describes all commands" do
-      usage = CommandProcessor.usage()
+    test "shows relevant commands when running all tests" do
+      config = Config.new()
+
+      assert_commands(config, ~w(p s f Enter q), ~w(a))
+    end
+
+    test "shows relevant commands when running specific files" do
+      config =
+        Config.new()
+        |> Config.only_files(["file"])
+
+      assert_commands(config, ~w(s f a Enter q), ~w(p))
+    end
+
+    test "shows relevant commands when running failed tests" do
+      config =
+        Config.new()
+        |> Config.only_failed()
+
+      assert_commands(config, ~w(p s a Enter q), ~w(f))
+    end
+
+    test "shows relevant commands when running stale tests" do
+      config =
+        Config.new()
+        |> Config.only_stale()
+
+      assert_commands(config, ~w(p f a Enter q), ~w(s))
+    end
+
+    defp assert_commands(config, included, excluded) do
+      usage = CommandProcessor.usage(config)
+
       assert usage =~ ~r/^Usage/
-      assert usage =~ ~r/^› p/m
-      assert usage =~ ~r/^› s/m
-      assert usage =~ ~r/^› f/m
-      assert usage =~ ~r/^› a/m
-      assert usage =~ ~r/^› Enter/m
-      assert usage =~ ~r/^› q/m
+
+      for command <- included do
+        assert usage =~ ~r/^› #{command}/m
+      end
+
+      for command <- excluded do
+        refute usage =~ ~r/^› #{command}/m
+      end
     end
   end
 end

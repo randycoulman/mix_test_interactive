@@ -2,8 +2,18 @@ defmodule MixTestInteractive.CommandProcessor do
   @moduledoc false
 
   alias MixTestInteractive.Config
+  alias MixTestInteractive.Command.{AllTests, Failed, FilterPaths, Quit, RunTests, Stale}
 
   @spec call(String.t() | :eof, Config.t()) :: {:ok, Config.t()} | :unknown | :quit
+
+  @commands [
+    FilterPaths,
+    Stale,
+    Failed,
+    AllTests,
+    RunTests,
+    Quit
+  ]
 
   def call(:eof, _config), do: :quit
 
@@ -14,35 +24,30 @@ defmodule MixTestInteractive.CommandProcessor do
     end
   end
 
-  def usage do
-    """
-    Usage
-    › p <files> to run only the specified test files.
-    › s to run only stale tests.
-    › f to run only failed tests.
-    › a to run all tests.
-    › Enter to trigger a test run.
-    › q to quit.
-    """
+  def usage(config) do
+    usage =
+      config
+      |> applicable_commands()
+      |> Enum.map(&usage_line/1)
+      |> Enum.join("\n")
+
+    "Usage\n" <> usage
   end
 
-  defp process_command("a", _args, config) do
-    {:ok, Config.all_tests(config)}
+  defp usage_line(command) do
+    "› #{command.name} to #{command.description}."
   end
 
-  defp process_command("f", _args, config) do
-    {:ok, Config.only_failed(config)}
+  defp process_command(command, args, config) do
+    case config
+         |> applicable_commands()
+         |> Enum.find(nil, &(&1.command == command)) do
+      nil -> :unknown
+      cmd -> cmd.run(args, config)
+    end
   end
 
-  defp process_command("p", files, config) do
-    {:ok, Config.only_files(config, files)}
+  defp applicable_commands(config) do
+    Enum.filter(@commands, & &1.applies?(config))
   end
-
-  defp process_command("s", _args, config) do
-    {:ok, Config.only_stale(config)}
-  end
-
-  defp process_command("q", _args, _config), do: :quit
-  defp process_command("", _args, config), do: {:ok, config}
-  defp process_command(_unknown_command, _args, _config), do: :unknown
 end
