@@ -24,9 +24,10 @@ defmodule MixTestInteractive.CommandProcessor do
     end
   end
 
-  def usage do
+  def usage(config) do
     usage =
-      @commands
+      config
+      |> applicable_commands()
       |> Enum.map(&usage_line/1)
       |> Enum.join("\n")
 

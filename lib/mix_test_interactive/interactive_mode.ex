@@ -10,7 +10,7 @@ defmodule MixTestInteractive.InteractiveMode do
   def run_tests(config) do
     Runner.run(config)
     show_summary(config)
-    show_usage()
+    show_usage(config)
   end
 
   defp loop(config) do
@@ -38,8 +38,8 @@ defmodule MixTestInteractive.InteractiveMode do
     |> IO.puts()
   end
 
-  defp show_usage() do
+  defp show_usage(config) do
     IO.puts("")
-    IO.puts(CommandProcessor.usage())
+    IO.puts(CommandProcessor.usage(config))
   end
 end
