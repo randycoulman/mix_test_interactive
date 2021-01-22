@@ -1,7 +1,7 @@
 defmodule MixTestInteractive.Command do
   alias MixTestInteractive.Config
 
-  @type response :: {:ok, Config.t()} | :quit | :unknown
+  @type response :: {:ok, Config.t()} | :help | :quit | :unknown
 
   @callback applies?(Config.t()) :: boolean()
   @callback description :: String.t()
@@ -96,6 +96,15 @@ defmodule MixTestInteractive.Command.AllTests do
   def run(_args, config) do
     {:ok, Config.all_tests(config)}
   end
+end
+
+defmodule MixTestInteractive.Command.Help do
+  alias MixTestInteractive.Command
+
+  use Command, command: "?", desc: "show help"
+
+  @impl Command
+  def run(_args, _config), do: :help
 end
 
 defmodule MixTestInteractive.Command.Quit do

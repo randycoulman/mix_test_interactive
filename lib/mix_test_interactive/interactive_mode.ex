@@ -10,7 +10,7 @@ defmodule MixTestInteractive.InteractiveMode do
   def run_tests(config) do
     Runner.run(config)
     show_summary(config)
-    show_usage(config)
+    show_usage_prompt()
   end
 
   defp loop(config) do
@@ -21,6 +21,10 @@ defmodule MixTestInteractive.InteractiveMode do
         ConfigStore.store(new_config)
         run_tests(new_config)
         loop(new_config)
+
+      :help ->
+        show_help(config)
+        loop(config)
 
       :unknown ->
         loop(config)
@@ -38,8 +42,16 @@ defmodule MixTestInteractive.InteractiveMode do
     |> IO.puts()
   end
 
-  defp show_usage(config) do
+  defp show_usage_prompt() do
     IO.puts("")
-    IO.puts(CommandProcessor.usage(config))
+    IO.puts("Usage: ? to show more")
+  end
+
+  defp show_help(config) do
+    IO.puts("")
+
+    config
+    |> CommandProcessor.usage()
+    |> IO.puts()
   end
 end

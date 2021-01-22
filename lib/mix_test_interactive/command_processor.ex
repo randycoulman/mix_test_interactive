@@ -2,9 +2,10 @@ defmodule MixTestInteractive.CommandProcessor do
   @moduledoc false
 
   alias MixTestInteractive.Config
-  alias MixTestInteractive.Command.{AllTests, Failed, FilterPaths, Quit, RunTests, Stale}
+  alias MixTestInteractive.Command
+  alias MixTestInteractive.Command.{AllTests, Failed, FilterPaths, Help, Quit, RunTests, Stale}
 
-  @spec call(String.t() | :eof, Config.t()) :: {:ok, Config.t()} | :unknown | :quit
+  @spec call(String.t() | :eof, Config.t()) :: Command.response()
 
   @commands [
     FilterPaths,
@@ -12,6 +13,7 @@ defmodule MixTestInteractive.CommandProcessor do
     Failed,
     AllTests,
     RunTests,
+    Help,
     Quit
   ]
 
@@ -31,7 +33,7 @@ defmodule MixTestInteractive.CommandProcessor do
       |> Enum.map(&usage_line/1)
       |> Enum.join("\n")
 
-    "Usage\n" <> usage
+    "Usage:\n" <> usage
   end
 
   defp usage_line(command) do
