@@ -34,13 +34,11 @@ Use the `p` command to run only a subset of your test files:
 p file1 file2
 ```
 
-Use the `c` command to clear the file filter and run all test files again.
-
 Use the `s` command to run only test files that reference modules that have changed since the last run (equivalent to the `--stale` option of `mix test`).
 
 Use the `f` command to run only tests that failed on the last run (equivalent to the `--failed` option of `mix test`).
 
-Use the `a` command to clear the `s` and/or `f` flags and run all tests again.
+Use the `a` command to run all tests.
 
 Use the `Enter` key to re-run the current set of tests without requiring a file change.
 
