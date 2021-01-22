@@ -30,14 +30,15 @@ defmodule MixTestInteractive.CommandProcessor do
     usage =
       config
       |> applicable_commands()
-      |> Enum.map(&usage_line/1)
-      |> Enum.join("\n")
+      |> Enum.flat_map(&usage_line/1)
 
-    "Usage:\n" <> usage
+    ([:bright, "Usage:\n", :normal] ++ usage)
+    |> IO.ANSI.format()
   end
 
   defp usage_line(command) do
-    "› #{command.name} to #{command.description}."
+    ["› ", :bright, command.name, :normal, " to ", command.description, ".\n"]
+    |> IO.ANSI.format_fragment()
   end
 
   defp process_command(command, args, config) do

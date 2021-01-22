@@ -65,7 +65,7 @@ defmodule MixTestInteractive.CommandProcessorTest do
     test "shows relevant commands when running all tests" do
       config = Config.new()
 
-      assert_commands(config, ~w(p s f), ~w(a))
+      assert_commands(config, ["p <files>", "s", "f"], ~w(a))
     end
 
     test "shows relevant commands when running specific files" do
@@ -81,7 +81,7 @@ defmodule MixTestInteractive.CommandProcessorTest do
         Config.new()
         |> Config.only_failed()
 
-      assert_commands(config, ~w(p s a), ~w(f))
+      assert_commands(config, ["p <files>", "s", "a"], ~w(f))
     end
 
     test "shows relevant commands when running stale tests" do
@@ -89,22 +89,32 @@ defmodule MixTestInteractive.CommandProcessorTest do
         Config.new()
         |> Config.only_stale()
 
-      assert_commands(config, ~w(p f a), ~w(s))
+      assert_commands(config, ["p <files>", "f", "a"], ~w(s))
     end
 
     defp assert_commands(config, included, excluded) do
       included = included ++ ~w(Enter ? q)
       usage = CommandProcessor.usage(config)
 
-      assert usage =~ ~r/^Usage:/
+      assert contains?(usage, "Usage:\n")
 
       for command <- included do
-        assert usage =~ ~r/^› #{command}/m
+        assert contains?(usage, command)
       end
 
       for command <- excluded do
-        refute usage =~ ~r/^› #{command}/m
+        refute contains?(usage, command)
       end
+    end
+
+    defp contains?([], _string), do: false
+
+    defp contains?([h | t], string) do
+      contains?(h, string) || contains?(t, string)
+    end
+
+    defp contains?(usage, string) when is_binary(usage) do
+      usage == string
     end
   end
 end
