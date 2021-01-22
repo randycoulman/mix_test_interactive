@@ -44,7 +44,10 @@ defmodule MixTestInteractive.InteractiveMode do
 
   defp show_usage_prompt() do
     IO.puts("")
-    IO.puts("Usage: ? to show more")
+
+    [:bright, "Usage: ?", :normal, " to show more"]
+    |> IO.ANSI.format()
+    |> IO.puts()
   end
 
   defp show_help(config) do
