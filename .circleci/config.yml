@@ -17,7 +17,7 @@ jobs:
             - v1-mix-deps-<< parameters.elixir >>
       - run: mix local.hex --force
       - run: mix local.rebar --force
-      - run: mix do deps.get --only test, deps.compile, compile
+      - run: mix do deps.get --only test, deps.compile, compile --warnings-as-errors
       - save_cache:
           key: v1-mix-deps-<< parameters.elixir >>-{{checksum "mix.lock"}}
           paths:
