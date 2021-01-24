@@ -5,7 +5,7 @@ defmodule MixTestInteractive.Command.AllTests do
 
   @impl Command
   def applies?(%Config{failed?: true}), do: true
-  def applies?(%Config{files: [_h | _t]}), do: true
+  def applies?(%Config{patterns: [_h | _t]}), do: true
   def applies?(%Config{stale?: true}), do: true
   def applies?(_config), do: false
 

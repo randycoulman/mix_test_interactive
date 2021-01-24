@@ -28,10 +28,10 @@ Your tests will run immediately (and every time a file changes).
 
 After the tests run, you can use the interactive mode to change which tests will run.
 
-Use the `p` command to run only a subset of your test files:
+Use the `p` command to run only test files that match one or more provided patterns. A pattern is a full pathname to a test file (relative to the project root) or a string that matches a portion of full pathname. e.g. `test/my_project/my_test.exs` or `my`.
 
 ```
-p file1 file2
+p pattern1 pattern 2
 ```
 
 Use the `s` command to run only test files that reference modules that have changed since the last run (equivalent to the `--stale` option of `mix test`).

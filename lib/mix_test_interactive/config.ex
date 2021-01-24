@@ -2,6 +2,9 @@ defmodule MixTestInteractive.Config do
   @moduledoc """
   Responsible for gathering and packaging the configuration for the task.
   """
+
+  alias MixTestInteractive.{PatternFilter, TestFiles}
+
   @application :mix_test_interactive
 
   @default_runner MixTestInteractive.PortRunner
@@ -11,14 +14,16 @@ defmodule MixTestInteractive.Config do
   @default_exclude [~r/\.#/, ~r{priv/repo/migrations}]
   @default_extra_extensions []
   @default_cli_executable "mix"
+  @default_list_all_files &TestFiles.list/0
 
   defstruct clear: @default_clear,
             cli_executable: @default_cli_executable,
             exclude: @default_exclude,
             extra_extensions: @default_extra_extensions,
             failed?: false,
-            files: [],
             initial_cli_args: [],
+            list_all_files: @default_list_all_files,
+            patterns: [],
             runner: @default_runner,
             stale?: false,
             tasks: @default_tasks,
@@ -50,28 +55,45 @@ defmodule MixTestInteractive.Config do
     initial_args ++ args_from_settings(config)
   end
 
-  def only_files(config, files) do
-    %{config | failed?: false, files: files, stale?: false}
+  def only_patterns(config, patterns) do
+    config
+    |> all_tests()
+    |> Map.put(:patterns, patterns)
   end
 
   def only_failed(config) do
-    %{config | failed?: true, files: [], stale?: false}
+    config
+    |> all_tests()
+    |> Map.put(:failed?, true)
   end
 
   def only_stale(config) do
-    %{config | failed?: false, files: [], stale?: true}
+    config
+    |> all_tests()
+    |> Map.put(:stale?, true)
   end
 
   def all_tests(config) do
-    %{config | failed?: false, files: [], stale?: false}
+    %{config | failed?: false, patterns: [], stale?: false}
+  end
+
+  def list_files_with(config, list_fn) do
+    %{config | list_all_files: list_fn}
   end
 
   def summary(config) do
     cond do
-      config.failed? -> "Ran only failed tests"
-      config.stale? -> "Ran only stale tests"
-      !Enum.empty?(config.files) -> "Ran only specified file(s)"
-      true -> "Ran all tests"
+      config.failed? ->
+        "Ran only failed tests"
+
+      config.stale? ->
+        "Ran only stale tests"
+
+      !Enum.empty?(config.patterns) ->
+        "Ran all test files matching #{Enum.join(config.patterns, ", ")}"
+
+      true ->
+        "Ran all tests"
     end
   end
 
@@ -80,17 +102,19 @@ defmodule MixTestInteractive.Config do
   end
 
   defp args_from_settings(%__MODULE__{failed?: true}) do
-    # --failed doesn't work with --stale or with any filenames
     ["--failed"]
   end
 
-  defp args_from_settings(%__MODULE__{files: files, stale?: stale?}) do
-    if stale? do
-      ["--stale" | files]
-    else
-      files
-    end
+  defp args_from_settings(%__MODULE__{stale?: true}) do
+    ["--stale"]
   end
+
+  defp args_from_settings(%__MODULE__{patterns: patterns} = config) when length(patterns) > 0 do
+    config.list_all_files.()
+    |> PatternFilter.matches(patterns)
+  end
+
+  defp args_from_settings(_config), do: []
 
   defp get_runner do
     Application.get_env(@application, :runner, @default_runner)

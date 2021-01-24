@@ -91,15 +91,18 @@ defmodule MixTestInteractive.ConfigTest do
   end
 
   describe "filtering tests" do
-    test "filters to provided files" do
+    test "filters to files matching patterns" do
+      all_files = ~w(file1 file2 no_match other)
+
       config =
         Config.new(["provided"])
-        |> Config.only_files(["file1", "file2:42"])
+        |> with_fake_file_list(all_files)
+        |> Config.only_patterns(["file", "other"])
 
-      assert Config.cli_args(config) == ["provided", "file1", "file2:42"]
+      assert Config.cli_args(config) == ["provided", "file1", "file2", "other"]
     end
 
-    test "restricts to failed files" do
+    test "restricts to failed tests" do
       config =
         Config.new(["provided"])
         |> Config.only_failed()
@@ -107,7 +110,7 @@ defmodule MixTestInteractive.ConfigTest do
       assert Config.cli_args(config) == ["provided", "--failed"]
     end
 
-    test "restricts to stale files" do
+    test "restricts to stale tests" do
       config =
         Config.new(["provided"])
         |> Config.only_stale()
@@ -115,28 +118,30 @@ defmodule MixTestInteractive.ConfigTest do
       assert Config.cli_args(config) == ["provided", "--stale"]
     end
 
-    test "file filter clears failed flag" do
+    test "pattern filter clears failed flag" do
       config =
         Config.new()
+        |> with_fake_file_list(["file"])
         |> Config.only_failed()
-        |> Config.only_files(["file"])
+        |> Config.only_patterns(["f"])
 
       assert Config.cli_args(config) == ["file"]
     end
 
-    test "file filter clears stale flag" do
+    test "pattern filter clears stale flag" do
       config =
         Config.new()
+        |> with_fake_file_list(["file"])
         |> Config.only_stale()
-        |> Config.only_files(["file"])
+        |> Config.only_patterns(["f"])
 
       assert Config.cli_args(config) == ["file"]
     end
 
-    test "failed flag clears file filters" do
+    test "failed flag clears pattern filters" do
       config =
         Config.new()
-        |> Config.only_files(["file"])
+        |> Config.only_patterns(["file"])
         |> Config.only_failed()
 
       assert Config.cli_args(config) == ["--failed"]
@@ -151,10 +156,10 @@ defmodule MixTestInteractive.ConfigTest do
       assert Config.cli_args(config) == ["--failed"]
     end
 
-    test "stale flag clears file filters" do
+    test "stale flag clears pattern filters" do
       config =
         Config.new()
-        |> Config.only_files(["file"])
+        |> Config.only_patterns(["file"])
         |> Config.only_stale()
 
       assert Config.cli_args(config) == ["--stale"]
@@ -169,10 +174,10 @@ defmodule MixTestInteractive.ConfigTest do
       assert Config.cli_args(config) == ["--stale"]
     end
 
-    test "all tests clears file filters" do
+    test "all tests clears pattern filters" do
       config =
         Config.new()
-        |> Config.only_files(["restricted"])
+        |> Config.only_patterns(["pattern"])
         |> Config.all_tests()
 
       assert Config.cli_args(config) == []
@@ -195,6 +200,10 @@ defmodule MixTestInteractive.ConfigTest do
 
       assert Config.cli_args(config) == []
     end
+
+    defp with_fake_file_list(config, files) do
+      config |> Config.list_files_with(fn -> files end)
+    end
   end
 
   describe "summary" do
@@ -216,10 +225,10 @@ defmodule MixTestInteractive.ConfigTest do
       assert Config.summary(config) == "Ran only stale tests"
     end
 
-    test "ran specific files" do
-      config = Config.new() |> Config.only_files(["file"])
+    test "ran specific patterns" do
+      config = Config.new() |> Config.only_patterns(["p1", "p2"])
 
-      assert Config.summary(config) == "Ran only specified file(s)"
+      assert Config.summary(config) == "Ran all test files matching p1, p2"
     end
   end
 end

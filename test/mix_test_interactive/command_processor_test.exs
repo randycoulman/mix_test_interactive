@@ -21,12 +21,11 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^config} = process_command("", config)
     end
 
-    test "p filters test files to provided list" do
+    test "p filters test files to those matching provided pattern" do
       config = Config.new()
-      files = ["file1", "file2"]
-      expected = Config.only_files(config, files)
+      expected = Config.only_patterns(config, ["pattern"])
 
-      assert {:ok, ^expected} = process_command("p file1 file2", config)
+      assert {:ok, ^expected} = process_command("p pattern", config)
     end
 
     test "s runs only stale tests" do
@@ -65,13 +64,13 @@ defmodule MixTestInteractive.CommandProcessorTest do
     test "shows relevant commands when running all tests" do
       config = Config.new()
 
-      assert_commands(config, ["p <files>", "s", "f"], ~w(a))
+      assert_commands(config, ["p <patterns>", "s", "f"], ~w(a))
     end
 
-    test "shows relevant commands when running specific files" do
+    test "shows relevant commands when filtering by pattern" do
       config =
         Config.new()
-        |> Config.only_files(["file"])
+        |> Config.only_patterns(["pattern"])
 
       assert_commands(config, ~w(s f a), ~w(p))
     end
@@ -81,7 +80,7 @@ defmodule MixTestInteractive.CommandProcessorTest do
         Config.new()
         |> Config.only_failed()
 
-      assert_commands(config, ["p <files>", "s", "a"], ~w(f))
+      assert_commands(config, ["p <patterns>", "s", "a"], ~w(f))
     end
 
     test "shows relevant commands when running stale tests" do
@@ -89,7 +88,7 @@ defmodule MixTestInteractive.CommandProcessorTest do
         Config.new()
         |> Config.only_stale()
 
-      assert_commands(config, ["p <files>", "f", "a"], ~w(s))
+      assert_commands(config, ["p <patterns>", "f", "a"], ~w(s))
     end
 
     defp assert_commands(config, included, excluded) do
