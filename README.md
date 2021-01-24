@@ -28,7 +28,9 @@ Your tests will run immediately (and every time a file changes).
 
 After the tests run, you can use the interactive mode to change which tests will run.
 
-Use the `p` command to run only test files that match one or more provided patterns. A pattern is a full pathname to a test file (relative to the project root) or a string that matches a portion of full pathname. e.g. `test/my_project/my_test.exs` or `my`.
+Use the `p` command to run only test files that match one or more provided patterns. A pattern is the project-root-relative path to a test file (with or without a line number specification) or a string that matches a portion of full pathname. e.g. `test/my_project/my_test.exs`, `test/my_project/my_test.exs:12:24` or `my`.
+
+If any pattern contains a line number specification, all patterns are passed directly to `mix test`.
 
 ```
 p pattern1 pattern 2
