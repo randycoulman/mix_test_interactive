@@ -11,7 +11,7 @@ defmodule MixTestInteractive.PortRunner do
   Run tests using the runner from the config.
   """
   def run(%Config{} = config) do
-    with {:ok, command} <- build_tasks_cmds(config) do
+    with {:ok, command} <- build_task_command(config) do
       case :os.type() do
         {:win32, _} ->
           System.cmd("cmd", ["/C", "set MIX_ENV=test&& mix test"], into: IO.stream(:stdio, :line))
@@ -31,30 +31,24 @@ defmodule MixTestInteractive.PortRunner do
   Colour is forced on- normally Elixir would not print ANSI colours while
   running inside a port.
   """
-  def build_tasks_cmds(%Config{} = config) do
+  def build_task_command(%Config{} = config) do
     with {:ok, cli_args} <- Config.cli_args(config) do
+      args = Enum.join(cli_args, " ")
+
+      ansi =
+        case Enum.member?(cli_args, "--no-start") do
+          true -> "run --no-start -e 'Application.put_env(:elixir, :ansi_enabled, true);'"
+          false -> "run -e 'Application.put_env(:elixir, :ansi_enabled, true);'"
+        end
+
       command =
-        config.tasks
-        |> Enum.map(&task_command(&1, config, cli_args))
-        |> Enum.join(" && ")
+        ["mix", "do", ansi <> ",", config.task, args]
+        |> Enum.filter(& &1)
+        |> Enum.join(" ")
+        |> (fn command -> "MIX_ENV=test #{command}" end).()
+        |> String.trim()
 
       {:ok, command}
     end
-  end
-
-  defp task_command(task, config, cli_args) do
-    args = Enum.join(cli_args, " ")
-
-    ansi =
-      case Enum.member?(cli_args, "--no-start") do
-        true -> "run --no-start -e 'Application.put_env(:elixir, :ansi_enabled, true);'"
-        false -> "run -e 'Application.put_env(:elixir, :ansi_enabled, true);'"
-      end
-
-    [config.cli_executable, "do", ansi <> ",", task, args]
-    |> Enum.filter(& &1)
-    |> Enum.join(" ")
-    |> (fn command -> "MIX_ENV=test #{command}" end).()
-    |> String.trim()
   end
 end

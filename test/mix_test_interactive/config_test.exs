@@ -5,17 +5,17 @@ defmodule MixTestInteractive.ConfigTest do
   alias MixTestInteractive.Config
 
   describe "creation" do
-    test "takes :tasks from the env" do
-      TemporaryEnv.put :mix_test_interactive, :tasks, :env_tasks do
+    test "takes :task from the env" do
+      TemporaryEnv.put :mix_test_interactive, :task, :env_task do
         config = Config.new()
-        assert config.tasks == :env_tasks
+        assert config.task == :env_task
       end
     end
 
-    test ~s(defaults :tasks to ["test"]) do
-      TemporaryEnv.delete :mix_test_interactive, :tasks do
+    test ~s(defaults :task to "test") do
+      TemporaryEnv.delete :mix_test_interactive, :task do
         config = Config.new()
-        assert config.tasks == ["test"]
+        assert config.task == "test"
       end
     end
 
@@ -55,13 +55,6 @@ defmodule MixTestInteractive.ConfigTest do
       TemporaryEnv.put :mix_test_interactive, :timestamp, true do
         config = Config.new()
         assert config.timestamp
-      end
-    end
-
-    test "takes :shell_prefix from the env" do
-      TemporaryEnv.put :mix_test_interactive, :cli_executable, "iex -S" do
-        config = Config.new()
-        assert config.cli_executable == "iex -S"
       end
     end
   end

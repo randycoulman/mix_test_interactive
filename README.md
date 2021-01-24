@@ -46,13 +46,9 @@ Use the `Enter` key to re-run the current set of tests without requiring a file 
 
 Use the `q` command, or press `Ctrl-D` to exit the program.
 
-## Running Additional Mix Tasks
+## Running A Different Mix Task
 
-Through the mix config it is possible to run other mix tasks as well as the
-test task. For example, if I wished to run the [Dogma][dogma] code style
-linter after my tests I would do so like this.
-
-[dogma]: https://github.com/lpil/dogma
+By default, `mix test.interactive` runs `mix test`. Through the mix config it is possible to run a different mix task. `mix test.interactive` assumes that this alternative task accepts the same command-line arguments as `mix test`.
 
 ```elixir
 # config/config.exs
@@ -60,17 +56,11 @@ use Mix.Config
 
 if Mix.env == :dev do
   config :mix_test_interactive,
-    tasks: [
-      "test",
-      "dogma",
-    ]
+    task: "custom_test_task"
 end
 ```
 
-Tasks are run in the order they appear in the list, and the progression will
-stop if any command returns a non-zero exit code.
-
-All tasks are run with `MIX_ENV` set to `test`.
+The task is run with `MIX_ENV` set to `test`.
 
 ## Passing Arguments To Tasks
 
@@ -80,9 +70,6 @@ through to all of the tasks being run, along with any arguments added by interac
 ```
 mix test.interactive --trace
 ```
-
-Note that if you have configured more than one task to be run, these arguments
-will be passed to all the tasks run, not just the test command.
 
 `mix test.interactive` will detect the `--stale` and `--failed` arguments and use those as initial settings in interactive mode. You can then toggle those flags on and off as needed.
 

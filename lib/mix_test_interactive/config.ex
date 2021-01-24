@@ -8,16 +8,14 @@ defmodule MixTestInteractive.Config do
   @application :mix_test_interactive
 
   @default_runner MixTestInteractive.PortRunner
-  @default_tasks ~w(test)
+  @default_task "test"
   @default_clear false
   @default_timestamp false
   @default_exclude [~r/\.#/, ~r{priv/repo/migrations}]
   @default_extra_extensions []
-  @default_cli_executable "mix"
   @default_list_all_files &TestFiles.list/0
 
   defstruct clear: @default_clear,
-            cli_executable: @default_cli_executable,
             exclude: @default_exclude,
             extra_extensions: @default_extra_extensions,
             failed?: false,
@@ -26,7 +24,7 @@ defmodule MixTestInteractive.Config do
             patterns: [],
             runner: @default_runner,
             stale?: false,
-            tasks: @default_tasks,
+            task: @default_task,
             timestamp: @default_timestamp
 
   @spec new([String.t()]) :: %__MODULE__{}
@@ -39,14 +37,13 @@ defmodule MixTestInteractive.Config do
 
     %__MODULE__{
       clear: get_clear(),
-      cli_executable: get_cli_executable(),
       exclude: get_excluded(),
       extra_extensions: get_extra_extensions(),
       failed?: failed?,
       initial_cli_args: args,
       runner: get_runner(),
       stale?: stale?,
-      tasks: get_tasks(),
+      task: get_task(),
       timestamp: get_timestamp()
     }
   end
@@ -124,8 +121,8 @@ defmodule MixTestInteractive.Config do
     Application.get_env(@application, :runner, @default_runner)
   end
 
-  defp get_tasks do
-    Application.get_env(@application, :tasks, @default_tasks)
+  defp get_task do
+    Application.get_env(@application, :task, @default_task)
   end
 
   defp get_clear do
@@ -138,10 +135,6 @@ defmodule MixTestInteractive.Config do
 
   defp get_excluded do
     Application.get_env(@application, :exclude, @default_exclude)
-  end
-
-  defp get_cli_executable do
-    Application.get_env(@application, :cli_executable, @default_cli_executable)
   end
 
   defp get_extra_extensions do
