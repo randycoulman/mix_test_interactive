@@ -6,7 +6,7 @@ defmodule MixTestInteractive.Runner do
   @doc """
   Run tests using provided runner.
   """
-  @spec run(Config.t()) :: :ok
+  @spec run(Config.t()) :: :ok | {:error, term()}
   def run(config) do
     :ok = maybe_clear_terminal(config)
     IO.puts("\nRunning tests...")

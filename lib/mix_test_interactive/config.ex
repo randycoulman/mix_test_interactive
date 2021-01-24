@@ -52,7 +52,9 @@ defmodule MixTestInteractive.Config do
   end
 
   def cli_args(%__MODULE__{initial_cli_args: initial_args} = config) do
-    initial_args ++ args_from_settings(config)
+    with {:ok, args} <- args_from_settings(config) do
+      {:ok, initial_args ++ args}
+    end
   end
 
   def only_patterns(config, patterns) do
@@ -102,19 +104,21 @@ defmodule MixTestInteractive.Config do
   end
 
   defp args_from_settings(%__MODULE__{failed?: true}) do
-    ["--failed"]
+    {:ok, ["--failed"]}
   end
 
   defp args_from_settings(%__MODULE__{stale?: true}) do
-    ["--stale"]
+    {:ok, ["--stale"]}
   end
 
   defp args_from_settings(%__MODULE__{patterns: patterns} = config) when length(patterns) > 0 do
-    config.list_all_files.()
-    |> PatternFilter.matches(patterns)
+    case config.list_all_files.() |> PatternFilter.matches(patterns) do
+      [] -> {:error, :no_matching_files}
+      files -> {:ok, files}
+    end
   end
 
-  defp args_from_settings(_config), do: []
+  defp args_from_settings(_config), do: {:ok, []}
 
   defp get_runner do
     Application.get_env(@application, :runner, @default_runner)

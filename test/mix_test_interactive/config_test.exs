@@ -69,12 +69,14 @@ defmodule MixTestInteractive.ConfigTest do
   describe "command line arguments" do
     test "passes on provided arguments" do
       config = Config.new(["hello", "world"])
-      assert Config.cli_args(config) == ["hello", "world"]
+      {:ok, args} = Config.cli_args(config)
+      assert args == ["hello", "world"]
     end
 
     test "passes no arguments by default" do
       config = Config.new()
-      assert Config.cli_args(config) == []
+      {:ok, args} = Config.cli_args(config)
+      assert args == []
     end
 
     test "initializes stale flag from arguments" do
@@ -99,7 +101,17 @@ defmodule MixTestInteractive.ConfigTest do
         |> with_fake_file_list(all_files)
         |> Config.only_patterns(["file", "other"])
 
-      assert Config.cli_args(config) == ["provided", "file1", "file2", "other"]
+      {:ok, args} = Config.cli_args(config)
+      assert args == ["provided", "file1", "file2", "other"]
+    end
+
+    test "returns error if no files match pattern" do
+      config =
+        Config.new()
+        |> with_fake_file_list([])
+        |> Config.only_patterns(["file"])
+
+      assert {:error, :no_matching_files} = Config.cli_args(config)
     end
 
     test "restricts to failed tests" do
@@ -107,7 +119,8 @@ defmodule MixTestInteractive.ConfigTest do
         Config.new(["provided"])
         |> Config.only_failed()
 
-      assert Config.cli_args(config) == ["provided", "--failed"]
+      {:ok, args} = Config.cli_args(config)
+      assert args == ["provided", "--failed"]
     end
 
     test "restricts to stale tests" do
@@ -115,7 +128,8 @@ defmodule MixTestInteractive.ConfigTest do
         Config.new(["provided"])
         |> Config.only_stale()
 
-      assert Config.cli_args(config) == ["provided", "--stale"]
+      {:ok, args} = Config.cli_args(config)
+      assert args == ["provided", "--stale"]
     end
 
     test "pattern filter clears failed flag" do
@@ -125,7 +139,8 @@ defmodule MixTestInteractive.ConfigTest do
         |> Config.only_failed()
         |> Config.only_patterns(["f"])
 
-      assert Config.cli_args(config) == ["file"]
+      {:ok, args} = Config.cli_args(config)
+      assert args == ["file"]
     end
 
     test "pattern filter clears stale flag" do
@@ -135,7 +150,8 @@ defmodule MixTestInteractive.ConfigTest do
         |> Config.only_stale()
         |> Config.only_patterns(["f"])
 
-      assert Config.cli_args(config) == ["file"]
+      {:ok, args} = Config.cli_args(config)
+      assert args == ["file"]
     end
 
     test "failed flag clears pattern filters" do
@@ -144,7 +160,8 @@ defmodule MixTestInteractive.ConfigTest do
         |> Config.only_patterns(["file"])
         |> Config.only_failed()
 
-      assert Config.cli_args(config) == ["--failed"]
+      {:ok, args} = Config.cli_args(config)
+      assert args == ["--failed"]
     end
 
     test "failed flag clears stale flag" do
@@ -153,7 +170,8 @@ defmodule MixTestInteractive.ConfigTest do
         |> Config.only_stale()
         |> Config.only_failed()
 
-      assert Config.cli_args(config) == ["--failed"]
+      {:ok, args} = Config.cli_args(config)
+      assert args == ["--failed"]
     end
 
     test "stale flag clears pattern filters" do
@@ -162,7 +180,8 @@ defmodule MixTestInteractive.ConfigTest do
         |> Config.only_patterns(["file"])
         |> Config.only_stale()
 
-      assert Config.cli_args(config) == ["--stale"]
+      {:ok, args} = Config.cli_args(config)
+      assert args == ["--stale"]
     end
 
     test "stale flag clears failed flag" do
@@ -171,7 +190,8 @@ defmodule MixTestInteractive.ConfigTest do
         |> Config.only_failed()
         |> Config.only_stale()
 
-      assert Config.cli_args(config) == ["--stale"]
+      {:ok, args} = Config.cli_args(config)
+      assert args == ["--stale"]
     end
 
     test "all tests clears pattern filters" do
@@ -180,7 +200,8 @@ defmodule MixTestInteractive.ConfigTest do
         |> Config.only_patterns(["pattern"])
         |> Config.all_tests()
 
-      assert Config.cli_args(config) == []
+      {:ok, args} = Config.cli_args(config)
+      assert args == []
     end
 
     test "all tests removes stale flag" do
@@ -189,7 +210,8 @@ defmodule MixTestInteractive.ConfigTest do
         |> Config.only_stale()
         |> Config.all_tests()
 
-      assert Config.cli_args(config) == []
+      {:ok, args} = Config.cli_args(config)
+      assert args == []
     end
 
     test "all tests removes failed flag" do
@@ -198,7 +220,8 @@ defmodule MixTestInteractive.ConfigTest do
         |> Config.only_failed()
         |> Config.all_tests()
 
-      assert Config.cli_args(config) == []
+      {:ok, args} = Config.cli_args(config)
+      assert args == []
     end
 
     defp with_fake_file_list(config, files) do

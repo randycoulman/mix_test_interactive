@@ -37,7 +37,7 @@ defmodule MixTestInteractive.Watcher do
     path = to_string(path)
 
     if Paths.watching?(path, config) do
-      InteractiveMode.run_tests(config)
+      InteractiveMode.run(config)
       MessageInbox.flush()
     end
 
