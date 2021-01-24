@@ -3,12 +3,12 @@ defmodule MixTestInteractive.CommandProcessor do
 
   alias MixTestInteractive.Config
   alias MixTestInteractive.Command
-  alias MixTestInteractive.Command.{AllTests, Failed, FilterPaths, Help, Quit, RunTests, Stale}
+  alias MixTestInteractive.Command.{AllTests, Failed, Help, Pattern, Quit, RunTests, Stale}
 
   @spec call(String.t() | :eof, Config.t()) :: Command.response()
 
   @commands [
-    FilterPaths,
+    Pattern,
     Stale,
     Failed,
     AllTests,
