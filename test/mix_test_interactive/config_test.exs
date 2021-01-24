@@ -61,9 +61,9 @@ defmodule MixTestInteractive.ConfigTest do
 
   describe "command line arguments" do
     test "passes on provided arguments" do
-      config = Config.new(["hello", "world"])
+      config = Config.new(["--trace", "--raise"])
       {:ok, args} = Config.cli_args(config)
-      assert args == ["hello", "world"]
+      assert args == ["--trace", "--raise"]
     end
 
     test "passes no arguments by default" do
@@ -72,16 +72,42 @@ defmodule MixTestInteractive.ConfigTest do
       assert args == []
     end
 
+    test "omits unknown arguments" do
+      config = Config.new(["--unknown-arg"])
+
+      assert config.initial_cli_args == []
+    end
+
     test "initializes stale flag from arguments" do
-      config = Config.new(["hello", "--stale", "world"])
+      config = Config.new(["--trace", "--stale", "--raise"])
       assert config.stale?
-      assert config.initial_cli_args == ["hello", "world"]
+      assert config.initial_cli_args == ["--trace", "--raise"]
     end
 
     test "initializes failed flag from arguments" do
-      config = Config.new(["hello", "--failed", "world"])
+      config = Config.new(["--trace", "--failed", "--raise"])
       assert config.failed?
-      assert config.initial_cli_args == ["hello", "world"]
+      assert config.initial_cli_args == ["--trace", "--raise"]
+    end
+
+    test "initializes patterns from arguments" do
+      config = Config.new(["pattern1", "--trace", "pattern2"])
+      assert config.patterns == ["pattern1", "pattern2"]
+      assert config.initial_cli_args == ["--trace"]
+    end
+
+    test "failed takes precedence to stale" do
+      config = Config.new(["--failed", "--stale"])
+      refute config.stale?
+      assert config.failed?
+    end
+
+    test "patterns take precedence to stale/failed flags" do
+      config = Config.new(["--failed", "--stale", "pattern"])
+      assert config.patterns == ["pattern"]
+      refute config.failed?
+      refute config.stale?
+      assert config.initial_cli_args == []
     end
   end
 
@@ -90,12 +116,12 @@ defmodule MixTestInteractive.ConfigTest do
       all_files = ~w(file1 file2 no_match other)
 
       config =
-        Config.new(["provided"])
+        Config.new(["--trace"])
         |> with_fake_file_list(all_files)
         |> Config.only_patterns(["file", "other"])
 
       {:ok, args} = Config.cli_args(config)
-      assert args == ["provided", "file1", "file2", "other"]
+      assert args == ["--trace", "file1", "file2", "other"]
     end
 
     test "returns error if no files match pattern" do
@@ -109,20 +135,20 @@ defmodule MixTestInteractive.ConfigTest do
 
     test "restricts to failed tests" do
       config =
-        Config.new(["provided"])
+        Config.new(["--trace"])
         |> Config.only_failed()
 
       {:ok, args} = Config.cli_args(config)
-      assert args == ["provided", "--failed"]
+      assert args == ["--trace", "--failed"]
     end
 
     test "restricts to stale tests" do
       config =
-        Config.new(["provided"])
+        Config.new(["--trace"])
         |> Config.only_stale()
 
       {:ok, args} = Config.cli_args(config)
-      assert args == ["provided", "--stale"]
+      assert args == ["--trace", "--stale"]
     end
 
     test "pattern filter clears failed flag" do

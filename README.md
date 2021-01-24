@@ -65,13 +65,13 @@ The task is run with `MIX_ENV` set to `test`.
 ## Passing Arguments To Tasks
 
 Any command line arguments passed to the `mix test.interactive` task will be passed
-through to all of the tasks being run, along with any arguments added by interactive mode. If I want to see detailed trace information for my tests, I can run:
+through to the task being run, along with any arguments added by interactive mode. If I want to see detailed trace information for my tests, I can run:
 
 ```
 mix test.interactive --trace
 ```
 
-`mix test.interactive` will detect the `--stale` and `--failed` arguments and use those as initial settings in interactive mode. You can then toggle those flags on and off as needed.
+`mix test.interactive` will detect the `--stale` and `--failed` flags and use those as initial settings in interactive mode. You can then toggle those flags on and off as needed. It will also detect any filename or pattern arguments and use those as initial settings. However, it does not detect any filenames passed with `--include` or `--only`. Note that if you specify a pattern on the command-line, `mix test.interactive` will find all test files matching that pattern and pass those to `mix test` as if you had used the `p` command.
 
 ## Clearing The Console Before Each Run
 
