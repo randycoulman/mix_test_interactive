@@ -7,6 +7,34 @@ defmodule MixTestInteractive.Config do
 
   @application :mix_test_interactive
 
+  @mix_test_options [
+    archives_check: :boolean,
+    color: :boolean,
+    compile: :boolean,
+    cover: :boolean,
+    deps_check: :boolean,
+    elixir_version_check: :boolean,
+    exclude: :keep,
+    export_coverage: :string,
+    failed: :boolean,
+    force: :boolean,
+    formatter: :keep,
+    include: :keep,
+    listen_on_stdin: :boolean,
+    max_cases: :integer,
+    max_failures: :integer,
+    only: :keep,
+    partitions: :integer,
+    preload_modules: :boolean,
+    raise: :boolean,
+    seed: :integer,
+    slowest: :integer,
+    stale: :boolean,
+    start: :boolean,
+    timeout: :integer,
+    trace: :boolean
+  ]
+
   @default_runner MixTestInteractive.PortRunner
   @default_task "test"
   @default_clear false
@@ -32,17 +60,20 @@ defmodule MixTestInteractive.Config do
   Create a new config struct, taking values from the ENV
   """
   def new(cli_args \\ []) do
-    {failed?, args} = delete_if_present(cli_args, "--failed")
-    {stale?, args} = delete_if_present(args, "--stale")
+    {opts, patterns} = OptionParser.parse!(cli_args, switches: @mix_test_options)
+    no_patterns? = Enum.empty?(patterns)
+    {failed?, opts} = Keyword.pop(opts, :failed, false)
+    {stale?, opts} = Keyword.pop(opts, :stale, false)
 
     %__MODULE__{
       clear: get_clear(),
       exclude: get_excluded(),
       extra_extensions: get_extra_extensions(),
-      failed?: failed?,
-      initial_cli_args: args,
+      failed?: no_patterns? && failed?,
+      initial_cli_args: OptionParser.to_argv(opts),
+      patterns: patterns,
       runner: get_runner(),
-      stale?: stale?,
+      stale?: no_patterns? && !failed? && stale?,
       task: get_task(),
       timestamp: get_timestamp()
     }
@@ -94,10 +125,6 @@ defmodule MixTestInteractive.Config do
       true ->
         "Ran all tests"
     end
-  end
-
-  defp delete_if_present(list, element) do
-    {Enum.member?(list, element), List.delete(list, element)}
   end
 
   defp args_from_settings(%__MODULE__{failed?: true}) do
