@@ -4,10 +4,6 @@ defmodule MixTestInteractive.Command.Pattern do
   use Command, command: "p", desc: "run only test files matching pattern(s)"
 
   @impl Command
-  def applies?(%Config{patterns: []}), do: true
-  def applies?(_config), do: false
-
-  @impl Command
   def name, do: "p <patterns>"
 
   @impl Command
