@@ -3,12 +3,12 @@ defmodule MixTestInteractive.InteractiveMode do
 
   def start(config) do
     ConfigStore.store(config)
-    run_tests(config)
+    run(config)
     loop(config)
   end
 
-  def run_tests(config) do
-    Runner.run(config)
+  def run(config) do
+    :ok = run_tests(config)
     show_summary(config)
     show_usage_prompt()
   end
@@ -19,7 +19,7 @@ defmodule MixTestInteractive.InteractiveMode do
     case CommandProcessor.call(command, config) do
       {:ok, new_config} ->
         ConfigStore.store(new_config)
-        run_tests(new_config)
+        run(new_config)
         loop(new_config)
 
       :help ->
@@ -31,6 +31,22 @@ defmodule MixTestInteractive.InteractiveMode do
 
       :quit ->
         :ok
+    end
+  end
+
+  defp run_tests(config) do
+    with :ok <- Runner.run(config) do
+      :ok
+    else
+      {:error, :no_matching_files} ->
+        [:red, "No matching tests found"]
+        |> IO.ANSI.format()
+        |> IO.puts()
+
+        :ok
+
+      error ->
+        error
     end
   end
 

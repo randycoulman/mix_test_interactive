@@ -11,18 +11,18 @@ defmodule MixTestInteractive.PortRunner do
   Run tests using the runner from the config.
   """
   def run(%Config{} = config) do
-    command = build_tasks_cmds(config)
+    with {:ok, command} <- build_tasks_cmds(config) do
+      case :os.type() do
+        {:win32, _} ->
+          System.cmd("cmd", ["/C", "set MIX_ENV=test&& mix test"], into: IO.stream(:stdio, :line))
 
-    case :os.type() do
-      {:win32, _} ->
-        System.cmd("cmd", ["/C", "set MIX_ENV=test&& mix test"], into: IO.stream(:stdio, :line))
+        _ ->
+          Path.join(:code.priv_dir(@application), "zombie_killer")
+          |> System.cmd(["sh", "-c", command], into: IO.stream(:stdio, :line))
+      end
 
-      _ ->
-        Path.join(:code.priv_dir(@application), "zombie_killer")
-        |> System.cmd(["sh", "-c", command], into: IO.stream(:stdio, :line))
+      :ok
     end
-
-    :ok
   end
 
   @doc """
@@ -32,13 +32,17 @@ defmodule MixTestInteractive.PortRunner do
   running inside a port.
   """
   def build_tasks_cmds(%Config{} = config) do
-    config.tasks
-    |> Enum.map(&task_command(&1, config))
-    |> Enum.join(" && ")
+    with {:ok, cli_args} <- Config.cli_args(config) do
+      command =
+        config.tasks
+        |> Enum.map(&task_command(&1, config, cli_args))
+        |> Enum.join(" && ")
+
+      {:ok, command}
+    end
   end
 
-  defp task_command(task, config) do
-    cli_args = Config.cli_args(config)
+  defp task_command(task, config, cli_args) do
     args = Enum.join(cli_args, " ")
 
     ansi =

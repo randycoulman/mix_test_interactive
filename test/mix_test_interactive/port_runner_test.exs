@@ -11,7 +11,7 @@ defmodule MixTestInteractive.PortRunnerTest do
         "MIX_ENV=test mix do run -e " <>
           "'Application.put_env(:elixir, :ansi_enabled, true);', " <> "test --exclude integration"
 
-      assert PortRunner.build_tasks_cmds(config) == expected
+      assert {:ok, ^expected} = PortRunner.build_tasks_cmds(config)
     end
 
     test "take the command cli_executable from passed config" do
@@ -21,7 +21,7 @@ defmodule MixTestInteractive.PortRunnerTest do
         "MIX_ENV=test iex -S mix do run -e " <>
           "'Application.put_env(:elixir, :ansi_enabled, true);', test"
 
-      assert PortRunner.build_tasks_cmds(config) == expected
+      assert {:ok, ^expected} = PortRunner.build_tasks_cmds(config)
     end
 
     test "respect no-start commandline argument from passed config" do
@@ -32,7 +32,7 @@ defmodule MixTestInteractive.PortRunnerTest do
           "'Application.put_env(:elixir, :ansi_enabled, true);', " <>
           "test --exclude integration --no-start"
 
-      assert PortRunner.build_tasks_cmds(config) == expected
+      assert {:ok, ^expected} = PortRunner.build_tasks_cmds(config)
     end
   end
 end
