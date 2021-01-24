@@ -28,6 +28,14 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("p pattern", config)
     end
 
+    test "p a second time replaces patterns with new ones" do
+      config = Config.new()
+      {:ok, first_config} = process_command("p first", Config.new())
+      expected = Config.only_patterns(config, ["second"])
+
+      assert {:ok, ^expected} = process_command("p second", first_config)
+    end
+
     test "s runs only stale tests" do
       config = Config.new()
       expected = Config.only_stale(config)
@@ -72,7 +80,7 @@ defmodule MixTestInteractive.CommandProcessorTest do
         Config.new()
         |> Config.only_patterns(["pattern"])
 
-      assert_commands(config, ~w(s f a), ~w(p))
+      assert_commands(config, ["p <patterns>", "s", "f", "a"], ~w(p))
     end
 
     test "shows relevant commands when running failed tests" do
