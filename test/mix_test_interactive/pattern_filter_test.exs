@@ -26,4 +26,11 @@ defmodule MixTestInteractive.PatternFilterTest do
 
     assert matches == [@abc, @def]
   end
+
+  test "returns only patterns if any is a file with line number" do
+    patterns = ["a", "some_test.exs:42"]
+    matches = PatternFilter.matches(@files, patterns)
+
+    assert matches == patterns
+  end
 end
