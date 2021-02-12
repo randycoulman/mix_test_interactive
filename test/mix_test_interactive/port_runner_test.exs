@@ -3,36 +3,78 @@ defmodule MixTestInteractive.PortRunnerTest do
 
   alias MixTestInteractive.{Config, PortRunner}
 
-  describe "build_task_command/1" do
-    test "appends commandline arguments from passed config" do
-      config = Config.new(["--exclude", "integration"])
-
-      expected =
-        "MIX_ENV=test mix do run -e " <>
-          "'Application.put_env(:elixir, :ansi_enabled, true);', " <> "test --exclude integration"
-
-      assert {:ok, ^expected} = PortRunner.build_task_command(config)
+  defp run(config, os_type) do
+    runner = fn command, args, options ->
+      send(self(), {command, args, options})
     end
 
-    test "takes custom task from passed config" do
-      config = %Config{task: "custom_task"}
+    PortRunner.run(config, os_type, runner)
 
-      expected =
-        "MIX_ENV=test mix do run -e " <>
-          "'Application.put_env(:elixir, :ansi_enabled, true);', " <> "custom_task"
+    receive do
+      message -> message
+    after
+      0 -> :no_message_received
+    end
+  end
 
-      assert {:ok, ^expected} = PortRunner.build_task_command(config)
+  describe "running on Windows" do
+    defp run_windows(config \\ %Config{}) do
+      run(config, {:win32, :nt})
     end
 
-    test "respect no-start commandline argument from passed config" do
-      config = Config.new(["--exclude", "integration", "--no-start"])
+    test "runs mix test directly in test environment by default" do
+      assert {"mix", ["test"], options} = run_windows()
 
-      expected =
-        "MIX_ENV=test mix do run --no-start -e " <>
-          "'Application.put_env(:elixir, :ansi_enabled, true);', " <>
-          "test --exclude integration --no-start"
+      assert Keyword.get(options, :env) == [{"MIX_ENV", "test"}]
+    end
 
-      assert {:ok, ^expected} = PortRunner.build_task_command(config)
+    test "appends extra command-line arguments from config" do
+      config = Config.new(["--cover"])
+      {_command, args, _options} = run_windows(config)
+
+      assert List.last(args) == "--cover"
+    end
+
+    test "uses custom task" do
+      config = %Config{task: "custom"}
+      assert {_command, ["custom"], _options} = run_windows(config)
+    end
+  end
+
+  describe "running on Unix-like operating systems" do
+    defp run_unix(config \\ %Config{}) do
+      run(config, {:unix, :darwin})
+    end
+
+    test "runs mix test via zombie killer with ansi enabled in test environment by default" do
+      {command, ["mix", "do", "run", "-e", ansi, ",", "test"], options} = run_unix()
+
+      assert command =~ ~r{/zombie_killer$}
+      assert ansi =~ ~r/:ansi_enabled/
+      assert Keyword.get(options, :env) == [{"MIX_ENV", "test"}]
+    end
+
+    test "includes no-start flag in ansi command" do
+      config = Config.new(["--no-start"])
+
+      assert {_command, args, _options} = run_unix(config)
+
+      assert ["mix", "do", "run", "--no-start", "-e", _ansi, ",", "test", "--no-start"] = args
+    end
+
+    test "appends extra command-line arguments from config" do
+      config = Config.new(["--cover"])
+      {_command, args, _options} = run_unix(config)
+
+      assert List.last(args) == "--cover"
+    end
+
+    test "uses custom task" do
+      config = %Config{task: "custom"}
+
+      {_command, args, _options} = run_unix(config)
+
+      assert List.last(args) == "custom"
     end
   end
 end
