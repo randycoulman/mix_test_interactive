@@ -10,7 +10,7 @@ defmodule MixTestInteractive.InteractiveMode do
   def run(config) do
     :ok = run_tests(config)
     show_summary(config)
-    show_usage_prompt()
+    show_usage_prompt(config)
   end
 
   defp loop(config) do
@@ -20,6 +20,11 @@ defmodule MixTestInteractive.InteractiveMode do
       {:ok, new_config} ->
         ConfigStore.store(new_config)
         run(new_config)
+        loop(new_config)
+
+      {:no_run, new_config} ->
+        ConfigStore.store(new_config)
+        show_usage_prompt(new_config)
         loop(new_config)
 
       :help ->
@@ -58,7 +63,15 @@ defmodule MixTestInteractive.InteractiveMode do
     |> IO.puts()
   end
 
-  defp show_usage_prompt() do
+  defp show_usage_prompt(config) do
+    IO.puts("")
+
+    if config.watching? do
+      IO.puts("Watching for file changes...")
+    else
+      IO.puts("Ignoring file changes")
+    end
+
     IO.puts("")
 
     [:bright, "Usage: ?", :normal, " to show more"]

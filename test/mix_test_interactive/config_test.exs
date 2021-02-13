@@ -59,6 +59,46 @@ defmodule MixTestInteractive.ConfigTest do
     end
   end
 
+  describe "watch mode" do
+    test "enabled by default" do
+      config = Config.new()
+
+      assert config.watching?
+    end
+
+    test "disables with --no-watch flag" do
+      config = Config.new(["--no-watch"])
+      refute config.watching?
+    end
+
+    test "consumes --watch flag" do
+      config = Config.new(["--watch"])
+      assert {:ok, []} = Config.cli_args(config)
+    end
+
+    test "consumes --no-watch flag" do
+      config = Config.new(["--no-watch"])
+      assert {:ok, []} = Config.cli_args(config)
+    end
+
+    test "toggles off" do
+      config =
+        Config.new()
+        |> Config.toggle_watch_mode()
+
+      refute config.watching?
+    end
+
+    test "toggles back on" do
+      config =
+        Config.new()
+        |> Config.toggle_watch_mode()
+        |> Config.toggle_watch_mode()
+
+      assert config.watching?
+    end
+  end
+
   describe "command line arguments" do
     test "passes on provided arguments" do
       config = Config.new(["--trace", "--raise"])
