@@ -26,6 +26,12 @@ mix test.interactive
 
 Your tests will run immediately (and every time a file changes).
 
+If you don't want tests to run automatically when files change, you can start `mix test.interactive` with the `--no-watch` flag:
+
+```shell
+mix test.interactive --no-watch
+```
+
 After the tests run, you can use the interactive mode to change which tests will run.
 
 Use the `p` command to run only test files that match one or more provided patterns. A pattern is the project-root-relative path to a test file (with or without a line number specification) or a string that matches a portion of full pathname. e.g. `test/my_project/my_test.exs`, `test/my_project/my_test.exs:12:24` or `my`.
@@ -41,6 +47,8 @@ Use the `s` command to run only test files that reference modules that have chan
 Use the `f` command to run only tests that failed on the last run (equivalent to the `--failed` option of `mix test`).
 
 Use the `a` command to run all tests.
+
+Use the `w` command to turn file-watching mode on or off.
 
 Use the `Enter` key to re-run the current set of tests without requiring a file change.
 

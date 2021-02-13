@@ -7,6 +7,10 @@ defmodule MixTestInteractive.Config do
 
   @application :mix_test_interactive
 
+  @options [
+    watch: :boolean
+  ]
+
   @mix_test_options [
     archives_check: :boolean,
     color: :boolean,
@@ -53,17 +57,19 @@ defmodule MixTestInteractive.Config do
             runner: @default_runner,
             stale?: false,
             task: @default_task,
-            timestamp: @default_timestamp
+            timestamp: @default_timestamp,
+            watching?: true
 
   @spec new([String.t()]) :: %__MODULE__{}
   @doc """
   Create a new config struct, taking values from the ENV
   """
   def new(cli_args \\ []) do
-    {opts, patterns} = OptionParser.parse!(cli_args, switches: @mix_test_options)
+    {opts, patterns} = OptionParser.parse!(cli_args, switches: @options ++ @mix_test_options)
     no_patterns? = Enum.empty?(patterns)
     {failed?, opts} = Keyword.pop(opts, :failed, false)
     {stale?, opts} = Keyword.pop(opts, :stale, false)
+    {watching?, opts} = Keyword.pop(opts, :watch, true)
 
     %__MODULE__{
       clear: get_clear(),
@@ -75,7 +81,8 @@ defmodule MixTestInteractive.Config do
       runner: get_runner(),
       stale?: no_patterns? && !failed? && stale?,
       task: get_task(),
-      timestamp: get_timestamp()
+      timestamp: get_timestamp(),
+      watching?: watching?
     }
   end
 
@@ -83,6 +90,10 @@ defmodule MixTestInteractive.Config do
     with {:ok, args} <- args_from_settings(config) do
       {:ok, initial_args ++ args}
     end
+  end
+
+  def toggle_watch_mode(config) do
+    %{config | watching?: !config.watching?}
   end
 
   def only_patterns(config, patterns) do

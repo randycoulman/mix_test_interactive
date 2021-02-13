@@ -36,7 +36,7 @@ defmodule MixTestInteractive.Watcher do
     config = ConfigStore.config()
     path = to_string(path)
 
-    if Paths.watching?(path, config) do
+    if config.watching? && Paths.watching?(path, config) do
       InteractiveMode.run(config)
       MessageInbox.flush()
     end

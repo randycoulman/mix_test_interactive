@@ -1,7 +1,7 @@
 defmodule MixTestInteractive.Command do
   alias MixTestInteractive.Config
 
-  @type response :: {:ok, Config.t()} | :help | :quit | :unknown
+  @type response :: {:ok, Config.t()} | {:no_run, Config.t()} | :help | :quit | :unknown
 
   @callback applies?(Config.t()) :: boolean()
   @callback description :: String.t()

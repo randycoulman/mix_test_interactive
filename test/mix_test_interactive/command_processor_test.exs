@@ -57,6 +57,13 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("a", config)
     end
 
+    test "w toggles watch mode" do
+      config = Config.new()
+      expected = Config.toggle_watch_mode(config)
+
+      assert {:no_run, ^expected} = process_command("w", config)
+    end
+
     test "? returns :help" do
       config = Config.new()
 
