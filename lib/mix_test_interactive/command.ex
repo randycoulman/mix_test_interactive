@@ -26,16 +26,16 @@ defmodule MixTestInteractive.Command do
   usage output: `<command> to <description>`. For example, `a to run all tests`.
   """
 
-  alias MixTestInteractive.Config
+  alias MixTestInteractive.Settings
 
-  @type response :: {:ok, Config.t()} | {:no_run, Config.t()} | :help | :quit | :unknown
+  @type response :: {:ok, Settings.t()} | {:no_run, Settings.t()} | :help | :quit | :unknown
 
   @doc """
   Is the command applicable given the current configuration?
 
   Returns `true` by default if not overridden.
   """
-  @callback applies?(Config.t()) :: boolean()
+  @callback applies?(Settings.t()) :: boolean()
 
   @doc """
   The command's description.
@@ -85,7 +85,7 @@ defmodule MixTestInteractive.Command do
 
   No default provided.
   """
-  @callback run([String.t()], Config.t()) :: response()
+  @callback run([String.t()], Settings.t()) :: response()
 
   defmacro __using__(opts) do
     description = Keyword.fetch!(opts, :desc)
@@ -95,7 +95,7 @@ defmodule MixTestInteractive.Command do
       @behaviour MixTestInteractive.Command
 
       @impl true
-      def applies?(_config), do: true
+      def applies?(_settings), do: true
 
       @impl true
       def description, do: unquote(description)

@@ -12,18 +12,19 @@ defmodule MixTestInteractive.Watcher do
   @doc """
   Start the file watcher.
   """
-  def start_link(_args) do
-    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  def start_link(options) do
+    config = Keyword.fetch!(options, :config)
+    GenServer.start_link(__MODULE__, config, name: __MODULE__)
   end
 
   @impl GenServer
-  def init(_) do
+  def init(config) do
     opts = [dirs: [Path.absname("")], name: :mix_test_watcher]
 
     case FileSystem.start_link(opts) do
       {:ok, _} ->
         FileSystem.subscribe(:mix_test_watcher)
-        {:ok, []}
+        {:ok, config}
 
       other ->
         Logger.warn("""
@@ -35,15 +36,14 @@ defmodule MixTestInteractive.Watcher do
   end
 
   @impl GenServer
-  def handle_info({:file_event, _, {path, _events}}, state) do
-    config = InteractiveMode.config()
+  def handle_info({:file_event, _, {path, _events}}, config) do
     path = to_string(path)
 
-    if config.watching? && Paths.watching?(path, config) do
-      InteractiveMode.run_tests()
+    if Paths.watching?(path, config) do
+      InteractiveMode.note_file_changed()
       MessageInbox.flush()
     end
 
-    {:noreply, state}
+    {:noreply, config}
   end
 end

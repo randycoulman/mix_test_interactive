@@ -1,10 +1,10 @@
 defmodule MixTestInteractive.CommandProcessorTest do
   use ExUnit.Case, async: true
 
-  alias MixTestInteractive.{CommandProcessor, Config}
+  alias MixTestInteractive.{CommandProcessor, Settings}
 
-  defp process_command(command, config \\ Config.new([])) do
-    CommandProcessor.call(command, config)
+  defp process_command(command, settings \\ Settings.new([])) do
+    CommandProcessor.call(command, settings)
   end
 
   describe "commands" do
@@ -17,57 +17,57 @@ defmodule MixTestInteractive.CommandProcessorTest do
     end
 
     test "Enter returns ok tuple" do
-      config = Config.new()
-      assert {:ok, ^config} = process_command("", config)
+      settings = Settings.new()
+      assert {:ok, ^settings} = process_command("", settings)
     end
 
     test "p filters test files to those matching provided pattern" do
-      config = Config.new()
-      expected = Config.only_patterns(config, ["pattern"])
+      settings = Settings.new()
+      expected = Settings.only_patterns(settings, ["pattern"])
 
-      assert {:ok, ^expected} = process_command("p pattern", config)
+      assert {:ok, ^expected} = process_command("p pattern", settings)
     end
 
     test "p a second time replaces patterns with new ones" do
-      config = Config.new()
-      {:ok, first_config} = process_command("p first", Config.new())
-      expected = Config.only_patterns(config, ["second"])
+      settings = Settings.new()
+      {:ok, first_config} = process_command("p first", Settings.new())
+      expected = Settings.only_patterns(settings, ["second"])
 
       assert {:ok, ^expected} = process_command("p second", first_config)
     end
 
     test "s runs only stale tests" do
-      config = Config.new()
-      expected = Config.only_stale(config)
+      settings = Settings.new()
+      expected = Settings.only_stale(settings)
 
-      assert {:ok, ^expected} = process_command("s", config)
+      assert {:ok, ^expected} = process_command("s", settings)
     end
 
     test "f runs only failed tests" do
-      config = Config.new()
-      expected = Config.only_failed(config)
+      settings = Settings.new()
+      expected = Settings.only_failed(settings)
 
-      assert {:ok, ^expected} = process_command("f", config)
+      assert {:ok, ^expected} = process_command("f", settings)
     end
 
     test "a runs all tests" do
-      {:ok, config} = process_command("s", Config.new())
-      expected = Config.all_tests(config)
+      {:ok, settings} = process_command("s", Settings.new())
+      expected = Settings.all_tests(settings)
 
-      assert {:ok, ^expected} = process_command("a", config)
+      assert {:ok, ^expected} = process_command("a", settings)
     end
 
     test "w toggles watch mode" do
-      config = Config.new()
-      expected = Config.toggle_watch_mode(config)
+      settings = Settings.new()
+      expected = Settings.toggle_watch_mode(settings)
 
-      assert {:no_run, ^expected} = process_command("w", config)
+      assert {:no_run, ^expected} = process_command("w", settings)
     end
 
     test "? returns :help" do
-      config = Config.new()
+      settings = Settings.new()
 
-      assert :help = process_command("?", config)
+      assert :help = process_command("?", settings)
     end
 
     test "trims whitespace from commands" do
@@ -77,38 +77,38 @@ defmodule MixTestInteractive.CommandProcessorTest do
 
   describe "usage information" do
     test "shows relevant commands when running all tests" do
-      config = Config.new()
+      settings = Settings.new()
 
-      assert_commands(config, ["p <patterns>", "s", "f"], ~w(a))
+      assert_commands(settings, ["p <patterns>", "s", "f"], ~w(a))
     end
 
     test "shows relevant commands when filtering by pattern" do
-      config =
-        Config.new()
-        |> Config.only_patterns(["pattern"])
+      settings =
+        Settings.new()
+        |> Settings.only_patterns(["pattern"])
 
-      assert_commands(config, ["p <patterns>", "s", "f", "a"], ~w(p))
+      assert_commands(settings, ["p <patterns>", "s", "f", "a"], ~w(p))
     end
 
     test "shows relevant commands when running failed tests" do
-      config =
-        Config.new()
-        |> Config.only_failed()
+      settings =
+        Settings.new()
+        |> Settings.only_failed()
 
-      assert_commands(config, ["p <patterns>", "s", "a"], ~w(f))
+      assert_commands(settings, ["p <patterns>", "s", "a"], ~w(f))
     end
 
     test "shows relevant commands when running stale tests" do
-      config =
-        Config.new()
-        |> Config.only_stale()
+      settings =
+        Settings.new()
+        |> Settings.only_stale()
 
-      assert_commands(config, ["p <patterns>", "f", "a"], ~w(s))
+      assert_commands(settings, ["p <patterns>", "f", "a"], ~w(s))
     end
 
-    defp assert_commands(config, included, excluded) do
+    defp assert_commands(settings, included, excluded) do
       included = included ++ ~w(Enter ? q)
-      usage = CommandProcessor.usage(config)
+      usage = CommandProcessor.usage(settings)
 
       assert contains?(usage, "Usage:\n")
 
