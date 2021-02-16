@@ -5,7 +5,7 @@ defmodule MixTestInteractive.Watcher do
 
   use GenServer
 
-  alias MixTestInteractive.{ConfigStore, InteractiveMode, MessageInbox, Paths}
+  alias MixTestInteractive.{InteractiveMode, MessageInbox, Paths}
 
   require Logger
 
@@ -36,11 +36,11 @@ defmodule MixTestInteractive.Watcher do
 
   @impl GenServer
   def handle_info({:file_event, _, {path, _events}}, state) do
-    config = ConfigStore.config()
+    config = InteractiveMode.config()
     path = to_string(path)
 
     if config.watching? && Paths.watching?(path, config) do
-      InteractiveMode.run(config)
+      InteractiveMode.run_tests()
       MessageInbox.flush()
     end
 
