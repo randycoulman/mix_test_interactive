@@ -18,12 +18,12 @@ defmodule MixTestInteractive.Runner do
     config.runner.run(config)
   end
 
-  defp maybe_clear_terminal(%{clear: false}), do: :ok
-  defp maybe_clear_terminal(%{clear: true}), do: :ok = IO.puts(IO.ANSI.clear() <> IO.ANSI.home())
+  defp maybe_clear_terminal(%{clear?: false}), do: :ok
+  defp maybe_clear_terminal(%{clear?: true}), do: :ok = IO.puts(IO.ANSI.clear() <> IO.ANSI.home())
 
-  defp maybe_print_timestamp(%{timestamp: false}), do: :ok
+  defp maybe_print_timestamp(%{show_timestamp?: false}), do: :ok
 
-  defp maybe_print_timestamp(%{timestamp: true}) do
+  defp maybe_print_timestamp(%{show_timestamp?: true}) do
     :ok =
       DateTime.utc_now()
       |> DateTime.to_string()

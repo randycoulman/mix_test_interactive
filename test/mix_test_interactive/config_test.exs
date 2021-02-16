@@ -47,14 +47,14 @@ defmodule MixTestInteractive.ConfigTest do
     test "takes :clear from the env" do
       TemporaryEnv.put :mix_test_interactive, :clear, true do
         config = Config.new()
-        assert config.clear
+        assert config.clear?
       end
     end
 
     test "takes :timestamp from the env" do
       TemporaryEnv.put :mix_test_interactive, :timestamp, true do
         config = Config.new()
-        assert config.timestamp
+        assert config.show_timestamp?
       end
     end
   end
