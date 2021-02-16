@@ -13,7 +13,7 @@ defmodule MixTestInteractive do
     Mix.env(:test)
     {:ok, _} = Application.ensure_all_started(:mix_test_interactive)
 
-    InteractiveMode.initialize(args)
+    InteractiveMode.command_line_arguments(args)
     loop()
   end
 

@@ -26,11 +26,11 @@ defmodule MixTestInteractive.InteractiveMode do
   end
 
   @doc """
-  Initialize from command-line arguments.
+  Process command-line arguments.
   """
-  @spec initialize([String.t()]) :: :ok
-  def initialize(cli_args) do
-    GenServer.call(__MODULE__, {:initialize, cli_args})
+  @spec command_line_arguments([String.t()]) :: :ok
+  def command_line_arguments(cli_args) do
+    GenServer.call(__MODULE__, {:command_line_arguments, cli_args})
   end
 
   @doc """
@@ -55,7 +55,7 @@ defmodule MixTestInteractive.InteractiveMode do
   end
 
   @impl GenServer
-  def handle_call({:initialize, cli_args}, _from, state) do
+  def handle_call({:command_line_arguments, cli_args}, _from, state) do
     settings = Settings.new(cli_args)
     {:reply, :ok, %{state | settings: settings}, {:continue, :run_tests}}
   end
