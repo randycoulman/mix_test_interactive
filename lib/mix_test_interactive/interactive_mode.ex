@@ -22,19 +22,35 @@ defmodule MixTestInteractive.InteractiveMode do
   end
 
   @doc """
+  Initialize from command-line arguments.
+  """
+  @spec initialize([String.t()]) :: :ok
+  def initialize(cli_args) do
+    GenServer.call(__MODULE__, {:initialize, cli_args})
+  end
+
+  @doc """
+  Process a command from the user.
+  """
+  @spec process_command(String.t()) :: :ok | :quit
+  def process_command(command) do
+    GenServer.call(__MODULE__, {:command, command})
+  end
+
+  @doc """
+  Run the tests.
+  """
+  @spec run_tests() :: :ok
+  def run_tests do
+    GenServer.call(__MODULE__, :run_tests, :infinity)
+  end
+
+  @doc """
   Return the current configuration.
   """
   @spec config() :: Config.t()
   def config do
     GenServer.call(__MODULE__, :config, :infinity)
-  end
-
-  @doc """
-  Store a new configuration.
-  """
-  @spec store_config(Config.t()) :: :ok
-  def store_config(config) do
-    GenServer.cast(__MODULE__, {:store_config, config})
   end
 
   @impl GenServer
@@ -43,59 +59,75 @@ defmodule MixTestInteractive.InteractiveMode do
   end
 
   @impl GenServer
+  def handle_call({:initialize, cli_args}, _from, _state) do
+    config = Config.new(cli_args)
+    {:reply, :ok, config, {:continue, :run_tests}}
+  end
+
+  @impl GenServer
+  def handle_call({:command, command}, _from, state) do
+    case CommandProcessor.call(command, state) do
+      {:ok, new_state} ->
+        {:reply, :ok, new_state, {:continue, :run_tests}}
+
+      {:no_run, new_state} ->
+        show_usage_prompt(new_state)
+        {:reply, :ok, new_state}
+
+      :help ->
+        show_help(state)
+        {:reply, :ok, state}
+
+      :unknown ->
+        {:reply, :ok, state}
+
+      :quit ->
+        System.stop()
+    end
+  end
+
+  @impl GenServer
+  def handle_call(:run_tests, _from, state) do
+    run_tests(state)
+    {:reply, :ok, state}
+  end
+
+  @impl GenServer
   def handle_call(:config, _from, state) do
     {:reply, state, state}
   end
 
   @impl GenServer
-  def handle_cast({:store_config, config}, _state) do
-    {:noreply, config}
+  def handle_continue(:run_tests, state) do
+    run_tests(state)
+    {:noreply, state}
   end
 
   @doc """
   Start the interactive mode loop.
   """
-  @spec start(Config.t()) :: no_return()
-  def start(config) do
-    store_config(config)
-    run(config)
-    loop(config)
+  @spec start() :: no_return()
+  def start() do
+    loop()
   end
 
-  @doc false
-  def run(config) do
-    :ok = run_tests(config)
-    show_summary(config)
-    show_usage_prompt(config)
-  end
-
-  defp loop(config) do
+  defp loop do
     command = IO.gets("")
 
-    case CommandProcessor.call(command, config) do
-      {:ok, new_config} ->
-        store_config(new_config)
-        run(new_config)
-        loop(new_config)
-
-      {:no_run, new_config} ->
-        store_config(new_config)
-        show_usage_prompt(new_config)
-        loop(new_config)
-
-      :help ->
-        show_help(config)
-        loop(config)
-
-      :unknown ->
-        loop(config)
-
-      :quit ->
-        :ok
+    with :ok <- process_command(command) do
+      loop()
+    else
+      :quit -> :ok
     end
   end
 
   defp run_tests(config) do
+    :ok = do_run_tests(config)
+    show_summary(config)
+    show_usage_prompt(config)
+  end
+
+  defp do_run_tests(config) do
     with :ok <- Runner.run(config) do
       :ok
     else

@@ -3,7 +3,7 @@ defmodule MixTestInteractive do
   Interactively run your Elixir project's tests.
   """
 
-  alias MixTestInteractive.{Config, InteractiveMode}
+  alias MixTestInteractive.InteractiveMode
 
   @doc """
   Start the interactive test runner.
@@ -13,8 +13,7 @@ defmodule MixTestInteractive do
     Mix.env(:test)
     {:ok, _} = Application.ensure_all_started(:mix_test_interactive)
 
-    config = Config.new(args)
-
-    InteractiveMode.start(config)
+    InteractiveMode.initialize(args)
+    InteractiveMode.start()
   end
 end
