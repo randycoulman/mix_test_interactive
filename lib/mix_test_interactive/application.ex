@@ -7,7 +7,7 @@ defmodule MixTestInteractive.Application do
 
   @impl Application
   def start(_type, _args) do
-    config = %Config{}
+    config = Config.new()
     children = [{InteractiveMode, config: config}, Watcher]
 
     opts = [strategy: :one_for_one, name: MixTestInteractive.Supervisor]

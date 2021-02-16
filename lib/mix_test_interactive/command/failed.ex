@@ -5,16 +5,16 @@ defmodule MixTestInteractive.Command.Failed do
   Equivalent to `mix test --failed`.
   """
 
-  alias MixTestInteractive.{Command, Config}
+  alias MixTestInteractive.{Command, Settings}
 
   use Command, command: "f", desc: "run only failed tests"
 
   @impl Command
-  def applies?(%Config{failed?: false}), do: true
-  def applies?(_config), do: false
+  def applies?(%Settings{failed?: false}), do: true
+  def applies?(_settings), do: false
 
   @impl Command
-  def run(_args, config) do
-    {:ok, Config.only_failed(config)}
+  def run(_args, settings) do
+    {:ok, Settings.only_failed(settings)}
   end
 end

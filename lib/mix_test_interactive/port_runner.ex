@@ -14,15 +14,21 @@ defmodule MixTestInteractive.PortRunner do
   @type runner ::
           (String.t(), [String.t()], keyword() ->
              {Collectable.t(), exit_status :: non_neg_integer()})
+  @type os_type :: {atom(), atom()}
 
-  alias MixTestInteractive.Config
+  alias MixTestInteractive.{Config, Settings}
 
   @doc """
   Run tests based on the current configuration.
   """
-  @spec run(Config.t(), {atom(), atom()}, runner()) :: :ok | {:error, term()}
-  def run(%Config{} = config, os_type \\ :os.type(), runner \\ &System.cmd/3) do
-    with {:ok, cli_args} <- Config.cli_args(config),
+  @spec run(Config.t(), Settings.t(), os_type(), runner()) :: :ok | {:error, term()}
+  def run(
+        %Config{} = config,
+        %Settings{} = settings,
+        os_type \\ :os.type(),
+        runner \\ &System.cmd/3
+      ) do
+    with {:ok, cli_args} <- Settings.cli_args(settings),
          command <- [config.task | cli_args] do
       case os_type do
         {:win32, _} ->

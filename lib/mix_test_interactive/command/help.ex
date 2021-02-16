@@ -10,5 +10,5 @@ defmodule MixTestInteractive.Command.Help do
   use Command, command: "?", desc: "show help"
 
   @impl Command
-  def run(_args, _config), do: :help
+  def run(_args, _settings), do: :help
 end

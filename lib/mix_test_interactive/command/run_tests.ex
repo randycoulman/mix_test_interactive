@@ -11,5 +11,5 @@ defmodule MixTestInteractive.Command.RunTests do
   def name, do: "Enter"
 
   @impl Command
-  def run(_args, config), do: {:ok, config}
+  def run(_args, settings), do: {:ok, settings}
 end

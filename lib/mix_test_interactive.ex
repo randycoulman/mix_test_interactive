@@ -20,10 +20,9 @@ defmodule MixTestInteractive do
   defp loop do
     command = IO.gets("")
 
-    if InteractiveMode.process_command(command) == :quit do
-      :ok
+    case InteractiveMode.process_command(command) do
+      :quit -> :ok
+      :ok -> loop()
     end
-
-    loop()
   end
 end

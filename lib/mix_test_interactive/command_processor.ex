@@ -3,8 +3,7 @@ defmodule MixTestInteractive.CommandProcessor do
   Processes interactive mode commands.
   """
 
-  alias MixTestInteractive.Config
-  alias MixTestInteractive.Command
+  alias MixTestInteractive.{Command, Settings}
 
   alias MixTestInteractive.Command.{
     AllTests,
@@ -33,13 +32,13 @@ defmodule MixTestInteractive.CommandProcessor do
   @doc """
   Processes a single interactive mode command.
   """
-  @spec call(String.t() | :eof, Config.t()) :: response()
-  def call(:eof, _config), do: :quit
+  @spec call(String.t() | :eof, Settings.t()) :: response()
+  def call(:eof, _settings), do: :quit
 
-  def call(command_line, config) when is_binary(command_line) do
+  def call(command_line, settings) when is_binary(command_line) do
     case String.split(command_line) do
-      [] -> process_command("", [], config)
-      [command | args] -> process_command(command, args, config)
+      [] -> process_command("", [], settings)
+      [command | args] -> process_command(command, args, settings)
     end
   end
 
@@ -48,10 +47,10 @@ defmodule MixTestInteractive.CommandProcessor do
 
   Includes only commands that are applicable to the current configuration.
   """
-  @spec usage(Config.t()) :: IO.chardata()
-  def usage(config) do
+  @spec usage(Settings.t()) :: IO.chardata()
+  def usage(settings) do
     usage =
-      config
+      settings
       |> applicable_commands()
       |> Enum.flat_map(&usage_line/1)
 

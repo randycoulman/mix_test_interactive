@@ -3,11 +3,11 @@ defmodule MixTestInteractive.RunnerTest do
 
   import ExUnit.CaptureIO
 
-  alias MixTestInteractive.{Config, Runner}
+  alias MixTestInteractive.{Config, Runner, Settings}
 
   defmodule DummyRunner do
-    def run(config) do
-      Agent.get_and_update(__MODULE__, fn data -> {:ok, [config | data]} end)
+    def run(config, settings) do
+      Agent.get_and_update(__MODULE__, fn data -> {:ok, [{config, settings} | data]} end)
     end
   end
 
@@ -19,13 +19,14 @@ defmodule MixTestInteractive.RunnerTest do
   describe "run/1" do
     test "It delegates to the runner specified by the config" do
       config = %Config{runner: DummyRunner}
+      settings = Settings.new()
 
       output =
         capture_io(fn ->
-          Runner.run(config)
+          Runner.run(config, settings)
         end)
 
-      assert Agent.get(DummyRunner, fn x -> x end) == [config]
+      assert Agent.get(DummyRunner, fn x -> x end) == [{config, settings}]
 
       assert output == """
 
@@ -35,13 +36,14 @@ defmodule MixTestInteractive.RunnerTest do
 
     test "It outputs timestamp when specified by the config" do
       config = %Config{runner: DummyRunner, show_timestamp?: true}
+      settings = Settings.new()
 
       output =
         capture_io(fn ->
-          Runner.run(config)
+          Runner.run(config, settings)
         end)
 
-      assert Agent.get(DummyRunner, fn x -> x end) == [config]
+      assert Agent.get(DummyRunner, fn x -> x end) == [{config, settings}]
 
       timestamp =
         output
