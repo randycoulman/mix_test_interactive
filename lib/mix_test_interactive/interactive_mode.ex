@@ -6,14 +6,58 @@ defmodule MixTestInteractive.InteractiveMode do
   the tests, and then prints out summary/usage information.
   """
 
-  alias MixTestInteractive.{CommandProcessor, Config, ConfigStore, Runner}
+  use GenServer
+
+  alias MixTestInteractive.{CommandProcessor, Config, Runner}
+
+  @type option :: {:config, Config.t()}
+
+  @doc """
+  Start the interactive mode server.
+  """
+  @spec start_link([option]) :: GenServer.on_start()
+  def start_link(options) do
+    state = Keyword.fetch!(options, :config)
+    GenServer.start_link(__MODULE__, state, name: __MODULE__)
+  end
+
+  @doc """
+  Return the current configuration.
+  """
+  @spec config() :: Config.t()
+  def config do
+    GenServer.call(__MODULE__, :config, :infinity)
+  end
+
+  @doc """
+  Store a new configuration.
+  """
+  @spec store_config(Config.t()) :: :ok
+  def store_config(config) do
+    GenServer.cast(__MODULE__, {:store_config, config})
+  end
+
+  @impl GenServer
+  def init(initial_state) do
+    {:ok, initial_state}
+  end
+
+  @impl GenServer
+  def handle_call(:config, _from, state) do
+    {:reply, state, state}
+  end
+
+  @impl GenServer
+  def handle_cast({:store_config, config}, _state) do
+    {:noreply, config}
+  end
 
   @doc """
   Start the interactive mode loop.
   """
   @spec start(Config.t()) :: no_return()
   def start(config) do
-    ConfigStore.store(config)
+    store_config(config)
     run(config)
     loop(config)
   end
@@ -30,12 +74,12 @@ defmodule MixTestInteractive.InteractiveMode do
 
     case CommandProcessor.call(command, config) do
       {:ok, new_config} ->
-        ConfigStore.store(new_config)
+        store_config(new_config)
         run(new_config)
         loop(new_config)
 
       {:no_run, new_config} ->
-        ConfigStore.store(new_config)
+        store_config(new_config)
         show_usage_prompt(new_config)
         loop(new_config)
 
