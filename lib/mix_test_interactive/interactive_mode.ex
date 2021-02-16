@@ -1,9 +1,12 @@
 defmodule MixTestInteractive.InteractiveMode do
   @moduledoc """
-  Main loop for interactive mode.
+  Server for interactive mode.
 
-  Repeatedly reads commands from the user, processes them, optionally runs
-  the tests, and then prints out summary/usage information.
+  Processes commands from the user and requests to run tests due to file changes.
+  This ensures that commands cannot be processed while tests are already running.
+
+  Any commands that come in while the tests are running will be processed once the
+  test run has completed.
   """
 
   use GenServer
