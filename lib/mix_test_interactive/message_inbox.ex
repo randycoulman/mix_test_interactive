@@ -1,12 +1,7 @@
 defmodule MixTestInteractive.MessageInbox do
-  @moduledoc """
-  Helpers for managing process messages.
-  """
+  @moduledoc false
 
   @spec flush :: :ok
-  @doc """
-  Clear the process inbox of all messages.
-  """
   def flush do
     receive do
       _ -> flush()

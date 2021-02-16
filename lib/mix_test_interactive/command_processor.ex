@@ -1,5 +1,7 @@
 defmodule MixTestInteractive.CommandProcessor do
-  @moduledoc false
+  @moduledoc """
+  Processes interactive mode commands.
+  """
 
   alias MixTestInteractive.Config
   alias MixTestInteractive.Command
@@ -15,7 +17,7 @@ defmodule MixTestInteractive.CommandProcessor do
     ToggleWatchMode
   }
 
-  @spec call(String.t() | :eof, Config.t()) :: Command.response()
+  @type response :: Command.response()
 
   @commands [
     Pattern,
@@ -28,6 +30,10 @@ defmodule MixTestInteractive.CommandProcessor do
     Quit
   ]
 
+  @doc """
+  Processes a single interactive mode command.
+  """
+  @spec call(String.t() | :eof, Config.t()) :: response()
   def call(:eof, _config), do: :quit
 
   def call(command_line, config) when is_binary(command_line) do
@@ -37,6 +43,12 @@ defmodule MixTestInteractive.CommandProcessor do
     end
   end
 
+  @doc """
+  Returns an ANSI-formatted usage summary.
+
+  Includes only commands that are applicable to the current configuration.
+  """
+  @spec usage(Config.t()) :: IO.chardata()
   def usage(config) do
     usage =
       config
