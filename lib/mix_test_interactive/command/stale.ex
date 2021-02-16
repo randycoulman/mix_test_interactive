@@ -1,4 +1,10 @@
 defmodule MixTestInteractive.Command.Stale do
+  @moduledoc """
+  Run only stale tests.
+
+  Equivalent to `mix test --stale`.
+  """
+
   alias MixTestInteractive.{Command, Config}
 
   use Command, command: "s", desc: "run only stale tests"

@@ -5,6 +5,9 @@ defmodule MixTestInteractive do
 
   alias MixTestInteractive.{Config, InteractiveMode}
 
+  @doc """
+  Start the interactive test runner.
+  """
   @spec run([String.t()]) :: :ok
   def run(args \\ []) when is_list(args) do
     Mix.env(:test)

@@ -1,10 +1,14 @@
 defmodule MixTestInteractive.Runner do
-  @moduledoc false
+  @moduledoc """
+  Runs tests based on current configuration.
+
+  Also responsible for optionally clearing the terminal and printing the current time.
+  """
 
   alias MixTestInteractive.Config
 
   @doc """
-  Run tests using provided runner.
+  Run tests using configured runner.
   """
   @spec run(Config.t()) :: :ok | {:error, term()}
   def run(config) do

@@ -6,10 +6,13 @@ defmodule MixTestInteractive.MixProject do
   def project do
     [
       app: :mix_test_interactive,
-      version: @version,
+      deps: deps(),
+      docs: docs(),
       elixir: "~> 1.8",
+      name: "mix test.interactive",
+      source_url: "https://github.com/randycoulman/mix_test_interactive",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      version: @version
     ]
   end
 
@@ -22,8 +25,20 @@ defmodule MixTestInteractive.MixProject do
 
   defp deps do
     [
+      {:ex_doc, "~> 0.23", only: :dev, runtime: false},
       {:file_system, "~> 0.2"},
-      {:temporary_env, "~> 2.0", only: :test}
+      {:temporary_env, "~> 2.0", only: :test},
+      {:typed_struct, "~> 0.2.1"}
+    ]
+  end
+
+  defp docs do
+    [
+      extras: ["README.md"],
+      groups_for_modules: [
+        Commands: [~r/^MixTestInteractive\.Command\..*/]
+      ],
+      main: "readme"
     ]
   end
 end

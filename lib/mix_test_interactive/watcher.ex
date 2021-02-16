@@ -1,14 +1,17 @@
 defmodule MixTestInteractive.Watcher do
+  @moduledoc """
+  A server that runs tests whenever source files change.
+  """
+
   use GenServer
 
   alias MixTestInteractive.{ConfigStore, InteractiveMode, MessageInbox, Paths}
 
   require Logger
 
-  @moduledoc """
-  A server that runs tests whenever source files change.
+  @doc """
+  Start the file watcher.
   """
-
   def start_link(_args) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end

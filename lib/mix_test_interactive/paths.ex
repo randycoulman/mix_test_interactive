@@ -1,29 +1,19 @@
 defmodule MixTestInteractive.Paths do
-  @moduledoc """
-  Decides if we should refresh for a path.
-  """
+  @moduledoc false
 
   alias MixTestInteractive.Config
 
   @elixir_source_endings ~w(.erl .ex .exs .eex .leex .xrl .yrl .hrl)
   @ignored_dirs ~w(deps/ _build/)
 
-  #
-  # Public API
-  #
-
+  @doc """
+  Determines if we should respond to changes in a file.
+  """
   @spec watching?(String.t(), Config.t()) :: boolean
-
   def watching?(path, config \\ %Config{}) do
     watched_directory?(path) and elixir_extension?(path, config.extra_extensions) and
       not excluded?(config, path)
   end
-
-  #
-  # Internal functions
-  #
-
-  @spec excluded?(Config.t(), String.t()) :: boolean
 
   defp excluded?(config, path) do
     config.exclude

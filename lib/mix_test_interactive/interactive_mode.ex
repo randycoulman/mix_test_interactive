@@ -1,12 +1,24 @@
 defmodule MixTestInteractive.InteractiveMode do
+  @moduledoc """
+  Main loop for interactive mode.
+
+  Repeatedly reads commands from the user, processes them, optionally runs
+  the tests, and then prints out summary/usage information.
+  """
+
   alias MixTestInteractive.{CommandProcessor, Config, ConfigStore, Runner}
 
+  @doc """
+  Start the interactive mode loop.
+  """
+  @spec start(Config.t()) :: no_return()
   def start(config) do
     ConfigStore.store(config)
     run(config)
     loop(config)
   end
 
+  @doc false
   def run(config) do
     :ok = run_tests(config)
     show_summary(config)
