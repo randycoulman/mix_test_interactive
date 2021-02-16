@@ -49,14 +49,6 @@ defmodule MixTestInteractive.InteractiveMode do
     GenServer.call(__MODULE__, :note_file_changed, :infinity)
   end
 
-  @doc """
-  Return the current configuration.
-  """
-  @spec config() :: Config.t()
-  def config do
-    GenServer.call(__MODULE__, :config, :infinity)
-  end
-
   @impl GenServer
   def init(initial_state) do
     {:ok, initial_state}
@@ -97,11 +89,6 @@ defmodule MixTestInteractive.InteractiveMode do
     end
 
     {:reply, :ok, state}
-  end
-
-  @impl GenServer
-  def handle_call(:config, _from, state) do
-    {:reply, state.config, state}
   end
 
   @impl GenServer
