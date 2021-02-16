@@ -14,6 +14,16 @@ defmodule MixTestInteractive do
     {:ok, _} = Application.ensure_all_started(:mix_test_interactive)
 
     InteractiveMode.initialize(args)
-    InteractiveMode.start()
+    loop()
+  end
+
+  defp loop do
+    command = IO.gets("")
+
+    if InteractiveMode.process_command(command) == :quit do
+      :ok
+    end
+
+    loop()
   end
 end

@@ -103,24 +103,6 @@ defmodule MixTestInteractive.InteractiveMode do
     {:noreply, state}
   end
 
-  @doc """
-  Start the interactive mode loop.
-  """
-  @spec start() :: no_return()
-  def start() do
-    loop()
-  end
-
-  defp loop do
-    command = IO.gets("")
-
-    with :ok <- process_command(command) do
-      loop()
-    else
-      :quit -> :ok
-    end
-  end
-
   defp run_tests(config) do
     :ok = do_run_tests(config)
     show_summary(config)
