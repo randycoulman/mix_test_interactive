@@ -41,11 +41,11 @@ defmodule MixTestInteractive.InteractiveMode do
   end
 
   @doc """
-  Run the tests.
+  Tell InteractiveMode that one or more files have changed.
   """
-  @spec run_tests() :: :ok
-  def run_tests do
-    GenServer.call(__MODULE__, :run_tests, :infinity)
+  @spec note_file_changed() :: :ok
+  def note_file_changed do
+    GenServer.call(__MODULE__, :note_file_changed, :infinity)
   end
 
   @doc """
@@ -90,8 +90,11 @@ defmodule MixTestInteractive.InteractiveMode do
   end
 
   @impl GenServer
-  def handle_call(:run_tests, _from, state) do
-    run_tests(state)
+  def handle_call(:note_file_changed, _from, state) do
+    if state.watching? do
+      run_tests(state)
+    end
+
     {:reply, :ok, state}
   end
 

@@ -39,8 +39,8 @@ defmodule MixTestInteractive.Watcher do
     config = InteractiveMode.config()
     path = to_string(path)
 
-    if config.watching? && Paths.watching?(path, config) do
-      InteractiveMode.run_tests()
+    if Paths.watching?(path, config) do
+      InteractiveMode.note_file_changed()
       MessageInbox.flush()
     end
 
