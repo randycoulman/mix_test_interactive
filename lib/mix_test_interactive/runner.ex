@@ -5,17 +5,17 @@ defmodule MixTestInteractive.Runner do
   Also responsible for optionally clearing the terminal and printing the current time.
   """
 
-  alias MixTestInteractive.{Config, Settings}
+  alias MixTestInteractive.Config
 
   @doc """
   Run tests using configured runner.
   """
-  @spec run(Config.t(), Settings.t()) :: :ok | {:error, term()}
-  def run(config, settings) do
+  @spec run(Config.t(), [String.t()]) :: :ok
+  def run(config, args) do
     :ok = maybe_clear_terminal(config)
     IO.puts("\nRunning tests...")
     :ok = maybe_print_timestamp(config)
-    config.runner.run(config, settings)
+    config.runner.run(config, args)
   end
 
   defp maybe_clear_terminal(%{clear?: false}), do: :ok

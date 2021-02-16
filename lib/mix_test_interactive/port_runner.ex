@@ -16,39 +16,38 @@ defmodule MixTestInteractive.PortRunner do
              {Collectable.t(), exit_status :: non_neg_integer()})
   @type os_type :: {atom(), atom()}
 
-  alias MixTestInteractive.{Config, Settings}
+  alias MixTestInteractive.Config
 
   @doc """
   Run tests based on the current configuration.
   """
-  @spec run(Config.t(), Settings.t(), os_type(), runner()) :: :ok | {:error, term()}
+  @spec run(Config.t(), [String.t()], os_type(), runner()) :: :ok
   def run(
         %Config{} = config,
-        %Settings{} = settings,
+        args,
         os_type \\ :os.type(),
         runner \\ &System.cmd/3
       ) do
-    with {:ok, cli_args} <- Settings.cli_args(settings),
-         command <- [config.task | cli_args] do
-      case os_type do
-        {:win32, _} ->
-          runner.("mix", command,
-            env: [{"MIX_ENV", "test"}],
-            into: IO.stream(:stdio, :line)
-          )
+    command = [config.task | args]
 
-        _ ->
-          command = enable_ansi(command)
+    case os_type do
+      {:win32, _} ->
+        runner.("mix", command,
+          env: [{"MIX_ENV", "test"}],
+          into: IO.stream(:stdio, :line)
+        )
 
-          Path.join(:code.priv_dir(@application), "zombie_killer")
-          |> runner.(["mix" | command],
-            env: [{"MIX_ENV", "test"}],
-            into: IO.stream(:stdio, :line)
-          )
-      end
+      _ ->
+        command = enable_ansi(command)
 
-      :ok
+        Path.join(:code.priv_dir(@application), "zombie_killer")
+        |> runner.(["mix" | command],
+          env: [{"MIX_ENV", "test"}],
+          into: IO.stream(:stdio, :line)
+        )
     end
+
+    :ok
   end
 
   defp enable_ansi(command) do

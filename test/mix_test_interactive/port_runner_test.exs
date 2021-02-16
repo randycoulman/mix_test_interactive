@@ -1,17 +1,17 @@
 defmodule MixTestInteractive.PortRunnerTest do
   use ExUnit.Case, async: true
 
-  alias MixTestInteractive.{Config, PortRunner, Settings}
+  alias MixTestInteractive.{Config, PortRunner}
 
   defp run(os_type, options) do
     config = Keyword.get(options, :config, Config.new())
-    settings = Keyword.get(options, :settings, Settings.new([]))
+    args = Keyword.get(options, :args, [])
 
     runner = fn command, args, options ->
       send(self(), {command, args, options})
     end
 
-    PortRunner.run(config, settings, os_type, runner)
+    PortRunner.run(config, args, os_type, runner)
 
     receive do
       message -> message
@@ -31,9 +31,8 @@ defmodule MixTestInteractive.PortRunnerTest do
       assert Keyword.get(options, :env) == [{"MIX_ENV", "test"}]
     end
 
-    test "appends extra command-line arguments from settings" do
-      settings = Settings.new(["--cover"])
-      {_command, args, _options} = run_windows(settings: settings)
+    test "appends extra command-line arguments" do
+      {_command, args, _options} = run_windows(args: ["--cover"])
 
       assert List.last(args) == "--cover"
     end
@@ -58,16 +57,13 @@ defmodule MixTestInteractive.PortRunnerTest do
     end
 
     test "includes no-start flag in ansi command" do
-      settings = Settings.new(["--no-start"])
-
-      assert {_command, args, _options} = run_unix(settings: settings)
+      assert {_command, args, _options} = run_unix(args: ["--no-start"])
 
       assert ["mix", "do", "run", "--no-start", "-e", _ansi, ",", "test", "--no-start"] = args
     end
 
     test "appends extra command-line arguments from settings" do
-      settings = Settings.new(["--cover"])
-      {_command, args, _options} = run_unix(settings: settings)
+      {_command, args, _options} = run_unix(args: ["--cover"])
 
       assert List.last(args) == "--cover"
     end
