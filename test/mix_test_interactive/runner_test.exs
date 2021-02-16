@@ -34,7 +34,7 @@ defmodule MixTestInteractive.RunnerTest do
     end
 
     test "It outputs timestamp when specified by the config" do
-      config = %Config{runner: DummyRunner, timestamp: true}
+      config = %Config{runner: DummyRunner, show_timestamp?: true}
 
       output =
         capture_io(fn ->

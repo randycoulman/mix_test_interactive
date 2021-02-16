@@ -7,6 +7,29 @@ defmodule MixTestInteractive.Config do
 
   alias MixTestInteractive.{PatternFilter, TestFiles}
 
+  @default_runner MixTestInteractive.PortRunner
+  @default_task "test"
+  @default_clear false
+  @default_show_timestamp false
+  @default_exclude [~r/\.#/, ~r{priv/repo/migrations}]
+  @default_extra_extensions []
+  @default_list_all_files &TestFiles.list/0
+
+  typedstruct do
+    field(:clear?, boolean, default: @default_clear)
+    field(:exclude, [Regex.t()], default: @default_exclude)
+    field(:extra_extensions, [String.t()], default: @default_extra_extensions)
+    field(:failed?, boolean(), default: false)
+    field(:initial_cli_args, [String.t()], default: [])
+    field(:list_all_files, (() -> [String.t()]), default: @default_list_all_files)
+    field(:patterns, [String.t()], default: [])
+    field(:runner, module(), default: @default_runner)
+    field(:show_timestamp?, boolean(), default: @default_show_timestamp)
+    field(:stale?, boolean(), default: false)
+    field(:task, String.t(), default: @default_task)
+    field(:watching?, boolean(), default: true)
+  end
+
   @application :mix_test_interactive
 
   @options [
@@ -41,29 +64,6 @@ defmodule MixTestInteractive.Config do
     trace: :boolean
   ]
 
-  @default_runner MixTestInteractive.PortRunner
-  @default_task "test"
-  @default_clear false
-  @default_timestamp false
-  @default_exclude [~r/\.#/, ~r{priv/repo/migrations}]
-  @default_extra_extensions []
-  @default_list_all_files &TestFiles.list/0
-
-  typedstruct do
-    field(:clear, boolean, default: @default_clear)
-    field(:exclude, [Regex.t()], default: @default_exclude)
-    field(:extra_extensions, [String.t()], default: @default_extra_extensions)
-    field(:failed?, boolean(), default: false)
-    field(:initial_cli_args, [String.t()], default: [])
-    field(:list_all_files, (() -> [String.t()]), default: @default_list_all_files)
-    field(:patterns, [String.t()], default: [])
-    field(:runner, module(), default: @default_runner)
-    field(:stale?, boolean(), default: false)
-    field(:task, String.t(), default: @default_task)
-    field(:timestamp, boolean(), default: @default_timestamp)
-    field(:watching?, boolean(), default: true)
-  end
-
   @doc """
   Create a new config struct, taking values from the command line and application environment.
 
@@ -79,16 +79,16 @@ defmodule MixTestInteractive.Config do
     {watching?, opts} = Keyword.pop(opts, :watch, true)
 
     %__MODULE__{
-      clear: get_clear(),
+      clear?: get_clear(),
       exclude: get_excluded(),
       extra_extensions: get_extra_extensions(),
       failed?: no_patterns? && failed?,
       initial_cli_args: OptionParser.to_argv(opts),
       patterns: patterns,
       runner: get_runner(),
+      show_timestamp?: get_show_timestamp(),
       stale?: no_patterns? && !failed? && stale?,
       task: get_task(),
-      timestamp: get_timestamp(),
       watching?: watching?
     }
   end
@@ -212,8 +212,8 @@ defmodule MixTestInteractive.Config do
     Application.get_env(@application, :clear, @default_clear)
   end
 
-  defp get_timestamp do
-    Application.get_env(@application, :timestamp, @default_timestamp)
+  defp get_show_timestamp do
+    Application.get_env(@application, :timestamp, @default_show_timestamp)
   end
 
   defp get_excluded do
