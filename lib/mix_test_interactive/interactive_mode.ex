@@ -13,40 +13,44 @@ defmodule MixTestInteractive.InteractiveMode do
 
   alias MixTestInteractive.{CommandProcessor, Config, Runner, Settings}
 
-  @type option :: {:config, Config.t()}
+  @type option :: {:config, Config.t()} | {:name | String.t()}
 
   @doc """
   Start the interactive mode server.
   """
   @spec start_link([option]) :: GenServer.on_start()
   def start_link(options) do
+    name = Keyword.get(options, :name, __MODULE__)
     config = Keyword.fetch!(options, :config)
     initial_state = %{config: config, settings: Settings.new()}
-    GenServer.start_link(__MODULE__, initial_state, name: __MODULE__)
+    GenServer.start_link(__MODULE__, initial_state, name: name)
   end
 
   @doc """
   Process command-line arguments.
   """
   @spec command_line_arguments([String.t()]) :: :ok
-  def command_line_arguments(cli_args) do
-    GenServer.call(__MODULE__, {:command_line_arguments, cli_args})
+  @spec command_line_arguments(GenServer.server(), [String.t()]) :: :ok
+  def command_line_arguments(server \\ __MODULE__, cli_args) do
+    GenServer.call(server, {:command_line_arguments, cli_args})
   end
 
   @doc """
   Process a command from the user.
   """
   @spec process_command(String.t()) :: :ok | :quit
-  def process_command(command) do
-    GenServer.call(__MODULE__, {:command, command})
+  @spec process_command(GenServer.server(), String.t()) :: :ok | :quit
+  def process_command(server \\ __MODULE__, command) do
+    GenServer.call(server, {:command, command})
   end
 
   @doc """
   Tell InteractiveMode that one or more files have changed.
   """
   @spec note_file_changed() :: :ok
-  def note_file_changed do
-    GenServer.call(__MODULE__, :note_file_changed, :infinity)
+  @spec note_file_changed(GenServer.server()) :: :ok
+  def note_file_changed(server \\ __MODULE__) do
+    GenServer.call(server, :note_file_changed, :infinity)
   end
 
   @impl GenServer
