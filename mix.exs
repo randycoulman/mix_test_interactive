@@ -10,7 +10,7 @@ defmodule MixTestInteractive.MixProject do
       docs: docs(),
       elixir: "~> 1.8",
       name: "mix test.interactive",
-      source_url: "https://github.com/randycoulman/mix_test_interactive",
+      source_url: "https://github.com/influxdata/mix_test_interactive",
       start_permanent: Mix.env() == :prod,
       version: @version
     ]
