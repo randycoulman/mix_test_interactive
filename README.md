@@ -1,17 +1,18 @@
 # mix test.interactive
 
 [![Build Status](https://circleci.com/gh/influxdata/mix_test_interactive.svg?style=shield)](https://app.circleci.com/pipelines/github/influxdata/mix_test_interactive)
+[![Hex version](https://img.shields.io/hexpm/v/mix_test_interactive.svg "Hex version")](https://hex.pm/packages/mix_test_interactive)
 
 Interactive watch mode for Elixir's mix test.
 
 ## Installation
 
-The package can be installed by adding `mix_test_interactive` to your list of dependencies in `mix.exs`. It is not yet published to `hex.pm`, so for now you'll have to reference it from its GitHub repository:
+The package can be installed by adding `mix_test_interactive` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:mix_test_interactive, github: "influxdata/mix_test_interactive", branch: "main", only: :dev, runtime: false}
+    {:mix_test_interactive, "~> 1.0", only: :dev, runtime: false}
   ]
 end
 ```

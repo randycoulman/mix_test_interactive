@@ -1,16 +1,19 @@
 defmodule MixTestInteractive.MixProject do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "1.0.0"
+  @source_url "https://github.com/influxdata/mix_test_interactive"
 
   def project do
     [
       app: :mix_test_interactive,
       deps: deps(),
+      description: description(),
       docs: docs(),
       elixir: "~> 1.8",
       name: "mix test.interactive",
-      source_url: "https://github.com/influxdata/mix_test_interactive",
+      package: package(),
+      source_url: @source_url,
       start_permanent: Mix.env() == :prod,
       version: @version
     ]
@@ -21,6 +24,10 @@ defmodule MixTestInteractive.MixProject do
       extra_applications: [:logger, :file_system],
       mod: {MixTestInteractive.Application, []}
     ]
+  end
+
+  defp description do
+    "Interactive test runner for mix test with watch mode."
   end
 
   defp deps do
@@ -39,6 +46,15 @@ defmodule MixTestInteractive.MixProject do
         Commands: [~r/^MixTestInteractive\.Command\..*/]
       ],
       main: "readme"
+    ]
+  end
+
+  defp package do
+    [
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => @source_url
+      }
     ]
   end
 end
