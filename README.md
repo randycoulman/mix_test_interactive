@@ -1,6 +1,6 @@
 # mix test.interactive
 
-[![Build Status](https://circleci.com/gh/randycoulman/mix_test_interactive.svg?style=shield)](https://app.circleci.com/pipelines/github/randycoulman/mix_test_interactive)
+[![Build Status](https://circleci.com/gh/influxdata/mix_test_interactive.svg?style=shield)](https://app.circleci.com/pipelines/github/influxdata/mix_test_interactive)
 
 Interactive watch mode for Elixir's mix test.
 
@@ -11,7 +11,7 @@ The package can be installed by adding `mix_test_interactive` to your list of de
 ```elixir
 def deps do
   [
-    {:mix_test_interactive, github: "randycoulman/mix_test_interactive", branch: "main", only: :dev, runtime: false}
+    {:mix_test_interactive, github: "influxdata/mix_test_interactive", branch: "main", only: :dev, runtime: false}
   ]
 end
 ```
