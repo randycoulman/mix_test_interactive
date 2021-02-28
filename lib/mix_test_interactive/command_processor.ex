@@ -63,16 +63,16 @@ defmodule MixTestInteractive.CommandProcessor do
     |> IO.ANSI.format_fragment()
   end
 
-  defp process_command(command, args, config) do
-    case config
+  defp process_command(command, args, settings) do
+    case settings
          |> applicable_commands()
          |> Enum.find(nil, &(&1.command == command)) do
       nil -> :unknown
-      cmd -> cmd.run(args, config)
+      cmd -> cmd.run(args, settings)
     end
   end
 
-  defp applicable_commands(config) do
-    Enum.filter(@commands, & &1.applies?(config))
+  defp applicable_commands(settings) do
+    Enum.filter(@commands, & &1.applies?(settings))
   end
 end

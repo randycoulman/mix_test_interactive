@@ -83,8 +83,8 @@ defmodule MixTestInteractive.Settings do
   as well as arguments based on the current interactive mode settings.
   """
   @spec cli_args(t()) :: {:ok, [String.t()]} | {:error, :no_matching_files}
-  def cli_args(%__MODULE__{initial_cli_args: initial_args} = config) do
-    with {:ok, args} <- args_from_settings(config) do
+  def cli_args(%__MODULE__{initial_cli_args: initial_args} = settings) do
+    with {:ok, args} <- args_from_settings(settings) do
       {:ok, initial_args ++ args}
     end
   end
@@ -93,8 +93,8 @@ defmodule MixTestInteractive.Settings do
   Toggle file-watching mode on or off.
   """
   @spec toggle_watch_mode(t()) :: t()
-  def toggle_watch_mode(config) do
-    %{config | watching?: !config.watching?}
+  def toggle_watch_mode(settings) do
+    %{settings | watching?: !settings.watching?}
   end
 
   @doc """
@@ -103,63 +103,63 @@ defmodule MixTestInteractive.Settings do
   Only test filenames matching one or more patterns will be run.
   """
   @spec only_patterns(t(), [String.t()]) :: t()
-  def only_patterns(config, patterns) do
-    config
+  def only_patterns(settings, patterns) do
+    settings
     |> all_tests()
     |> Map.put(:patterns, patterns)
   end
 
   @doc """
-  Update config to only run failing tests.
+  Update settings to only run failing tests.
 
   Corresponds to `mix test --failed`.
   """
   @spec only_failed(t()) :: t()
-  def only_failed(config) do
-    config
+  def only_failed(settings) do
+    settings
     |> all_tests()
     |> Map.put(:failed?, true)
   end
 
   @doc """
-  Update config to only run "stale" tests.
+  Update settings to only run "stale" tests.
 
   Corresponds to `mix test --stale`.
   """
   @spec only_stale(t()) :: t()
-  def only_stale(config) do
-    config
+  def only_stale(settings) do
+    settings
     |> all_tests()
     |> Map.put(:stale?, true)
   end
 
   @doc """
-  Update config to run all tests, removing any flags or filter patterns.
+  Update settings to run all tests, removing any flags or filter patterns.
   """
   @spec all_tests(t()) :: t()
-  def all_tests(config) do
-    %{config | failed?: false, patterns: [], stale?: false}
+  def all_tests(settings) do
+    %{settings | failed?: false, patterns: [], stale?: false}
   end
 
   @doc false
-  def list_files_with(config, list_fn) do
-    %{config | list_all_files: list_fn}
+  def list_files_with(settings, list_fn) do
+    %{settings | list_all_files: list_fn}
   end
 
   @doc """
   Return a text summary of the current interactive mode settings.
   """
   @spec summary(t()) :: String.t()
-  def summary(config) do
+  def summary(settings) do
     cond do
-      config.failed? ->
+      settings.failed? ->
         "Ran only failed tests"
 
-      config.stale? ->
+      settings.stale? ->
         "Ran only stale tests"
 
-      !Enum.empty?(config.patterns) ->
-        "Ran all test files matching #{Enum.join(config.patterns, ", ")}"
+      !Enum.empty?(settings.patterns) ->
+        "Ran all test files matching #{Enum.join(settings.patterns, ", ")}"
 
       true ->
         "Ran all tests"
@@ -174,8 +174,8 @@ defmodule MixTestInteractive.Settings do
     {:ok, ["--stale"]}
   end
 
-  defp args_from_settings(%__MODULE__{patterns: patterns} = config) when length(patterns) > 0 do
-    case config.list_all_files.() |> PatternFilter.matches(patterns) do
+  defp args_from_settings(%__MODULE__{patterns: patterns} = settings) when length(patterns) > 0 do
+    case settings.list_all_files.() |> PatternFilter.matches(patterns) do
       [] -> {:error, :no_matching_files}
       files -> {:ok, files}
     end
