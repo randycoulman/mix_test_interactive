@@ -58,8 +58,6 @@ defmodule MixTestInteractive.EndToEndTest do
 
     assert :ok = InteractiveMode.note_file_changed(pid)
     assert_ran_tests(["--stale"])
-
-    assert :quit = InteractiveMode.process_command(pid, "q")
   end
 
   defp assert_ran_tests(args \\ []) do
