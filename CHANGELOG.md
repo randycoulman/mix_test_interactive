@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/influxdata/mix_test_interactive/compare/v1.0.0...HEAD)
+## [Unreleased](https://github.com/influxdata/mix_test_interactive/compare/v1.0.1...HEAD)
+
+## [v1.0.1](https://github.com/influxdata/mix_test_interactive/compare/v1.0.0...v1.0.1)
+
+### Fixed
+
+- Eliminates a GenServer call timeout that can occur if a command is typed while a long-running test run is in progress. ([#44](https://github.com/influxdata/mix_test_interactive/pull/44)).
 
 ## [v1.0.0](https://github.com/influxdata/mix_test_interactive/compare/14eb50c742a042de7bfc37c41b8af68d839eb443...v1.0.0)
 
