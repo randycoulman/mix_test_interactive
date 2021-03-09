@@ -9,7 +9,7 @@ defmodule MixTestInteractive.InteractiveMode do
   test run has completed.
   """
 
-  use GenServer
+  use GenServer, restart: :transient
 
   alias MixTestInteractive.{CommandProcessor, Config, Runner, Settings}
 
@@ -38,10 +38,10 @@ defmodule MixTestInteractive.InteractiveMode do
   @doc """
   Process a command from the user.
   """
-  @spec process_command(String.t()) :: :ok | :quit
-  @spec process_command(GenServer.server(), String.t()) :: :ok | :quit
+  @spec process_command(String.t()) :: :ok
+  @spec process_command(GenServer.server(), String.t()) :: :ok
   def process_command(server \\ __MODULE__, command) do
-    GenServer.call(server, {:command, command})
+    GenServer.cast(server, {:command, command})
   end
 
   @doc """
@@ -65,34 +65,36 @@ defmodule MixTestInteractive.InteractiveMode do
   end
 
   @impl GenServer
-  def handle_call({:command, command}, _from, state) do
-    case CommandProcessor.call(command, state.settings) do
-      {:ok, new_settings} ->
-        {:reply, :ok, %{state | settings: new_settings}, {:continue, :run_tests}}
-
-      {:no_run, new_settings} ->
-        show_usage_prompt(new_settings)
-        {:reply, :ok, %{state | settings: new_settings}}
-
-      :help ->
-        show_help(state.settings)
-        {:reply, :ok, state}
-
-      :unknown ->
-        {:reply, :ok, state}
-
-      :quit ->
-        {:reply, :quit, state}
-    end
-  end
-
-  @impl GenServer
   def handle_call(:note_file_changed, _from, state) do
     if state.settings.watching? do
       run_tests(state)
     end
 
     {:reply, :ok, state}
+  end
+
+  @impl GenServer
+  def handle_cast({:command, command}, state) do
+    case CommandProcessor.call(command, state.settings) do
+      {:ok, new_settings} ->
+        {:noreply, %{state | settings: new_settings}, {:continue, :run_tests}}
+
+      {:no_run, new_settings} ->
+        show_usage_prompt(new_settings)
+        {:noreply, %{state | settings: new_settings}}
+
+      :help ->
+        show_help(state.settings)
+        {:noreply, state}
+
+      :unknown ->
+        {:noreply, state}
+
+      :quit ->
+        IO.puts("Shutting down...")
+        System.stop(0)
+        {:stop, :shutdown, state}
+    end
   end
 
   @impl GenServer

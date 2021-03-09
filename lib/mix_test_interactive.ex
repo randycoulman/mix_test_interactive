@@ -8,8 +8,8 @@ defmodule MixTestInteractive do
   @doc """
   Start the interactive test runner.
   """
-  @spec run([String.t()]) :: :ok
-  def run(args \\ []) when is_list(args) do
+  @spec run([String.t()]) :: no_return()
+  def(run(args \\ []) when is_list(args)) do
     Mix.env(:test)
     {:ok, _} = Application.ensure_all_started(:mix_test_interactive)
 
@@ -19,10 +19,7 @@ defmodule MixTestInteractive do
 
   defp loop do
     command = IO.gets("")
-
-    case InteractiveMode.process_command(command) do
-      :quit -> :ok
-      :ok -> loop()
-    end
+    InteractiveMode.process_command(command)
+    loop()
   end
 end
