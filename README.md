@@ -5,7 +5,7 @@
 
 `mix test.interactive` is an interactive test runner for ExUnit tests.
 
-Based on Louis Pilford's wonderful [mix-test.watch](https://github.com/lpil/mix-test.watch) and inspired by Jest's interactive watch mode, `mix test.interactive` allows you to dynamically change which tests should be run with a few keystrokes.
+Based on Louis Pilfold's wonderful [mix-test.watch](https://github.com/lpil/mix-test.watch) and inspired by Jest's interactive watch mode, `mix test.interactive` allows you to dynamically change which tests should be run with a few keystrokes.
 
 It allows you to easily switch between running all tests, stale tests, or failed tests. Or, you can run only the tests whose filenames contain a substring. Includes an optional "watch mode" which runs tests after every file change.
 
