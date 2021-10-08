@@ -5,7 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/influxdata/mix_test_interactive/compare/v1.0.1...HEAD)
+## [Unreleased](https://github.com/influxdata/mix_test_interactive/compare/v1.1.0...HEAD)
+
+## [v1.1.0](https://github.com/influxdata/mix_test_interactive/compare/v1.0.1...v1.1.0)
+
+### Fixed
+
+- The `p` (pattern) command now works properly in umbrella projects. Previously, it was unable to find any test files in order to filter the pattern and would therefore not run any tests. Now, in an umbrella project, `mix test.interactive` looks for test files in `apps/*/test` by default, but still respects the `:test_paths` config option used by `mix test`. ([#48](https://github.com/influxdata/mix_test_interactive/pull/48))
+
+### Documentation
+
+- Fixed the spelling of Louis Pilfold's name in the README. Sorry, Louis! 🤦‍♂️ ([#49](https://github.com/influxdata/mix_test_interactive/pull/49))
 
 ## [v1.0.1](https://github.com/influxdata/mix_test_interactive/compare/v1.0.0...v1.0.1)
 
