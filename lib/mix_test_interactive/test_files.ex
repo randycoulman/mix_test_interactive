@@ -12,9 +12,17 @@ defmodule MixTestInteractive.TestFiles do
   @spec list() :: [String.t()]
   def list() do
     config = Mix.Project.config()
-    paths = config[:test_paths] || ["test"]
+    paths = config[:test_paths] || default_test_paths()
     pattern = config[:test_pattern] || "*_test.exs"
 
     Mix.Utils.extract_files(paths, pattern)
+  end
+
+  def default_test_paths do
+    if Mix.Project.umbrella?() do
+      Path.wildcard("apps/*/test")
+    else
+      ["test"]
+    end
   end
 end
