@@ -1,7 +1,11 @@
 # mix test.interactive
 
 [![Build Status](https://circleci.com/gh/influxdata/mix_test_interactive.svg?style=shield)](https://app.circleci.com/pipelines/github/influxdata/mix_test_interactive)
-[![Hex version](https://img.shields.io/hexpm/v/mix_test_interactive.svg "Hex version")](https://hex.pm/packages/mix_test_interactive)
+[![Module Version](https://img.shields.io/hexpm/v/mix_test_interactive.svg)](https://hex.pm/packages/mix_test_interactive)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/mix_test_interactive/)
+[![Total Download](https://img.shields.io/hexpm/dt/mix_test_interactive.svg)](https://hex.pm/packages/mix_test_interactive)
+[![License](https://img.shields.io/hexpm/l/mix_test_interactive.svg)](https://github.com/influxdata/mix_test_interactive/blob/master/LICENSE.md)
+[![Last Updated](https://img.shields.io/github/last-commit/influxdata/mix_test_interactive.svg)](https://github.com/influxdata/mix_test_interactive/commits/master)
 
 `mix test.interactive` is an interactive test runner for ExUnit tests.
 
@@ -133,3 +137,10 @@ You can enable desktop notifications with
 This project started as a clone of the wonderful [mix-test.watch](https://github.com/lpil/mix-test.watch) project, which I've used and loved for years. I've added the interactive mode features to the existing feature set.
 
 The idea for having an interactive mode comes from [Jest](https://jestjs.io/) and its incredibly useful interactive watch mode.
+
+## Copyright and License
+
+Copyright (c) 2021 Randy Coulman
+
+This work is free. You can redistribute it and/or modify it under the
+terms of the MIT License. See the [LICENSE.md](./LICENSE.md) file for more details.

@@ -22,12 +22,8 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 mix_test_interactive-*.tar
 
-
-# Temporary files for e.g. tests
+# Temporary files for example, tests
 /tmp
 
 # Ignore secrets
 /config/*.secret.exs
-
-# Ignore editor integration files
-.elixir_ls/
