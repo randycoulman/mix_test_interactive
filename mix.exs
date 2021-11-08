@@ -41,11 +41,17 @@ defmodule MixTestInteractive.MixProject do
 
   defp docs do
     [
-      extras: ["README.md"],
+      extras: [
+        "CHANGELOG.md": [],
+        "LICENSE.md": [title: "License"],
+        "README.md": [title: "Overview"]
+      ],
+      formatters: ["html"],
       groups_for_modules: [
         Commands: [~r/^MixTestInteractive\.Command\..*/]
       ],
-      main: "readme"
+      main: "readme",
+      source_ref: "#{@version}"
     ]
   end
 
