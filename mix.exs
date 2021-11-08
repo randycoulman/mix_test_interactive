@@ -13,6 +13,7 @@ defmodule MixTestInteractive.MixProject do
       elixir: "~> 1.8",
       name: "mix test.interactive",
       package: package(),
+      source_url: @source_url,
       start_permanent: Mix.env() == :prod,
       version: @version
     ]
@@ -43,15 +44,14 @@ defmodule MixTestInteractive.MixProject do
       extras: [
         "CHANGELOG.md": [],
         "LICENSE.md": [title: "License"],
-        "README.md": [title: "Overview"],
+        "README.md": [title: "Overview"]
       ],
       formatters: ["html"],
       groups_for_modules: [
         Commands: [~r/^MixTestInteractive\.Command\..*/]
       ],
       main: "readme",
-      source_ref: "#{@version}",
-      source_url: @source_url
+      source_ref: "#{@version}"
     ]
   end
 
