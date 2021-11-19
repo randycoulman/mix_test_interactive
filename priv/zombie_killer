@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+# This shell is launched via a configurable shell
+# in port_runner.ex, so no shebang is necessary.
 
 # Start the program in the background
 exec "$@" &

@@ -125,6 +125,14 @@ The default is `exclude: [~r/\.#/, ~r{priv/repo/migrations}]`.
 
 On Linux you may need to install `inotify-tools`.
 
+### Shells
+
+If you are on a computer that doesn't have `bash` installed (for instance, an `alpine`-based Docker container), you will need to set `ZOMBIE_PROCESS_KILLER_SHELL` equal to the path of the shell you wish to invoke. For example, you may need to set:
+
+`ZOMBIE_PROCESS_KILLER_SHELL=ash`
+
+And at that point, the zombie process killer will be run in the `ash` environment instead of the default `bash`.
+
 ## Desktop Notifications
 
 You can enable desktop notifications with
