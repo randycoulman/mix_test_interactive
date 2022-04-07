@@ -14,6 +14,7 @@ defmodule MixTestInteractive.Command do
 
     # ...
   end
+  ```
 
   This will provide overridable implementations of most of the callbacks.
 
