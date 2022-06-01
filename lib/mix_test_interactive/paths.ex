@@ -3,7 +3,7 @@ defmodule MixTestInteractive.Paths do
 
   alias MixTestInteractive.Config
 
-  @elixir_source_endings ~w(.erl .ex .exs .eex .leex .xrl .yrl .hrl)
+  @elixir_source_endings ~w(.erl .ex .exs .eex .leex .heex .xrl .yrl .hrl)
   @ignored_dirs ~w(deps/ _build/)
 
   @doc """
