@@ -5,16 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v1.2.1...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v1.2.2...HEAD)
 
-## [v1.2.1](https://github.com/randycoulman/mix_test_interactive/compare/v1.2.0...v1.2.1)
+## [v1.2.2](https://github.com/randycoulman/mix_test_interactive/compare/v1.2.1...v1.2.2) - 2022-11-15
+
+No functional changes; purely administrative.
+
+## Changed
+
+- Migrated repository ownership from @influxdata to @randycoulman ([#60](https://github.com/randycoulman/mix_test_interactive/pull/60))
+
+## [v1.2.1](https://github.com/randycoulman/mix_test_interactive/compare/v1.2.0...v1.2.1) - 2022-06-01
 
 ### Fixed
 
 - Include .heex in list of watched file extensions
   ([#57](https://github.com/randycoulman/mix_test_interactive/pull/57) - Thanks @juddey!)
 
-## [v1.2.0](https://github.com/randycoulman/mix_test_interactive/compare/v1.1.0...v1.2.0)
+## [v1.2.0](https://github.com/randycoulman/mix_test_interactive/compare/v1.1.0...v1.2.0) - 2022-04-07
 
 ### Changed
 
@@ -27,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Include license and changelog in generated documentation. ([#51](https://github.com/randycoulman/mix_test_interactive/pull/51) - Thanks @kianmeng!)
 
-## [v1.1.0](https://github.com/randycoulman/mix_test_interactive/compare/v1.0.1...v1.1.0)
+## [v1.1.0](https://github.com/randycoulman/mix_test_interactive/compare/v1.0.1...v1.1.0) - 2021-10-08
 
 ### Fixed
 
@@ -37,13 +45,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed the spelling of Louis Pilfold's name in the README. Sorry, Louis! 🤦‍♂️ ([#49](https://github.com/randycoulman/mix_test_interactive/pull/49))
 
-## [v1.0.1](https://github.com/randycoulman/mix_test_interactive/compare/v1.0.0...v1.0.1)
+## [v1.0.1](https://github.com/randycoulman/mix_test_interactive/compare/v1.0.0...v1.0.1) - 2021-03-09
 
 ### Fixed
 
 - Eliminates a GenServer call timeout that can occur if a command is typed while a long-running test run is in progress. ([#44](https://github.com/randycoulman/mix_test_interactive/pull/44)).
 
-## [v1.0.0](https://github.com/randycoulman/mix_test_interactive/compare/14eb50c742a042de7bfc37c41b8af68d839eb443...v1.0.0)
+## [v1.0.0](https://github.com/randycoulman/mix_test_interactive/compare/14eb50c742a042de7bfc37c41b8af68d839eb443...v1.0.0) - 2021-02-18
 
 🎉 Happy Birthday!
 
