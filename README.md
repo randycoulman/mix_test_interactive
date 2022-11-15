@@ -1,9 +1,9 @@
 # mix test.interactive
 
-[![Build Status](https://circleci.com/gh/influxdata/mix_test_interactive.svg?style=shield)](https://app.circleci.com/pipelines/github/influxdata/mix_test_interactive)
+[![Build Status](https://circleci.com/gh/randycoulman/mix_test_interactive.svg?style=shield)](https://app.circleci.com/pipelines/github/randycoulman/mix_test_interactive)
 [![Module Version](https://img.shields.io/hexpm/v/mix_test_interactive.svg)](https://hex.pm/packages/mix_test_interactive)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/mix_test_interactive/)
-[![License](https://img.shields.io/hexpm/l/mix_test_interactive.svg)](https://github.com/influxdata/mix_test_interactive/blob/master/LICENSE.md)
+[![License](https://img.shields.io/hexpm/l/mix_test_interactive.svg)](https://github.com/randycoulman/mix_test_interactive/blob/master/LICENSE.md)
 
 `mix test.interactive` is an interactive test runner for ExUnit tests.
 
