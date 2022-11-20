@@ -26,7 +26,7 @@ defmodule MixTestInteractive.PortRunnerTest do
     end
 
     test "runs mix test directly in test environment by default" do
-      assert {"mix", ["test"], options} = run_windows()
+      assert {"mix", ["do", "test"], options} = run_windows()
 
       assert Keyword.get(options, :env) == [{"MIX_ENV", "test"}]
     end
@@ -39,7 +39,7 @@ defmodule MixTestInteractive.PortRunnerTest do
 
     test "uses custom task" do
       config = %Config{task: "custom"}
-      assert {_command, ["custom"], _options} = run_windows(config: config)
+      assert {_command, ["do", "custom"], _options} = run_windows(config: config)
     end
   end
 
