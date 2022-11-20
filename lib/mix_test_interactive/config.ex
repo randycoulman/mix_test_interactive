@@ -7,6 +7,8 @@ defmodule MixTestInteractive.Config do
 
   @default_runner MixTestInteractive.PortRunner
   @default_task "test"
+  @default_before_task []
+  @default_after_task []
   @default_clear false
   @default_show_timestamp false
   @default_exclude [~r/\.#/, ~r{priv/repo/migrations}]
@@ -19,6 +21,8 @@ defmodule MixTestInteractive.Config do
     field(:runner, module(), default: @default_runner)
     field(:show_timestamp?, boolean(), default: @default_show_timestamp)
     field(:task, String.t(), default: @default_task)
+    field(:before_task, [[String.t()]], default: @default_before_task)
+    field(:after_task, [[String.t()]], default: @default_after_task)
   end
 
   @application :mix_test_interactive
@@ -34,7 +38,9 @@ defmodule MixTestInteractive.Config do
       extra_extensions: get_extra_extensions(),
       runner: get_runner(),
       show_timestamp?: get_show_timestamp(),
-      task: get_task()
+      task: get_task(),
+      before_task: get_before_task(),
+      after_task: get_after_task()
     }
   end
 
@@ -44,6 +50,14 @@ defmodule MixTestInteractive.Config do
 
   defp get_task do
     Application.get_env(@application, :task, @default_task)
+  end
+
+  defp get_before_task do
+    Application.get_env(@application, :before_task, @default_before_task)
+  end
+
+  defp get_after_task do
+    Application.get_env(@application, :after_task, @default_after_task)
   end
 
   defp get_clear do

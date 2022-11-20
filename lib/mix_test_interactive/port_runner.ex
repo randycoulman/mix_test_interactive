@@ -28,20 +28,21 @@ defmodule MixTestInteractive.PortRunner do
         os_type \\ :os.type(),
         runner \\ &System.cmd/3
       ) do
-    command = [config.task | args]
+    task_command = [config.task | args]
+    do_commands = config.before_task ++ [task_command] ++ config.after_task
 
     case os_type do
       {:win32, _} ->
-        runner.("mix", command,
+        runner.("mix", flatten_do_commands(do_commands),
           env: [{"MIX_ENV", "test"}],
           into: IO.stream(:stdio, :line)
         )
 
       _ ->
-        command = enable_ansi(command)
+        do_commands = [enable_ansi(task_command) | do_commands]
 
         Path.join(:code.priv_dir(@application), "zombie_killer")
-        |> runner.(["mix" | command],
+        |> runner.(["mix" | flatten_do_commands(do_commands)],
           env: [{"MIX_ENV", "test"}],
           into: IO.stream(:stdio, :line)
         )
@@ -50,16 +51,23 @@ defmodule MixTestInteractive.PortRunner do
     :ok
   end
 
-  defp enable_ansi(command) do
+  defp enable_ansi(task_command) do
     enable_command = "Application.put_env(:elixir, :ansi_enabled, true);"
 
-    run =
-      if Enum.member?(command, "--no-start") do
-        ["run", "--no-start", "-e"]
-      else
-        ["run", "-e"]
-      end
+    if Enum.member?(task_command, "--no-start") do
+      ["run", "--no-start", "-e", enable_command]
+    else
+      ["run", "-e", enable_command]
+    end
+  end
 
-    ["do"] ++ run ++ [enable_command, ","] ++ command
+  defp flatten_do_commands(do_commands) do
+    commands =
+      do_commands
+      |> Enum.reject(&(&1 == []))
+      |> Enum.intersperse([","])
+      |> Enum.concat()
+
+    ["do" | commands]
   end
 end
