@@ -36,6 +36,13 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("p second", first_config)
     end
 
+    test "t filters by tags matching the provided pattern" do
+      settings = Settings.new()
+      expected = Settings.only_tags(settings, ["focus"])
+
+      assert {:ok, ^expected} = process_command("t focus", settings)
+    end
+
     test "s runs only stale tests" do
       settings = Settings.new()
       expected = Settings.only_stale(settings)

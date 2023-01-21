@@ -18,6 +18,7 @@ defmodule MixTestInteractive.Settings do
     field(:list_all_files, (() -> [String.t()]), default: @default_list_all_files)
     field(:patterns, [String.t()], default: [])
     field(:stale?, boolean(), default: false)
+    field(:tags, [String.t()], default: [])
     field(:watching?, boolean(), default: true)
   end
 
@@ -110,6 +111,18 @@ defmodule MixTestInteractive.Settings do
   end
 
   @doc """
+  Provide a list of tag patterns.
+
+  Only tests matching one or more of the tags will be run.
+  """
+  @spec only_tags(t(), [String.t()]) :: t()
+  def only_tags(settings, tags) do
+    settings
+    |> all_tests()
+    |> Map.put(:tags, tags)
+  end
+
+  @doc """
   Update settings to only run failing tests.
 
   Corresponds to `mix test --failed`.
@@ -179,6 +192,11 @@ defmodule MixTestInteractive.Settings do
       [] -> {:error, :no_matching_files}
       files -> {:ok, files}
     end
+  end
+
+  defp args_from_settings(%__MODULE__{tags: [_ | _] = tags}) do
+    tag_args = Enum.map(tags, &["--only", &1]) |> List.flatten()
+    {:ok, tag_args}
   end
 
   defp args_from_settings(_config), do: {:ok, []}

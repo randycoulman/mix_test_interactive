@@ -13,6 +13,7 @@ defmodule MixTestInteractive.CommandProcessor do
     Quit,
     RunTests,
     Stale,
+    Tags,
     ToggleWatchMode
   }
 
@@ -20,6 +21,7 @@ defmodule MixTestInteractive.CommandProcessor do
 
   @commands [
     Pattern,
+    Tags,
     Stale,
     Failed,
     AllTests,
