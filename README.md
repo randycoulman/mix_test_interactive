@@ -49,6 +49,12 @@ If any pattern contains a line number specification, all patterns are passed dir
 p pattern1 pattern 2
 ```
 
+Use the `t` command to run only tests tagged with matching tags, via `@tag :tag`.
+
+```
+t focus slowest
+```
+
 Use the `s` command to run only test files that reference modules that have changed since the last run (equivalent to the `--stale` option of `mix test`).
 
 Use the `f` command to run only tests that failed on the last run (equivalent to the `--failed` option of `mix test`).
