@@ -10,24 +10,19 @@ defmodule MixTestInteractive.PortRunner do
   supported by Windows command processors.
   """
 
+  alias MixTestInteractive.Config
+
   @application :mix_test_interactive
   @type runner ::
           (String.t(), [String.t()], keyword() ->
              {Collectable.t(), exit_status :: non_neg_integer()})
   @type os_type :: {atom(), atom()}
 
-  alias MixTestInteractive.Config
-
   @doc """
   Run tests based on the current configuration.
   """
   @spec run(Config.t(), [String.t()], os_type(), runner()) :: :ok
-  def run(
-        %Config{} = config,
-        args,
-        os_type \\ :os.type(),
-        runner \\ &System.cmd/3
-      ) do
+  def run(%Config{} = config, args, os_type \\ :os.type(), runner \\ &System.cmd/3) do
     command = [config.task | args]
 
     case os_type do
@@ -40,7 +35,9 @@ defmodule MixTestInteractive.PortRunner do
       _ ->
         command = enable_ansi(command)
 
-        Path.join(:code.priv_dir(@application), "zombie_killer")
+        @application
+        |> :code.priv_dir()
+        |> Path.join("zombie_killer")
         |> runner.(["mix" | command],
           env: [{"MIX_ENV", "test"}],
           into: IO.stream(:stdio, :line)

@@ -1,7 +1,8 @@
 defmodule MixTestInteractive.PortRunnerTest do
   use ExUnit.Case, async: true
 
-  alias MixTestInteractive.{Config, PortRunner}
+  alias MixTestInteractive.Config
+  alias MixTestInteractive.PortRunner
 
   defp run(os_type, options) do
     config = Keyword.get(options, :config, Config.new())

@@ -10,7 +10,7 @@ defmodule MixTestInteractive.TestFiles do
   up immediately.
   """
   @spec list() :: [String.t()]
-  def list() do
+  def list do
     config = Mix.Project.config()
     paths = config[:test_paths] || default_test_paths()
     pattern = config[:test_pattern] || "*_test.exs"

@@ -9,9 +9,10 @@ defmodule MixTestInteractive.Command.Pattern do
   only supports a single filename-with-line-number pattern at a time.
   """
 
-  alias MixTestInteractive.{Command, Settings}
+  use MixTestInteractive.Command, command: "p", desc: "run only test files matching pattern(s)"
 
-  use Command, command: "p", desc: "run only test files matching pattern(s)"
+  alias MixTestInteractive.Command
+  alias MixTestInteractive.Settings
 
   @impl Command
   def name, do: "p <patterns>"

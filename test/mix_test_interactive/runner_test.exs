@@ -3,9 +3,11 @@ defmodule MixTestInteractive.RunnerTest do
 
   import ExUnit.CaptureIO
 
-  alias MixTestInteractive.{Config, Runner}
+  alias MixTestInteractive.Config
+  alias MixTestInteractive.Runner
 
   defmodule DummyRunner do
+    @moduledoc false
     def run(config, args) do
       Agent.get_and_update(__MODULE__, fn data -> {:ok, [{config, args} | data]} end)
     end

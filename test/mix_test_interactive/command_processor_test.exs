@@ -1,7 +1,8 @@
 defmodule MixTestInteractive.CommandProcessorTest do
   use ExUnit.Case, async: true
 
-  alias MixTestInteractive.{CommandProcessor, Settings}
+  alias MixTestInteractive.CommandProcessor
+  alias MixTestInteractive.Settings
 
   defp process_command(command, settings \\ Settings.new([])) do
     CommandProcessor.call(command, settings)
@@ -84,24 +85,21 @@ defmodule MixTestInteractive.CommandProcessorTest do
 
     test "shows relevant commands when filtering by pattern" do
       settings =
-        Settings.new()
-        |> Settings.only_patterns(["pattern"])
+        Settings.only_patterns(Settings.new(), ["pattern"])
 
       assert_commands(settings, ["p <patterns>", "s", "f", "a"], ~w(p))
     end
 
     test "shows relevant commands when running failed tests" do
       settings =
-        Settings.new()
-        |> Settings.only_failed()
+        Settings.only_failed(Settings.new())
 
       assert_commands(settings, ["p <patterns>", "s", "a"], ~w(f))
     end
 
     test "shows relevant commands when running stale tests" do
       settings =
-        Settings.new()
-        |> Settings.only_stale()
+        Settings.only_stale(Settings.new())
 
       assert_commands(settings, ["p <patterns>", "f", "a"], ~w(s))
     end

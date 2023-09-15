@@ -5,9 +5,9 @@ defmodule MixTestInteractive.PatternFilterTest do
 
   @abc "test/project/abc_test.exs"
   @bcd "test/project/bcd_test.exs"
-  @def "test/project/def_test.exs"
+  @cde "test/project/cde_test.exs"
 
-  @files [@abc, @bcd, @def]
+  @files [@abc, @bcd, @cde]
 
   test "returns files matching a pattern" do
     matches = PatternFilter.matches(@files, "bc")
@@ -22,9 +22,9 @@ defmodule MixTestInteractive.PatternFilterTest do
   end
 
   test "returns files matching at least one of multiple patterns" do
-    matches = PatternFilter.matches(@files, ["a", "f"])
+    matches = PatternFilter.matches(@files, ["ab", "de"])
 
-    assert matches == [@abc, @def]
+    assert matches == [@abc, @cde]
   end
 
   test "returns only patterns if any is a file with line number" do

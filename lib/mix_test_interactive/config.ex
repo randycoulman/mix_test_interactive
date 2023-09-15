@@ -27,7 +27,7 @@ defmodule MixTestInteractive.Config do
   Create a new config struct, taking values from the application environment.
   """
   @spec new() :: t()
-  def new() do
+  def new do
     %__MODULE__{
       clear?: get_clear(),
       exclude: get_excluded(),

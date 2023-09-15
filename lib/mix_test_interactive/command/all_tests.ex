@@ -3,9 +3,10 @@ defmodule MixTestInteractive.Command.AllTests do
   Run all tests, removing any flags or filters.
   """
 
-  alias MixTestInteractive.{Command, Settings}
+  use MixTestInteractive.Command, command: "a", desc: "run all tests"
 
-  use Command, command: "a", desc: "run all tests"
+  alias MixTestInteractive.Command
+  alias MixTestInteractive.Settings
 
   @impl Command
   def applies?(%Settings{failed?: true}), do: true

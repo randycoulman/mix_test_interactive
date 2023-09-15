@@ -1,11 +1,11 @@
 defmodule Mix.Tasks.Test.Interactive do
-  use Mix.Task
-
+  @shortdoc "Interactively run tests"
   @moduledoc """
   A task for interactively running tests
   """
 
-  @shortdoc "Interactively run tests"
+  use Mix.Task
+
   @preferred_cli_env :test
 
   defdelegate run(args), to: MixTestInteractive

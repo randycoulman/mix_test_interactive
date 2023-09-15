@@ -1,5 +1,6 @@
 defmodule MixTestInteractive.MessageInboxTest do
   use ExUnit.Case
+
   alias MixTestInteractive.MessageInbox
 
   test "flush clears the process inbox of messages" do

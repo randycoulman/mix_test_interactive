@@ -28,8 +28,7 @@ defmodule MixTestInteractive.SettingsTest do
 
     test "toggles off" do
       settings =
-        Settings.new()
-        |> Settings.toggle_watch_mode()
+        Settings.toggle_watch_mode(Settings.new())
 
       refute settings.watching?
     end
@@ -101,7 +100,8 @@ defmodule MixTestInteractive.SettingsTest do
       all_files = ~w(file1 file2 no_match other)
 
       settings =
-        Settings.new(["--trace"])
+        ["--trace"]
+        |> Settings.new()
         |> with_fake_file_list(all_files)
         |> Settings.only_patterns(["file", "other"])
 
@@ -120,7 +120,8 @@ defmodule MixTestInteractive.SettingsTest do
 
     test "restricts to failed tests" do
       settings =
-        Settings.new(["--trace"])
+        ["--trace"]
+        |> Settings.new()
         |> Settings.only_failed()
 
       {:ok, args} = Settings.cli_args(settings)
@@ -129,7 +130,8 @@ defmodule MixTestInteractive.SettingsTest do
 
     test "restricts to stale tests" do
       settings =
-        Settings.new(["--trace"])
+        ["--trace"]
+        |> Settings.new()
         |> Settings.only_stale()
 
       {:ok, args} = Settings.cli_args(settings)
@@ -229,7 +231,7 @@ defmodule MixTestInteractive.SettingsTest do
     end
 
     defp with_fake_file_list(settings, files) do
-      settings |> Settings.list_files_with(fn -> files end)
+      Settings.list_files_with(settings, fn -> files end)
     end
   end
 
@@ -241,19 +243,19 @@ defmodule MixTestInteractive.SettingsTest do
     end
 
     test "ran failed tests" do
-      settings = Settings.new() |> Settings.only_failed()
+      settings = Settings.only_failed(Settings.new())
 
       assert Settings.summary(settings) == "Ran only failed tests"
     end
 
     test "ran stale tests" do
-      settings = Settings.new() |> Settings.only_stale()
+      settings = Settings.only_stale(Settings.new())
 
       assert Settings.summary(settings) == "Ran only stale tests"
     end
 
     test "ran specific patterns" do
-      settings = Settings.new() |> Settings.only_patterns(["p1", "p2"])
+      settings = Settings.only_patterns(Settings.new(), ["p1", "p2"])
 
       assert Settings.summary(settings) == "Ran all test files matching p1, p2"
     end

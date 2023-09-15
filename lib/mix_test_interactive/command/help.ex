@@ -5,9 +5,9 @@ defmodule MixTestInteractive.Command.Help do
   Lists all commands applicable to the current context.
   """
 
-  alias MixTestInteractive.Command
+  use MixTestInteractive.Command, command: "?", desc: "show help"
 
-  use Command, command: "?", desc: "show help"
+  alias MixTestInteractive.Command
 
   @impl Command
   def run(_args, _settings), do: :help

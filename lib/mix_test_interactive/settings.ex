@@ -8,7 +8,8 @@ defmodule MixTestInteractive.Settings do
 
   use TypedStruct
 
-  alias MixTestInteractive.{PatternFilter, TestFiles}
+  alias MixTestInteractive.PatternFilter
+  alias MixTestInteractive.TestFiles
 
   @default_list_all_files &TestFiles.list/0
 
@@ -175,7 +176,7 @@ defmodule MixTestInteractive.Settings do
   end
 
   defp args_from_settings(%__MODULE__{patterns: patterns} = settings) when length(patterns) > 0 do
-    case settings.list_all_files.() |> PatternFilter.matches(patterns) do
+    case PatternFilter.matches(settings.list_all_files.(), patterns) do
       [] -> {:error, :no_matching_files}
       files -> {:ok, files}
     end
