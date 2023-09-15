@@ -24,7 +24,11 @@ jobs:
             - _build
             - deps
             - ~/.mix
-      - run: mix format --check-formatted
+      - when:
+          condition:
+            equal: ["1.15", << parameters.elixir >>]
+          steps:
+            - run: mix format --check-formatted
       - run: mix test
 
 workflows:
