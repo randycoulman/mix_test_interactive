@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   test:
     docker:
-      - image: circleci/elixir:<< parameters.elixir >>
+      - image: cimg/elixir:<< parameters.elixir >>
         environment:
           MIX_ENV: test
     parameters:
@@ -24,7 +24,11 @@ jobs:
             - _build
             - deps
             - ~/.mix
-      - run: mix format --check-formatted
+      - when:
+          condition:
+            equal: ["1.15", << parameters.elixir >>]
+          steps:
+            - run: mix format --check-formatted
       - run: mix test
 
 workflows:
@@ -33,4 +37,4 @@ workflows:
       - test:
           matrix:
             parameters:
-              elixir: ["1.8", "1.9", "1.10", "1.11", "1.12", "1.13"]
+              elixir: ["1.11", "1.12", "1.13", "1.14", "1.15"]

@@ -27,7 +27,7 @@ defmodule MixTestInteractive.Watcher do
         {:ok, config}
 
       other ->
-        Logger.warn("""
+        Logger.warning("""
         Could not start the file system monitor.
         """)
 
