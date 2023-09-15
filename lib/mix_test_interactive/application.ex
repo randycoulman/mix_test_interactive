@@ -3,7 +3,9 @@ defmodule MixTestInteractive.Application do
 
   use Application
 
-  alias MixTestInteractive.{Config, InteractiveMode, Watcher}
+  alias MixTestInteractive.Config
+  alias MixTestInteractive.InteractiveMode
+  alias MixTestInteractive.Watcher
 
   @impl Application
   def start(_type, _args) do

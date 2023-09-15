@@ -5,7 +5,9 @@ defmodule MixTestInteractive.Watcher do
 
   use GenServer
 
-  alias MixTestInteractive.{InteractiveMode, MessageInbox, Paths}
+  alias MixTestInteractive.InteractiveMode
+  alias MixTestInteractive.MessageInbox
+  alias MixTestInteractive.Paths
 
   require Logger
 

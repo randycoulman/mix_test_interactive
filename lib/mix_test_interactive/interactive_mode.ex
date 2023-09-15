@@ -11,7 +11,10 @@ defmodule MixTestInteractive.InteractiveMode do
 
   use GenServer, restart: :transient
 
-  alias MixTestInteractive.{CommandProcessor, Config, Runner, Settings}
+  alias MixTestInteractive.CommandProcessor
+  alias MixTestInteractive.Config
+  alias MixTestInteractive.Runner
+  alias MixTestInteractive.Settings
 
   @type option :: {:config, Config.t()} | {:name | String.t()}
 

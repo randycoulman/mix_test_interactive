@@ -2,6 +2,7 @@ defmodule MixTestInteractive.PathTest do
   use ExUnit.Case
 
   import MixTestInteractive.Paths, only: [watching?: 1, watching?: 2]
+
   alias MixTestInteractive.Config
 
   test ".ex files are watched" do

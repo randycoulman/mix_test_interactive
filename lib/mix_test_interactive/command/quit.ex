@@ -3,9 +3,9 @@ defmodule MixTestInteractive.Command.Quit do
   Exit mix test.interactive.
   """
 
-  alias MixTestInteractive.Command
+  use MixTestInteractive.Command, command: "q", desc: "quit"
 
-  use Command, command: "q", desc: "quit"
+  alias MixTestInteractive.Command
 
   @impl Command
   def run(_args, _settings), do: :quit

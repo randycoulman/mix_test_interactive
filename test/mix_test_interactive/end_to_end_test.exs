@@ -1,9 +1,11 @@
 defmodule MixTestInteractive.EndToEndTest do
   use ExUnit.Case, async: true
 
-  alias MixTestInteractive.{Config, InteractiveMode}
+  alias MixTestInteractive.Config
+  alias MixTestInteractive.InteractiveMode
 
   defmodule DummyRunner do
+    @moduledoc false
     def run(config, args) do
       Agent.update(__MODULE__, fn test_pid ->
         send(test_pid, {config, args})

@@ -10,9 +10,10 @@ defmodule MixTestInteractive.Command.ToggleWatchMode do
   `MixTestInteractive.Command.RunTests` command.
   """
 
-  alias MixTestInteractive.{Command, Settings}
+  use MixTestInteractive.Command, command: "w", desc: "turn watch mode on/off"
 
-  use Command, command: "w", desc: "turn watch mode on/off"
+  alias MixTestInteractive.Command
+  alias MixTestInteractive.Settings
 
   @impl Command
   def run(_args, settings) do

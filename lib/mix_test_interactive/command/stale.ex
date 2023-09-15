@@ -5,9 +5,10 @@ defmodule MixTestInteractive.Command.Stale do
   Equivalent to `mix test --stale`.
   """
 
-  alias MixTestInteractive.{Command, Settings}
+  use MixTestInteractive.Command, command: "s", desc: "run only stale tests"
 
-  use Command, command: "s", desc: "run only stale tests"
+  alias MixTestInteractive.Command
+  alias MixTestInteractive.Settings
 
   @impl Command
   def applies?(%Settings{stale?: false}), do: true

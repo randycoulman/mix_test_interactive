@@ -3,18 +3,16 @@ defmodule MixTestInteractive.CommandProcessor do
   Processes interactive mode commands.
   """
 
-  alias MixTestInteractive.{Command, Settings}
-
-  alias MixTestInteractive.Command.{
-    AllTests,
-    Failed,
-    Help,
-    Pattern,
-    Quit,
-    RunTests,
-    Stale,
-    ToggleWatchMode
-  }
+  alias MixTestInteractive.Command
+  alias MixTestInteractive.Command.AllTests
+  alias MixTestInteractive.Command.Failed
+  alias MixTestInteractive.Command.Help
+  alias MixTestInteractive.Command.Pattern
+  alias MixTestInteractive.Command.Quit
+  alias MixTestInteractive.Command.RunTests
+  alias MixTestInteractive.Command.Stale
+  alias MixTestInteractive.Command.ToggleWatchMode
+  alias MixTestInteractive.Settings
 
   @type response :: Command.response()
 
@@ -54,13 +52,11 @@ defmodule MixTestInteractive.CommandProcessor do
       |> applicable_commands()
       |> Enum.flat_map(&usage_line/1)
 
-    ([:bright, "Usage:\n", :normal] ++ usage)
-    |> IO.ANSI.format()
+    IO.ANSI.format([:bright, "Usage:\n", :normal] ++ usage)
   end
 
   defp usage_line(command) do
-    ["› ", :bright, command.name, :normal, " to ", command.description, ".\n"]
-    |> IO.ANSI.format_fragment()
+    IO.ANSI.format_fragment(["› ", :bright, command.name, :normal, " to ", command.description, ".\n"])
   end
 
   defp process_command(command, args, settings) do

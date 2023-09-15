@@ -3,9 +3,9 @@ defmodule MixTestInteractive.Command.RunTests do
   Run all tests matching the current flags and filter settings.
   """
 
-  alias MixTestInteractive.Command
+  use MixTestInteractive.Command, command: "", desc: "trigger a test run"
 
-  use Command, command: "", desc: "trigger a test run"
+  alias MixTestInteractive.Command
 
   @impl Command
   def name, do: "Enter"
