@@ -46,7 +46,7 @@ Use the `p` command to run only test files that match one or more provided patte
 If any pattern contains a line number specification, all patterns are passed directly to `mix test`.
 
 ```
-p pattern1 pattern 2
+p pattern1 pattern2
 ```
 
 Use the `s` command to run only test files that reference modules that have changed since the last run (equivalent to the `--stale` option of `mix test`).
@@ -60,6 +60,17 @@ Use the `w` command to turn file-watching mode on or off.
 Use the `Enter` key to re-run the current set of tests without requiring a file change.
 
 Use the `q` command, or press `Ctrl-D` to exit the program.
+
+## Passing Arguments To Tasks
+
+Any command line arguments passed to the `mix test.interactive` task will be passed
+through to the task being run, along with any arguments added by interactive mode. If I want to see detailed trace information for my tests, I can run:
+
+```
+mix test.interactive --trace
+```
+
+`mix test.interactive` will detect the `--stale` and `--failed` flags and use those as initial settings in interactive mode. You can then toggle those flags on and off as needed. It will also detect any filename or pattern arguments and use those as initial settings. However, it does not detect any filenames passed with `--include` or `--only`. Note that if you specify a pattern on the command-line, `mix test.interactive` will find all test files matching that pattern and pass those to `mix test` as if you had used the `p` command.
 
 ## Running A Different Mix Task
 
@@ -76,17 +87,6 @@ end
 ```
 
 The task is run with `MIX_ENV` set to `test`.
-
-## Passing Arguments To Tasks
-
-Any command line arguments passed to the `mix test.interactive` task will be passed
-through to the task being run, along with any arguments added by interactive mode. If I want to see detailed trace information for my tests, I can run:
-
-```
-mix test.interactive --trace
-```
-
-`mix test.interactive` will detect the `--stale` and `--failed` flags and use those as initial settings in interactive mode. You can then toggle those flags on and off as needed. It will also detect any filename or pattern arguments and use those as initial settings. However, it does not detect any filenames passed with `--include` or `--only`. Note that if you specify a pattern on the command-line, `mix test.interactive` will find all test files matching that pattern and pass those to `mix test` as if you had used the `p` command.
 
 ## Clearing The Console Before Each Run
 
@@ -138,7 +138,7 @@ The idea for having an interactive mode comes from [Jest](https://jestjs.io/) an
 
 ## Copyright and License
 
-Copyright (c) 2021-2022 Randy Coulman
+Copyright (c) 2021-2023 Randy Coulman
 
 This work is free. You can redistribute it and/or modify it under the
 terms of the MIT License. See the [LICENSE.md](./LICENSE.md) file for more details.
