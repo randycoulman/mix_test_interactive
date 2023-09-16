@@ -27,6 +27,7 @@ defmodule MixTestInteractive.Settings do
   ]
 
   @mix_test_options [
+    all_warnings: :boolean,
     archives_check: :boolean,
     color: :boolean,
     compile: :boolean,
@@ -34,6 +35,7 @@ defmodule MixTestInteractive.Settings do
     deps_check: :boolean,
     elixir_version_check: :boolean,
     exclude: :keep,
+    exit_status: :integer,
     export_coverage: :string,
     failed: :boolean,
     force: :boolean,
@@ -45,13 +47,15 @@ defmodule MixTestInteractive.Settings do
     only: :keep,
     partitions: :integer,
     preload_modules: :boolean,
+    profile_require: :string,
     raise: :boolean,
     seed: :integer,
     slowest: :integer,
     stale: :boolean,
     start: :boolean,
     timeout: :integer,
-    trace: :boolean
+    trace: :boolean,
+    warnings_as_errors: :boolean
   ]
 
   @doc """
