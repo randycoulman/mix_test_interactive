@@ -32,9 +32,9 @@ defmodule MixTestInteractive.MixProject do
 
   defp deps do
     [
-      {:ex_doc, "~> 0.30.6", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.31.1", only: :dev, runtime: false},
       {:file_system, "~> 1.0"},
-      {:styler, "~> 0.9.3"},
+      {:styler, "~> 0.11.6"},
       {:temporary_env, "~> 2.0", only: :test},
       {:typed_struct, "~> 0.3.0"}
     ]
