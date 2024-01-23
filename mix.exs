@@ -1,7 +1,7 @@
 defmodule MixTestInteractive.MixProject do
   use Mix.Project
 
-  @version "1.2.2"
+  @version "2.0.0"
   @source_url "https://github.com/randycoulman/mix_test_interactive"
 
   def project do
@@ -10,7 +10,7 @@ defmodule MixTestInteractive.MixProject do
       deps: deps(),
       description: description(),
       docs: docs(),
-      elixir: "~> 1.8",
+      elixir: "~> 1.12",
       name: "mix test.interactive",
       package: package(),
       source_url: @source_url,
