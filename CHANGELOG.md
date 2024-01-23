@@ -28,7 +28,7 @@ There are no actual breaking changes, so as long as you're on Elixir 1.12 or
 later and aren't depending on a pre-1.0 version of `file_system`, you should
 have no problems upgrading to this version.
 
-## Added
+### Added
 
 - Add full task documentation. `mix help test.interactive` will now show a
   summary of usage and configuration information ([#70](https://github.com/randycoulman/mix_test_interactive/pull/70))
