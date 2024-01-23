@@ -5,7 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v1.2.2...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v2.0.0...HEAD)
+
+## [v2.0.0](https://github.com/randycoulman/mix_test_interactive/compare/v1.2.1...v2.0.0) - 2024-01-22
+
+### 💥 BREAKING CHANGES 💥
+
+- This release drops support for older Elixir versions. We officially support the
+  [same versions as Elixir
+  itself](https://hexdocs.pm/elixir/1.16.0/compatibility-and-deprecations.html),
+  so support for Elixir 1.11 and prior has been dropped.
+  ([#67](https://github.com/randycoulman/mix_test_interactive/pull/67),
+  [#75](https://github.com/randycoulman/mix_test_interactive/pull/75))
+- Upgrade [file_system](https://hex.pm/packages/file_system) dependency to
+  version 1.0. This appears to be a simple bump to 1.0 with no breaking changes,
+  so should be safe to upgrade to. It might break dependency resolution
+  if you're locked to a pre-1.0 version, so it's noted here.
+  ([#72](https://github.com/randycoulman/mix_test_interactive/pull/72) - Thanks
+  [@andyl](https://github.com/andyl)!)
+
+There are no actual breaking changes, so as long as you're on Elixir 1.12 or
+later and aren't depending on a pre-1.0 version of `file_system`, you should
+have no problems upgrading to this version.
+
+## Added
+
+- Add full task documentation. `mix help test.interactive` will now show a
+  summary of usage and configuration information ([#70](https://github.com/randycoulman/mix_test_interactive/pull/70))
+
+- Add support for newer `mix test` options ([#71](https://github.com/randycoulman/mix_test_interactive/pull/71))
 
 ## [v1.2.2](https://github.com/randycoulman/mix_test_interactive/compare/v1.2.1...v1.2.2) - 2022-11-15
 
