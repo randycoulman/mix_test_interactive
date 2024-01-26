@@ -34,7 +34,7 @@ defmodule MixTestInteractive.MixProject do
     [
       {:ex_doc, "~> 0.31.1", only: :dev, runtime: false},
       {:file_system, "~> 1.0"},
-      {:styler, "~> 0.11.6"},
+      {:styler, "~> 0.11.8", only: [:dev, :test], runtime: false},
       {:temporary_env, "~> 2.0", only: :test},
       {:typed_struct, "~> 0.3.0"}
     ]
