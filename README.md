@@ -18,7 +18,7 @@ The package can be installed by adding `mix_test_interactive` to your list of de
 ```elixir
 def deps do
   [
-    {:mix_test_interactive, "~> 1.0", only: :dev, runtime: false}
+    {:mix_test_interactive, "~> 2.0", only: :dev, runtime: false}
   ]
 end
 ```
