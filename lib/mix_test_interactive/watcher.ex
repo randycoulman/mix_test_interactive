@@ -11,6 +11,8 @@ defmodule MixTestInteractive.Watcher do
 
   require Logger
 
+  @ignore_events MapSet.new([:isdir, :closed, :attribute, :undefined])
+
   @doc """
   Start the file watcher.
   """
@@ -38,12 +40,16 @@ defmodule MixTestInteractive.Watcher do
   end
 
   @impl GenServer
-  def handle_info({:file_event, _, {path, _events}}, config) do
-    path = to_string(path)
+  def handle_info({:file_event, _, {path, events}}, config) do
+    events = MapSet.new(events)
 
-    if Paths.watching?(path, config) do
-      InteractiveMode.note_file_changed()
-      MessageInbox.flush()
+    if MapSet.disjoint?(events, @ignore_events) do
+      path = to_string(path)
+
+      if Paths.watching?(path, config) do
+        InteractiveMode.note_file_changed()
+        MessageInbox.flush()
+      end
     end
 
     {:noreply, config}
