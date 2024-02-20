@@ -4,7 +4,7 @@ defmodule MixTestInteractive.Paths do
   alias MixTestInteractive.Config
 
   @elixir_source_endings ~w(.erl .ex .exs .eex .leex .heex .xrl .yrl .hrl)
-  @ignored_dirs ~w(deps/ _build/)
+  @ignored_dirs ~w(deps/ _build/ .elixir_ls/ .git/)
 
   @doc """
   Determines if we should respond to changes in a file.
