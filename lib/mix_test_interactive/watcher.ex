@@ -11,7 +11,18 @@ defmodule MixTestInteractive.Watcher do
 
   require Logger
 
-  @ignore_events MapSet.new([:isdir, :closed, :attribute, :undefined])
+  # The following events (among many others, depending on platform) are emitted
+  # by the `FileSystem` library and are the ones that we look for in order to
+  # kick off a test run.
+  @trigger_events [
+    :created,
+    :deleted,
+    :modified,
+    :moved_from,
+    :moved_to,
+    :removed,
+    :renamed
+  ]
 
   @doc """
   Start the file watcher.
@@ -41,9 +52,7 @@ defmodule MixTestInteractive.Watcher do
 
   @impl GenServer
   def handle_info({:file_event, _, {path, events}}, config) do
-    events = MapSet.new(events)
-
-    if MapSet.disjoint?(events, @ignore_events) do
+    if Enum.any?(events, &(&1 in @trigger_events)) do
       path = to_string(path)
 
       if Paths.watching?(path, config) do
