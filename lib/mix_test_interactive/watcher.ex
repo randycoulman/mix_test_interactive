@@ -11,6 +11,19 @@ defmodule MixTestInteractive.Watcher do
 
   require Logger
 
+  # The following events (among many others, depending on platform) are emitted
+  # by the `FileSystem` library and are the ones that we look for in order to
+  # kick off a test run.
+  @trigger_events [
+    :created,
+    :deleted,
+    :modified,
+    :moved_from,
+    :moved_to,
+    :removed,
+    :renamed
+  ]
+
   @doc """
   Start the file watcher.
   """
@@ -38,12 +51,14 @@ defmodule MixTestInteractive.Watcher do
   end
 
   @impl GenServer
-  def handle_info({:file_event, _, {path, _events}}, config) do
-    path = to_string(path)
+  def handle_info({:file_event, _, {path, events}}, config) do
+    if Enum.any?(events, &(&1 in @trigger_events)) do
+      path = to_string(path)
 
-    if Paths.watching?(path, config) do
-      InteractiveMode.note_file_changed()
-      MessageInbox.flush()
+      if Paths.watching?(path, config) do
+        InteractiveMode.note_file_changed()
+        MessageInbox.flush()
+      end
     end
 
     {:noreply, config}
