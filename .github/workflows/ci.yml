@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   test:
-    name: Checks/Tests on TOP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+    name: Checks/Tests on OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     runs-on: ubuntu-latest
     strategy:
       matrix:
