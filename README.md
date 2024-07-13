@@ -1,6 +1,6 @@
 # mix test.interactive
 
-[![Build Status](https://circleci.com/gh/randycoulman/mix_test_interactive.svg?style=shield)](https://app.circleci.com/pipelines/github/randycoulman/mix_test_interactive)
+[![Build Status](https://github.com/randycoulman/mix_test_interactive/actions/workflows/ci.yml/badge.svg)](https://github.com/randycoulman/mix_test_interactive/actions)
 [![Module Version](https://img.shields.io/hexpm/v/mix_test_interactive.svg)](https://hex.pm/packages/mix_test_interactive)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/mix_test_interactive/)
 [![License](https://img.shields.io/hexpm/l/mix_test_interactive.svg)](https://github.com/randycoulman/mix_test_interactive/blob/master/LICENSE.md)
