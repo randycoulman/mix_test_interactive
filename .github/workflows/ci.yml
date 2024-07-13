@@ -29,6 +29,8 @@ jobs:
             otp: '26'
           - elixir: '1.16'
             otp: '26'
+          - elixir: '1.17'
+            otp: '27'
     steps:
       - name: Set up Elixir
         id: setup
@@ -80,7 +82,7 @@ jobs:
         run: mix compile --warnings-as-errors
 
       - name: Check formatting
-        if: ${{matrix.elixir == '1.16'}}
+        if: ${{matrix.elixir == '1.17'}}
         run: mix format --check-formatted
 
       - name: Run tests

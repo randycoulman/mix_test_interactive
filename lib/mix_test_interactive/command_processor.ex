@@ -56,13 +56,13 @@ defmodule MixTestInteractive.CommandProcessor do
   end
 
   defp usage_line(command) do
-    IO.ANSI.format_fragment(["› ", :bright, command.name, :normal, " to ", command.description, ".\n"])
+    IO.ANSI.format_fragment(["› ", :bright, command.name(), :normal, " to ", command.description(), ".\n"])
   end
 
   defp process_command(command, args, settings) do
     case settings
          |> applicable_commands()
-         |> Enum.find(nil, &(&1.command == command)) do
+         |> Enum.find(nil, &(&1.command() == command)) do
       nil -> :unknown
       cmd -> cmd.run(args, settings)
     end
