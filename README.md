@@ -18,7 +18,7 @@ The package can be installed by adding `mix_test_interactive` to your list of de
 ```elixir
 def deps do
   [
-    {:mix_test_interactive, "~> 2.1", only: :dev, runtime: false}
+    {:mix_test_interactive, "~> 3.0", only: :dev, runtime: false}
   ]
 end
 ```
@@ -138,7 +138,7 @@ The idea for having an interactive mode comes from [Jest](https://jestjs.io/) an
 
 ## Copyright and License
 
-Copyright (c) 2021-2023 Randy Coulman
+Copyright (c) 2021-2024 Randy Coulman
 
 This work is free. You can redistribute it and/or modify it under the
 terms of the MIT License. See the [LICENSE.md](./LICENSE.md) file for more details.

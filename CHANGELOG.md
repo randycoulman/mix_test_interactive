@@ -5,7 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v2.1.0...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v3.0.0...HEAD)
+
+## [v3.0.0](https://github.com/randycoulman/mix_test_interactive/compare/v2.1.0...v3.0.0) - 2024-07-13
+
+### 💥 BREAKING CHANGE 💥
+
+- This release drops support for Elixir 1.12. We officially support the
+  [same versions as Elixir
+  itself](https://hexdocs.pm/elixir/1.17.2/compatibility-and-deprecations.html),
+  so support for Elixir 1.12.
+  ([#94](https://github.com/randycoulman/mix_test_interactive/pull/94))
+
+There are no actual breaking changes in the code itself, so as long as you're on
+Elixir 1.13 or later, you should have no problems upgrading to this version.
+
+### Changed
+
+- Update to the latest version of [ex_doc](https://hexdocs.pm/ex_doc/readme.html). The [documentation](https://hexdocs.pm/mix_test_interactive/readme.html) reflects these changes. ([#93](https://github.com/randycoulman/mix_test_interactive/pull/93))
 
 ## [v2.1.0](https://github.com/randycoulman/mix_test_interactive/compare/v2.0.4...v2.1.0) - 2024-07-13
 
