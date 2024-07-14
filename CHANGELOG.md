@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v2.0.4...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v2.1.0...HEAD)
+
+## [v2.1.0](https://github.com/randycoulman/mix_test_interactive/compare/v2.0.4...v2.1.0) - 2024-07-13
+
+### Fixed
+
+- Fix compiler warnings on Elixir 1.17. ([#89](https://github.com/randycoulman/mix_test_interactive/pull/89) - Thanks [@jfpedroza](https://github.com/jfpedroza)!)
 
 ## [v2.0.4](https://github.com/randycoulman/mix_test_interactive/compare/v2.0.3...v2.0.4) - 2024-03-04
 
