@@ -42,6 +42,21 @@ defmodule MixTestInteractive.PortRunnerTest do
       config = %Config{task: "custom"}
       assert {_command, ["custom"], _options} = run_windows(config: config)
     end
+
+    test "uses custom command with no args" do
+      config = %Config{command: {"custom_command", []}}
+      assert {"custom_command", _args, _options} = run_windows(config: config)
+    end
+
+    test "uses custom command with args" do
+      config = %Config{command: {"custom_command", ["--custom_arg"]}}
+      assert {"custom_command", ["--custom_arg", "test"], _options} = run_windows(config: config)
+    end
+
+    test "prepends command args to other args" do
+      config = %Config{command: {"custom_command", ["--custom_arg"]}}
+      assert {_command, ["--custom_arg", "test", "--cover"], _options} = run_windows(args: ["--cover"], config: config)
+    end
   end
 
   describe "running on Unix-like operating systems" do
@@ -75,6 +90,33 @@ defmodule MixTestInteractive.PortRunnerTest do
       {_command, args, _options} = run_unix(config: config)
 
       assert List.last(args) == "custom"
+    end
+
+    test "uses custom command with no args" do
+      config = %Config{command: {"custom_command", []}}
+
+      {_command, args, _options} = run_unix(config: config)
+
+      assert List.first(args) == "custom_command"
+      assert List.last(args) == "test"
+    end
+
+    test "uses custom command with args" do
+      config = %Config{command: {"custom_command", ["--custom_arg"]}}
+
+      {_command, args, _options} = run_unix(config: config)
+
+      assert List.first(args) == "custom_command"
+      assert Enum.take(args, -2) == ["--custom_arg", "test"]
+    end
+
+    test "prepends command args to other args" do
+      config = %Config{command: {"custom_command", ["--custom_arg"]}}
+
+      {_command, args, _options} = run_unix(args: ["--cover"], config: config)
+
+      assert List.first(args) == "custom_command"
+      assert Enum.take(args, -3) == ["--custom_arg", "test", "--cover"]
     end
   end
 end

@@ -3,8 +3,8 @@ defmodule MixTestInteractive.PortRunner do
   Run the tasks in a new OS process via `Port`s.
 
   On Unix-like operating systems, it runs the tests using a `zombie_killer` script
-  as describe in https://hexdocs.pm/elixir/Port.html#module-zombie-operating-system-processes.
-  It also enable ANSI output mode.
+  as described in https://hexdocs.pm/elixir/Port.html#module-zombie-operating-system-processes.
+  It also enables ANSI output mode.
 
   On Windows, `mix` is run directly and ANSI mode is not enabled, as it is not always
   supported by Windows command processors.
@@ -13,6 +13,7 @@ defmodule MixTestInteractive.PortRunner do
   alias MixTestInteractive.Config
 
   @application :mix_test_interactive
+
   @type runner ::
           (String.t(), [String.t()], keyword() ->
              {Collectable.t(), exit_status :: non_neg_integer()})
@@ -23,22 +24,23 @@ defmodule MixTestInteractive.PortRunner do
   """
   @spec run(Config.t(), [String.t()], os_type(), runner()) :: :ok
   def run(%Config{} = config, args, os_type \\ :os.type(), runner \\ &System.cmd/3) do
-    command = [config.task | args]
+    {command, extra_args} = config.command
+    args = extra_args ++ [config.task | args]
 
     case os_type do
       {:win32, _} ->
-        runner.("mix", command,
+        runner.(command, args,
           env: [{"MIX_ENV", "test"}],
           into: IO.stream(:stdio, :line)
         )
 
       _ ->
-        command = enable_ansi(command)
+        args = enable_ansi(args)
 
         @application
         |> :code.priv_dir()
         |> Path.join("zombie_killer")
-        |> runner.(["mix" | command],
+        |> runner.([command | args],
           env: [{"MIX_ENV", "test"}],
           into: IO.stream(:stdio, :line)
         )

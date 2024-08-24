@@ -14,12 +14,12 @@ defmodule MixTestInteractive.Settings do
   @default_list_all_files &TestFiles.list/0
 
   typedstruct do
-    field(:failed?, boolean(), default: false)
-    field(:initial_cli_args, [String.t()], default: [])
-    field(:list_all_files, (-> [String.t()]), default: @default_list_all_files)
-    field(:patterns, [String.t()], default: [])
-    field(:stale?, boolean(), default: false)
-    field(:watching?, boolean(), default: true)
+    field :failed?, boolean(), default: false
+    field :initial_cli_args, [String.t()], default: []
+    field :list_all_files, (-> [String.t()]), default: @default_list_all_files
+    field :patterns, [String.t()], default: []
+    field :stale?, boolean(), default: false
+    field :watching?, boolean(), default: true
   end
 
   @options [
