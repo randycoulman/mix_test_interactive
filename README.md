@@ -72,30 +72,19 @@ mix test.interactive --trace
 
 `mix test.interactive` will detect the `--stale` and `--failed` flags and use those as initial settings in interactive mode. You can then toggle those flags on and off as needed. It will also detect any filename or pattern arguments and use those as initial settings. However, it does not detect any filenames passed with `--include` or `--only`. Note that if you specify a pattern on the command-line, `mix test.interactive` will find all test files matching that pattern and pass those to `mix test` as if you had used the `p` command.
 
-## Running A Different Mix Task
+## Configuration
 
-By default, `mix test.interactive` runs `mix test`. Through the mix config it is possible to run a different mix task. `mix test.interactive` assumes that this alternative task accepts the same command-line arguments as `mix test`.
+`mix test.interactive` can be configured with various options using application
+configuration.
 
-```elixir
-# config/config.exs
-use Mix.Config
-
-if Mix.env == :dev do
-  config :mix_test_interactive,
-    task: "custom_test_task"
-end
-```
-
-The task is run with `MIX_ENV` set to `test`.
-
-## Clearing The Console Before Each Run
+### `clear`: Clear the console before each run
 
 If you want `mix test.interactive` to clear the console before each run, you can
 enable this option in your config/dev.exs as follows:
 
 ```elixir
 # config/config.exs
-use Mix.Config
+import Config
 
 if Mix.env == :dev do
   config :mix_test_interactive,
@@ -103,14 +92,56 @@ if Mix.env == :dev do
 end
 ```
 
-## Excluding files or directories
+### `command`: Use a custom command
 
-To ignore changes from specific files or directories add `exclude:` regexp
-patterns to your config in `mix.exs`:
+By default, `mix test.interactive` uses `mix test` to run tests.
+
+You might want to provide a custom command that does other things before or
+after running `mix`. In that case, you can customize the command used for
+running tests.
+
+For example, you might want to provide a name for the test runner process to
+allow connection from other Erlang nodes. Or you might want to run other
+commands before or after running the tests.
+
+In those cases, you can customize the command that `mix test.interactive` will
+use to run your tests. `mix test.interactive` assumes that the custom command
+ultimately runs `mix` under the hood (or at least accepts
+all of the same command-line arguments as `mix`). The custom command can either be a string or
+a `{command, [..args..]}` tuple.
+
+Examples:
 
 ```elixir
 # config/config.exs
-use Mix.Config
+import Config
+
+if Mix.env == :dev do
+  config :mix_test_interactive,
+    command: "path/to/my/test_runner.sh"
+end
+```
+
+```elixir
+# config/config.exs
+import Config
+
+if Mix.env == :dev do
+  config :mix_test_interactive,
+    command: {"elixir", ["--sname", "name", "-S", "mix"]}
+end
+```
+
+To run a different mix task instead, see the `task` option below.
+
+### `exclude`: Excluding files or directories
+
+To stop changes to specific files or directories from triggering test runs, you
+can add `exclude:` regexp patterns to your config in `mix.exs`:
+
+```elixir
+# config/config.exs
+import Config
 
 if Mix.env == :dev do
   config :mix_test_interactive,
@@ -120,6 +151,84 @@ end
 ```
 
 The default is `exclude: [~r/\.#/, ~r{priv/repo/migrations}]`.
+
+### `extra_extensions`: Watch files with additional extensions
+
+By default, `mix test.interactive` will trigger a test run when a known Elixir
+or Erlang file has changed, but not when any other file changes.
+
+You can specify additional file extensions to be included with the
+`extra_extensions` option.
+
+```elixir
+# config/config.exs
+import Config
+
+if Mix.env == :dev do
+  config :mix_test_interactive,
+    extra_extensions: ["json"]
+end
+```
+
+`mix test.interactive` always watches files with the following extensions:
+`.erl`, `.ex`, `.exs`, `.eex`, `.leex`, `.heex`, `.xrl`, `.yrl`, and `.hrl`. To
+ignore files with any of these extensions, you can specify an `exclude` regexp
+(see above).
+
+### `runner`: Use a custom runner module
+
+By default `mix test.interactive` uses an internal module named
+`MixTestInteractive.PortRunner` to run the tests. If you want to
+run the tests in a different way, you can supply your own runner module instead.
+Your module must implement a `run/2` function that takes a
+`MixTestInteractive.Config` struct and a list of `String.t()` arguments.
+
+```elixir
+# config/config.exs
+import Config
+
+if Mix.env == :dev do
+  config :mix_test_interactive,
+    runner: MyApp.FancyTestRunner
+end
+```
+
+### `timestamp`: Display the current time before running the tests
+
+When `timestamp` is set to true, `mix test.interactive` will display the
+current time (UTC) just before running the tests.
+
+```elixir
+# config/config.exs
+import Config
+
+if Mix.env == :dev do
+  config :mix_test_interactive,
+    timestamp: true
+end
+```
+
+### `task`: Run a different mix task
+
+By default, `mix test.interactive` runs `mix test`.
+
+Through the mix config it is possible to run a different mix task. `mix
+test.interactive` assumes that this alternative task accepts the same
+command-line arguments as `mix test`.
+
+```elixir
+# config/config.exs
+import Config
+
+if Mix.env == :dev do
+  config :mix_test_interactive,
+    task: "custom_test_task"
+end
+```
+
+The task is run with `MIX_ENV` set to `test`.
+
+To use a custom command instead, see the `command` option above.
 
 ## Compatibility Notes
 

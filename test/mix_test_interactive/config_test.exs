@@ -5,18 +5,42 @@ defmodule MixTestInteractive.ConfigTest do
   alias MixTestInteractive.Config
 
   describe "creation" do
-    test "takes :task from the env" do
-      TemporaryEnv.put :mix_test_interactive, :task, :env_task do
+    test "takes :clear? from the env" do
+      TemporaryEnv.put :mix_test_interactive, :clear, true do
         config = Config.new()
-        assert config.task == :env_task
+        assert config.clear?
       end
     end
 
-    test ~s(defaults :task to "test") do
-      TemporaryEnv.delete :mix_test_interactive, :task do
+    test "takes :command as a string from the env" do
+      command = "/path/to/command"
+
+      TemporaryEnv.put :mix_test_interactive, :command, command do
         config = Config.new()
-        assert config.task == "test"
+        assert config.command == {command, []}
       end
+    end
+
+    test "takes :command as a tuple from the env" do
+      command = {"command", ["arg1", "arg2"]}
+
+      TemporaryEnv.put :mix_test_interactive, :command, command do
+        config = Config.new()
+        assert config.command == command
+      end
+    end
+
+    test "raises an error if :command is invalid" do
+      TemporaryEnv.put :mix_test_interactive, :command, ["invalid_command", "arg1", "arg2"] do
+        assert_raise ArgumentError, fn ->
+          Config.new()
+        end
+      end
+    end
+
+    test "defaults :command to `{\"mix\", []}`" do
+      config = Config.new()
+      assert config.command == {"mix", []}
     end
 
     test "takes :exclude from the env" do
@@ -44,17 +68,24 @@ defmodule MixTestInteractive.ConfigTest do
       end
     end
 
-    test "takes :clear? from the env" do
-      TemporaryEnv.put :mix_test_interactive, :clear, true do
-        config = Config.new()
-        assert config.clear?
-      end
-    end
-
     test "takes :show_timestamps? from the env" do
       TemporaryEnv.put :mix_test_interactive, :timestamp, true do
         config = Config.new()
         assert config.show_timestamp?
+      end
+    end
+
+    test "takes :task from the env" do
+      TemporaryEnv.put :mix_test_interactive, :task, :env_task do
+        config = Config.new()
+        assert config.task == :env_task
+      end
+    end
+
+    test ~s(defaults :task to "test") do
+      TemporaryEnv.delete :mix_test_interactive, :task do
+        config = Config.new()
+        assert config.task == "test"
       end
     end
   end
