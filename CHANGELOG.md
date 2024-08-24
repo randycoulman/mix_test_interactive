@@ -5,7 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v3.0.0...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v3.1.0...HEAD)
+
+## [v3.1.0](https://github.com/randycoulman/mix_test_interactive/compare/v3.0.0...v3.1.0) - 2024-08-24
+
+### Added
+
+- Add a new `command` configuration option that allows use of a custom command instead of `mix` for running tests. See the [README](https://github.com/randycoulman/mix_test_interactive#command-use-a-custom-command) for more details. ([#96](https://github.com/randycoulman/mix_test_interactive/pull/96))
+
+### Changed
+
+- Added [documentation for missing configuration options](https://github.com/randycoulman/mix_test_interactive#configuration) in the README. ([#96](https://github.com/randycoulman/mix_test_interactive/pull/96))
 
 ## [v3.0.0](https://github.com/randycoulman/mix_test_interactive/compare/v2.1.0...v3.0.0) - 2024-07-13
 
