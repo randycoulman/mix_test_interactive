@@ -18,7 +18,7 @@ The package can be installed by adding `mix_test_interactive` to your list of de
 ```elixir
 def deps do
   [
-    {:mix_test_interactive, "~> 3.1", only: :dev, runtime: false}
+    {:mix_test_interactive, "~> 3.2", only: :dev, runtime: false}
   ]
 end
 ```
@@ -43,7 +43,8 @@ After the tests run, you can use the interactive mode to change which tests will
 
 Use the `p` command to run only test files that match one or more provided patterns. A pattern is the project-root-relative path to a test file (with or without a line number specification) or a string that matches a portion of full pathname. e.g. `test/my_project/my_test.exs`, `test/my_project/my_test.exs:12:24` or `my`.
 
-If any pattern contains a line number specification, all patterns are passed directly to `mix test`.
+Any patterns that contain a line number specification are passed directly to
+`mix test`. Remaining patterns are matched against test filenames as above.
 
 ```
 p pattern1 pattern2
