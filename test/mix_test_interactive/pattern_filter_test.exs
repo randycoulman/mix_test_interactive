@@ -27,10 +27,17 @@ defmodule MixTestInteractive.PatternFilterTest do
     assert matches == [@abc, @cde]
   end
 
-  test "returns only patterns if any is a file with line number" do
-    patterns = ["a", "some_test.exs:42"]
+  test "returns multiple file with line number patterns" do
+    patterns = ["some_test.exs:42", "other_test.exs:58"]
     matches = PatternFilter.matches(@files, patterns)
 
     assert matches == patterns
+  end
+
+  test "returns a mix of matching files and files with line numbers" do
+    patterns = ["some_test.exs:42", "bc", "other_test.exs:58"]
+    matches = PatternFilter.matches(@files, patterns)
+
+    assert matches == [@abc, @bcd, "some_test.exs:42", "other_test.exs:58"]
   end
 end

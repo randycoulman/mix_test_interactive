@@ -18,15 +18,11 @@ defmodule MixTestInteractive.PatternFilter do
   end
 
   def matches(files, patterns) do
-    if any_line_number_patterns?(patterns) do
-      patterns
-    else
-      Enum.filter(files, &String.contains?(&1, patterns))
-    end
-  end
+    {with_line_number, simple} = Enum.split_with(patterns, &is_line_number_pattern?/1)
 
-  defp any_line_number_patterns?(patterns) do
-    Enum.any?(patterns, &is_line_number_pattern?/1)
+    files
+    |> Enum.filter(&String.contains?(&1, simple))
+    |> Kernel.++(with_line_number)
   end
 
   defp is_line_number_pattern?(pattern) do
