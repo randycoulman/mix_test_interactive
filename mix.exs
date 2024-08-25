@@ -60,6 +60,7 @@ defmodule MixTestInteractive.MixProject do
     [
       licenses: ["MIT"],
       links: %{
+        "Changelog" => "https://hexdocs.pm/mix_test_interactive/changelog.html",
         "GitHub" => @source_url
       }
     ]
