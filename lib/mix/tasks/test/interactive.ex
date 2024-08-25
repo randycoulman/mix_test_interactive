@@ -61,10 +61,18 @@ defmodule Mix.Tasks.Test.Interactive do
   operation of `mix test.interactive` with the following settings:
 
   - `clear: true`: Clear the console before each run (default: `false`).
+  - `command: <program>` or `command: {<program>, [<arg>, ...]}`:
+    Use the provided command and arguments to run the test task (default: `mix`).
   - `exclude: [patterns...]`: A list of `Regex`es to ignore when watching for
     changes (default: `[~r/\.#/, ~r{priv/repo/migrations}]`).
+  - `extra_extensions: [<ext>...]`: Additional filename extensions to include
+    when watching for file changes (default: `[]`).
+  - `runner: <module>`: A custom runner for running the tests (default:
+    `MixTestInteractive.PortRunner`).
   - `task: <task name>`: The mix task to use when running tests (default:
     `"test"`).
+  - `timestamp: true`: Print current time (UTC) before running tests (default:
+    false).
   """
 
   use Mix.Task

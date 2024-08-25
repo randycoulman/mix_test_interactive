@@ -193,21 +193,6 @@ if Mix.env == :dev do
 end
 ```
 
-### `timestamp`: Display the current time before running the tests
-
-When `timestamp` is set to true, `mix test.interactive` will display the
-current time (UTC) just before running the tests.
-
-```elixir
-# config/config.exs
-import Config
-
-if Mix.env == :dev do
-  config :mix_test_interactive,
-    timestamp: true
-end
-```
-
 ### `task`: Run a different mix task
 
 By default, `mix test.interactive` runs `mix test`.
@@ -229,6 +214,21 @@ end
 The task is run with `MIX_ENV` set to `test`.
 
 To use a custom command instead, see the `command` option above.
+
+### `timestamp`: Display the current time before running the tests
+
+When `timestamp` is set to true, `mix test.interactive` will display the
+current time (UTC) just before running the tests.
+
+```elixir
+# config/config.exs
+import Config
+
+if Mix.env == :dev do
+  config :mix_test_interactive,
+    timestamp: true
+end
+```
 
 ## Compatibility Notes
 
