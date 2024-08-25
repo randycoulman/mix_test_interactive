@@ -1,40 +1,36 @@
 defmodule MixTestInteractive.ConfigTest do
-  use ExUnit.Case, async: false
-  use TemporaryEnv
+  use ExUnit.Case, async: true
 
   alias MixTestInteractive.Config
 
   describe "creation" do
     test "takes :clear? from the env" do
-      TemporaryEnv.put :mix_test_interactive, :clear, true do
-        config = Config.new()
-        assert config.clear?
-      end
+      Process.put(:clear, true)
+      config = Config.new()
+      assert config.clear?
     end
 
     test "takes :command as a string from the env" do
       command = "/path/to/command"
 
-      TemporaryEnv.put :mix_test_interactive, :command, command do
-        config = Config.new()
-        assert config.command == {command, []}
-      end
+      Process.put(:command, command)
+      config = Config.new()
+      assert config.command == {command, []}
     end
 
     test "takes :command as a tuple from the env" do
       command = {"command", ["arg1", "arg2"]}
 
-      TemporaryEnv.put :mix_test_interactive, :command, command do
-        config = Config.new()
-        assert config.command == command
-      end
+      Process.put(:command, command)
+      config = Config.new()
+      assert config.command == command
     end
 
     test "raises an error if :command is invalid" do
-      TemporaryEnv.put :mix_test_interactive, :command, ["invalid_command", "arg1", "arg2"] do
-        assert_raise ArgumentError, fn ->
-          Config.new()
-        end
+      Process.put(:command, ["invalid_command", "arg1", "arg2"])
+
+      assert_raise ArgumentError, fn ->
+        Config.new()
       end
     end
 
@@ -44,10 +40,9 @@ defmodule MixTestInteractive.ConfigTest do
     end
 
     test "takes :exclude from the env" do
-      TemporaryEnv.put :mix_test_interactive, :exclude, [~r/migration_.*/] do
-        config = Config.new()
-        assert config.exclude == [~r/migration_.*/]
-      end
+      Process.put(:exclude, [~r/migration_.*/])
+      config = Config.new()
+      assert config.exclude == [~r/migration_.*/]
     end
 
     test ":exclude contains common editor temp/swap files by default" do
@@ -62,31 +57,26 @@ defmodule MixTestInteractive.ConfigTest do
     end
 
     test "takes :extra_extensions from the env" do
-      TemporaryEnv.put :mix_test_interactive, :extra_extensions, [".haml"] do
-        config = Config.new()
-        assert config.extra_extensions == [".haml"]
-      end
+      Process.put(:extra_extensions, [".haml"])
+      config = Config.new()
+      assert config.extra_extensions == [".haml"]
     end
 
     test "takes :show_timestamps? from the env" do
-      TemporaryEnv.put :mix_test_interactive, :timestamp, true do
-        config = Config.new()
-        assert config.show_timestamp?
-      end
+      Process.put(:timestamp, true)
+      config = Config.new()
+      assert config.show_timestamp?
     end
 
     test "takes :task from the env" do
-      TemporaryEnv.put :mix_test_interactive, :task, :env_task do
-        config = Config.new()
-        assert config.task == :env_task
-      end
+      Process.put(:task, :env_task)
+      config = Config.new()
+      assert config.task == :env_task
     end
 
     test ~s(defaults :task to "test") do
-      TemporaryEnv.delete :mix_test_interactive, :task do
-        config = Config.new()
-        assert config.task == "test"
-      end
+      config = Config.new()
+      assert config.task == "test"
     end
   end
 end

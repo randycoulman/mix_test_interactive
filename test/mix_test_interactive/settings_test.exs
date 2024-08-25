@@ -1,6 +1,5 @@
 defmodule MixTestInteractive.SettingsTest do
-  use ExUnit.Case, async: false
-  use TemporaryEnv
+  use ExUnit.Case, async: true
 
   alias MixTestInteractive.Settings
 
