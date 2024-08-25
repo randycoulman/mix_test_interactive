@@ -9,7 +9,7 @@ defmodule MixTestInteractive do
   Start the interactive test runner.
   """
   @spec run([String.t()]) :: no_return()
-  def(run(args \\ []) when is_list(args)) do
+  def run(args \\ []) when is_list(args) do
     Mix.env(:test)
     {:ok, _} = Application.ensure_all_started(:mix_test_interactive)
 

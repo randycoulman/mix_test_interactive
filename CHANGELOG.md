@@ -5,7 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v3.1.0...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v3.2.0...HEAD)
+
+## [v3.2.0](https://github.com/randycoulman/mix_test_interactive/compare/v3.1.0...v3.2.0) - 2024-08-24
+
+### Changed
+
+- Made pattern matching more flexible. Previously, when given multiple patterns, we would not do any file filtering if any of the patterns was a `file:line`-style pattern. Instead, we'd pass all of the patterns to `mix test` literally. Now, we run normal file filtering for any non-`file:line`-style patterns and concatenate the results with any `file:line`-style patterns. ([#99](https://github.com/randycoulman/mix_test_interactive/pull/99))
+- Added documentation for missing configuration options in the mix task's module documentation. ([#100](https://github.com/randycoulman/mix_test_interactive/pull/100))
 
 ## [v3.1.0](https://github.com/randycoulman/mix_test_interactive/compare/v3.0.0...v3.1.0) - 2024-08-24
 
