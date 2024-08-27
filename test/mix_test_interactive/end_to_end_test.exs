@@ -3,6 +3,7 @@ defmodule MixTestInteractive.EndToEndTest do
 
   alias MixTestInteractive.Config
   alias MixTestInteractive.InteractiveMode
+  alias MixTestInteractive.Settings
 
   defmodule DummyRunner do
     @moduledoc false
@@ -15,20 +16,20 @@ defmodule MixTestInteractive.EndToEndTest do
   end
 
   @config %Config{runner: DummyRunner}
+  @settings Settings.new([])
 
   setup do
     test_pid = self()
     {:ok, _} = Agent.start_link(fn -> test_pid end, name: DummyRunner)
+
     {:ok, io} = StringIO.open("")
-    {:ok, pid} = start_supervised({InteractiveMode, config: @config, name: :end_to_end})
+    Process.group_leader(self(), io)
 
-    Process.group_leader(pid, io)
-
+    {:ok, pid} = start_supervised({InteractiveMode, config: @config, name: :end_to_end, settings: @settings})
     %{pid: pid}
   end
 
   test "end to end workflow test", %{pid: pid} do
-    InteractiveMode.command_line_arguments(pid, [])
     assert_ran_tests()
 
     assert :ok = InteractiveMode.process_command(pid, "")

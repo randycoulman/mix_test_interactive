@@ -2,18 +2,22 @@ defmodule MixTestInteractive do
   @moduledoc """
   Interactively run your Elixir project's tests.
   """
-
+  alias MixTestInteractive.InitialSupervisor
   alias MixTestInteractive.InteractiveMode
+  alias MixTestInteractive.MainSupervisor
+  alias MixTestInteractive.Settings
+
+  @application :mix_test_interactive
 
   @doc """
   Start the interactive test runner.
   """
-  @spec run([String.t()]) :: no_return()
   def run(args \\ []) when is_list(args) do
-    Mix.env(:test)
-    {:ok, _} = Application.ensure_all_started(:mix_test_interactive)
+    settings = Settings.new(args)
 
-    InteractiveMode.command_line_arguments(args)
+    {:ok, _} = Application.ensure_all_started(@application)
+    {:ok, _supervisor} = DynamicSupervisor.start_child(InitialSupervisor, {MainSupervisor, settings: settings})
+
     loop()
   end
 

@@ -78,6 +78,7 @@ defmodule Mix.Tasks.Test.Interactive do
   use Mix.Task
 
   @preferred_cli_env :test
+  @requirements ["app.config"]
 
   defdelegate run(args), to: MixTestInteractive
 end
