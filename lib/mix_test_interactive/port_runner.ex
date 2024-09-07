@@ -24,41 +24,46 @@ defmodule MixTestInteractive.PortRunner do
   """
   @spec run(Config.t(), [String.t()], os_type(), runner()) :: :ok
   def run(%Config{} = config, args, os_type \\ :os.type(), runner \\ &System.cmd/3) do
-    {command, extra_args} = config.command
-    args = extra_args ++ [config.task | args]
+    {command, command_args} = config.command
 
-    case os_type do
-      {:win32, _} ->
-        runner.(command, args,
-          env: [{"MIX_ENV", "test"}],
-          into: IO.stream(:stdio, :line)
-        )
+    {runner_program, runner_program_args} =
+      case os_type do
+        {:win32, _} ->
+          runner_program_args = command_args ++ [config.task | args]
+          {command, runner_program_args}
 
-      _ ->
-        args = enable_ansi(args)
+        _ ->
+          runner_program =
+            @application
+            |> :code.priv_dir()
+            |> Path.join("zombie_killer")
 
-        @application
-        |> :code.priv_dir()
-        |> Path.join("zombie_killer")
-        |> runner.([command | args],
-          env: [{"MIX_ENV", "test"}],
-          into: IO.stream(:stdio, :line)
-        )
-    end
+          runner_program_args = [command] ++ command_args ++ enable_ansi(config.task, args)
+
+          {runner_program, runner_program_args}
+      end
+
+    runner_opts = [
+      env: [{"MIX_ENV", "test"}],
+      into: IO.stream(:stdio, :line)
+    ]
+
+    runner.(runner_program, runner_program_args, runner_opts)
 
     :ok
   end
 
-  defp enable_ansi(command) do
+  defp enable_ansi(task, args) do
     enable_command = "Application.put_env(:elixir, :ansi_enabled, true);"
+    no_start_flag = "--no-start"
 
-    run =
-      if Enum.member?(command, "--no-start") do
-        ["run", "--no-start", "-e"]
+    {run, args} =
+      if Enum.member?(args, no_start_flag) do
+        {["run", no_start_flag, "-e"], List.delete(args, no_start_flag)}
       else
-        ["run", "-e"]
+        {["run", "-e"], args}
       end
 
-    ["do"] ++ run ++ [enable_command, ","] ++ command
+    ["do"] ++ run ++ [enable_command, ",", task] ++ args
   end
 end

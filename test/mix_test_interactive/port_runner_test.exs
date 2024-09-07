@@ -75,7 +75,7 @@ defmodule MixTestInteractive.PortRunnerTest do
     test "includes no-start flag in ansi command" do
       assert {_command, args, _options} = run_unix(args: ["--no-start"])
 
-      assert ["mix", "do", "run", "--no-start", "-e", _ansi, ",", "test", "--no-start"] = args
+      assert ["mix", "do", "run", "--no-start", "-e", _ansi, ",", "test"] = args
     end
 
     test "appends extra command-line arguments from settings" do
@@ -102,12 +102,12 @@ defmodule MixTestInteractive.PortRunnerTest do
     end
 
     test "uses custom command with args" do
-      config = %Config{command: {"custom_command", ["--custom_arg"]}}
+      # custom command == "elixir"
+      config = %Config{command: {"elixir", ["--sname", "node-name", "-S", "mix"]}}
 
       {_command, args, _options} = run_unix(config: config)
 
-      assert List.first(args) == "custom_command"
-      assert Enum.take(args, -2) == ["--custom_arg", "test"]
+      assert ["elixir", "--sname", "node-name", "-S", "mix", "do", "run", "-e", _ansi, ",", "test"] = args
     end
 
     test "prepends command args to other args" do
@@ -115,8 +115,7 @@ defmodule MixTestInteractive.PortRunnerTest do
 
       {_command, args, _options} = run_unix(args: ["--cover"], config: config)
 
-      assert List.first(args) == "custom_command"
-      assert Enum.take(args, -3) == ["--custom_arg", "test", "--cover"]
+      assert ["custom_command", "--custom_arg", "do", "run", "-e", _ansi, ",", "test", "--cover"] = args
     end
   end
 end
