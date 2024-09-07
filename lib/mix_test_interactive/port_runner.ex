@@ -23,47 +23,44 @@ defmodule MixTestInteractive.PortRunner do
   Run tests based on the current configuration.
   """
   @spec run(Config.t(), [String.t()], os_type(), runner()) :: :ok
-  def run(%Config{} = config, args, os_type \\ :os.type(), runner \\ &System.cmd/3) do
+  def run(%Config{} = config, task_args, os_type \\ :os.type(), runner \\ &System.cmd/3) do
     {command, command_args} = config.command
 
     {runner_program, runner_program_args} =
       case os_type do
         {:win32, _} ->
-          runner_program_args = command_args ++ [config.task | args]
-          {command, runner_program_args}
+          {command, command_args ++ [config.task | task_args]}
 
         _ ->
-          runner_program =
-            @application
-            |> :code.priv_dir()
-            |> Path.join("zombie_killer")
-
-          runner_program_args = [command] ++ command_args ++ enable_ansi(config.task, args)
-
-          {runner_program, runner_program_args}
+          {zombie_killer(), [command] ++ command_args ++ enable_ansi(config.task, task_args)}
       end
 
-    runner_opts = [
+    runner.(runner_program, runner_program_args,
       env: [{"MIX_ENV", "test"}],
       into: IO.stream(:stdio, :line)
-    ]
-
-    runner.(runner_program, runner_program_args, runner_opts)
+    )
 
     :ok
   end
 
+  @no_start_flag "--no-start"
+
   defp enable_ansi(task, args) do
     enable_command = "Application.put_env(:elixir, :ansi_enabled, true);"
-    no_start_flag = "--no-start"
 
-    {run, args} =
-      if Enum.member?(args, no_start_flag) do
-        {["run", no_start_flag, "-e"], List.delete(args, no_start_flag)}
+    {run, task_args} =
+      if @no_start_flag in args do
+        {["run", @no_start_flag, "-e"], List.delete(args, @no_start_flag)}
       else
         {["run", "-e"], args}
       end
 
-    ["do"] ++ run ++ [enable_command, ",", task] ++ args
+    ["do"] ++ run ++ [enable_command, ",", task] ++ task_args
+  end
+
+  defp zombie_killer do
+    @application
+    |> :code.priv_dir()
+    |> Path.join("zombie_killer")
   end
 end
