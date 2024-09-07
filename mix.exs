@@ -1,7 +1,7 @@
 defmodule MixTestInteractive.MixProject do
   use Mix.Project
 
-  @version "3.2.0"
+  @version "3.2.1"
   @source_url "https://github.com/randycoulman/mix_test_interactive"
 
   def project do
