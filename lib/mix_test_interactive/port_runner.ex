@@ -23,42 +23,44 @@ defmodule MixTestInteractive.PortRunner do
   Run tests based on the current configuration.
   """
   @spec run(Config.t(), [String.t()], os_type(), runner()) :: :ok
-  def run(%Config{} = config, args, os_type \\ :os.type(), runner \\ &System.cmd/3) do
-    {command, extra_args} = config.command
-    args = extra_args ++ [config.task | args]
+  def run(%Config{} = config, task_args, os_type \\ :os.type(), runner \\ &System.cmd/3) do
+    {command, command_args} = config.command
 
-    case os_type do
-      {:win32, _} ->
-        runner.(command, args,
-          env: [{"MIX_ENV", "test"}],
-          into: IO.stream(:stdio, :line)
-        )
+    {runner_program, runner_program_args} =
+      case os_type do
+        {:win32, _} ->
+          {command, command_args ++ [config.task | task_args]}
 
-      _ ->
-        args = enable_ansi(args)
+        _ ->
+          {zombie_killer(), [command] ++ command_args ++ enable_ansi(config.task, task_args)}
+      end
 
-        @application
-        |> :code.priv_dir()
-        |> Path.join("zombie_killer")
-        |> runner.([command | args],
-          env: [{"MIX_ENV", "test"}],
-          into: IO.stream(:stdio, :line)
-        )
-    end
+    runner.(runner_program, runner_program_args,
+      env: [{"MIX_ENV", "test"}],
+      into: IO.stream(:stdio, :line)
+    )
 
     :ok
   end
 
-  defp enable_ansi(command) do
+  @no_start_flag "--no-start"
+
+  defp enable_ansi(task, args) do
     enable_command = "Application.put_env(:elixir, :ansi_enabled, true);"
 
-    run =
-      if Enum.member?(command, "--no-start") do
-        ["run", "--no-start", "-e"]
+    {run, task_args} =
+      if @no_start_flag in args do
+        {["run", @no_start_flag, "-e"], List.delete(args, @no_start_flag)}
       else
-        ["run", "-e"]
+        {["run", "-e"], args}
       end
 
-    ["do"] ++ run ++ [enable_command, ","] ++ command
+    ["do"] ++ run ++ [enable_command, ",", task] ++ task_args
+  end
+
+  defp zombie_killer do
+    @application
+    |> :code.priv_dir()
+    |> Path.join("zombie_killer")
   end
 end

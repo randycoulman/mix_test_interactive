@@ -33,9 +33,7 @@ defmodule MixTestInteractive.PortRunnerTest do
     end
 
     test "appends extra command-line arguments" do
-      {_command, args, _options} = run_windows(args: ["--cover"])
-
-      assert List.last(args) == "--cover"
+      assert {"mix", ["test", "--cover"], _options} = run_windows(args: ["--cover"])
     end
 
     test "uses custom task" do
@@ -53,9 +51,11 @@ defmodule MixTestInteractive.PortRunnerTest do
       assert {"custom_command", ["--custom_arg", "test"], _options} = run_windows(config: config)
     end
 
-    test "prepends command args to other args" do
+    test "prepends command args to test args" do
       config = %Config{command: {"custom_command", ["--custom_arg"]}}
-      assert {_command, ["--custom_arg", "test", "--cover"], _options} = run_windows(args: ["--cover"], config: config)
+
+      assert {"custom_command", ["--custom_arg", "test", "--cover"], _options} =
+               run_windows(args: ["--cover"], config: config)
     end
   end
 
@@ -75,21 +75,21 @@ defmodule MixTestInteractive.PortRunnerTest do
     test "includes no-start flag in ansi command" do
       assert {_command, args, _options} = run_unix(args: ["--no-start"])
 
-      assert ["mix", "do", "run", "--no-start", "-e", _ansi, ",", "test", "--no-start"] = args
+      assert ["mix", "do", "run", "--no-start", "-e", _ansi, ",", "test"] = args
     end
 
     test "appends extra command-line arguments from settings" do
       {_command, args, _options} = run_unix(args: ["--cover"])
 
-      assert List.last(args) == "--cover"
+      assert ["mix", "do", "run", "-e", _ansi, ",", "test", "--cover"] = args
     end
 
     test "uses custom task" do
-      config = %Config{task: "custom"}
+      config = %Config{task: "custom_task"}
 
       {_command, args, _options} = run_unix(config: config)
 
-      assert List.last(args) == "custom"
+      assert ["mix", "do", "run", "-e", _ansi, ",", "custom_task"] = args
     end
 
     test "uses custom command with no args" do
@@ -97,8 +97,7 @@ defmodule MixTestInteractive.PortRunnerTest do
 
       {_command, args, _options} = run_unix(config: config)
 
-      assert List.first(args) == "custom_command"
-      assert List.last(args) == "test"
+      assert ["custom_command", "do", "run", "-e", _ansi, ",", "test"] = args
     end
 
     test "uses custom command with args" do
@@ -106,17 +105,15 @@ defmodule MixTestInteractive.PortRunnerTest do
 
       {_command, args, _options} = run_unix(config: config)
 
-      assert List.first(args) == "custom_command"
-      assert Enum.take(args, -2) == ["--custom_arg", "test"]
+      assert ["custom_command", "--custom_arg", "do", "run", "-e", _ansi, ",", "test"] = args
     end
 
-    test "prepends command args to other args" do
+    test "prepends command args to test args" do
       config = %Config{command: {"custom_command", ["--custom_arg"]}}
 
       {_command, args, _options} = run_unix(args: ["--cover"], config: config)
 
-      assert List.first(args) == "custom_command"
-      assert Enum.take(args, -3) == ["--custom_arg", "test", "--cover"]
+      assert ["custom_command", "--custom_arg", "do", "run", "-e", _ansi, ",", "test", "--cover"] = args
     end
   end
 end
