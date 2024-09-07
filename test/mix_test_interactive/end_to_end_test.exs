@@ -16,7 +16,7 @@ defmodule MixTestInteractive.EndToEndTest do
   end
 
   @config %Config{runner: DummyRunner}
-  @settings Settings.new([])
+  @settings %Settings{}
 
   setup do
     test_pid = self()

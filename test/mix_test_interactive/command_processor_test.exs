@@ -4,7 +4,7 @@ defmodule MixTestInteractive.CommandProcessorTest do
   alias MixTestInteractive.CommandProcessor
   alias MixTestInteractive.Settings
 
-  defp process_command(command, settings \\ Settings.new([])) do
+  defp process_command(command, settings \\ %Settings{}) do
     CommandProcessor.call(command, settings)
   end
 
@@ -18,55 +18,55 @@ defmodule MixTestInteractive.CommandProcessorTest do
     end
 
     test "Enter returns ok tuple" do
-      settings = Settings.new()
+      settings = %Settings{}
       assert {:ok, ^settings} = process_command("", settings)
     end
 
     test "p filters test files to those matching provided pattern" do
-      settings = Settings.new()
+      settings = %Settings{}
       expected = Settings.only_patterns(settings, ["pattern"])
 
       assert {:ok, ^expected} = process_command("p pattern", settings)
     end
 
     test "p a second time replaces patterns with new ones" do
-      settings = Settings.new()
-      {:ok, first_config} = process_command("p first", Settings.new())
+      settings = %Settings{}
+      {:ok, first_config} = process_command("p first", %Settings{})
       expected = Settings.only_patterns(settings, ["second"])
 
       assert {:ok, ^expected} = process_command("p second", first_config)
     end
 
     test "s runs only stale tests" do
-      settings = Settings.new()
+      settings = %Settings{}
       expected = Settings.only_stale(settings)
 
       assert {:ok, ^expected} = process_command("s", settings)
     end
 
     test "f runs only failed tests" do
-      settings = Settings.new()
+      settings = %Settings{}
       expected = Settings.only_failed(settings)
 
       assert {:ok, ^expected} = process_command("f", settings)
     end
 
     test "a runs all tests" do
-      {:ok, settings} = process_command("s", Settings.new())
+      {:ok, settings} = process_command("s", %Settings{})
       expected = Settings.all_tests(settings)
 
       assert {:ok, ^expected} = process_command("a", settings)
     end
 
     test "w toggles watch mode" do
-      settings = Settings.new()
+      settings = %Settings{}
       expected = Settings.toggle_watch_mode(settings)
 
       assert {:no_run, ^expected} = process_command("w", settings)
     end
 
     test "? returns :help" do
-      settings = Settings.new()
+      settings = %Settings{}
 
       assert :help = process_command("?", settings)
     end
@@ -78,28 +78,28 @@ defmodule MixTestInteractive.CommandProcessorTest do
 
   describe "usage information" do
     test "shows relevant commands when running all tests" do
-      settings = Settings.new()
+      settings = %Settings{}
 
       assert_commands(settings, ["p <patterns>", "s", "f"], ~w(a))
     end
 
     test "shows relevant commands when filtering by pattern" do
       settings =
-        Settings.only_patterns(Settings.new(), ["pattern"])
+        Settings.only_patterns(%Settings{}, ["pattern"])
 
       assert_commands(settings, ["p <patterns>", "s", "f", "a"], ~w(p))
     end
 
     test "shows relevant commands when running failed tests" do
       settings =
-        Settings.only_failed(Settings.new())
+        Settings.only_failed(%Settings{})
 
       assert_commands(settings, ["p <patterns>", "s", "a"], ~w(f))
     end
 
     test "shows relevant commands when running stale tests" do
       settings =
-        Settings.only_stale(Settings.new())
+        Settings.only_stale(%Settings{})
 
       assert_commands(settings, ["p <patterns>", "f", "a"], ~w(s))
     end
