@@ -58,6 +58,6 @@ defmodule MixTestInteractive.CommandLineParser do
       watching?: watching?
     }
 
-    {Config.new(), settings}
+    {Config.load_from_environment(), settings}
   end
 end

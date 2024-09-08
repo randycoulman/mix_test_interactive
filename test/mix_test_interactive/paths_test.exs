@@ -1,9 +1,8 @@
-defmodule MixTestInteractive.PathTest do
+defmodule MixTestInteractive.PathsTest do
   use ExUnit.Case
 
-  import MixTestInteractive.Paths, only: [watching?: 1, watching?: 2]
-
   alias MixTestInteractive.Config
+  alias MixTestInteractive.Paths
 
   test ".ex files are watched" do
     assert watching?("foo.ex")
@@ -77,5 +76,9 @@ defmodule MixTestInteractive.PathTest do
 
   test "app.ex is not excluded by migrations_.* pattern" do
     assert watching?("app.ex", %Config{exclude: [~r/migrations_.*/]})
+  end
+
+  defp watching?(path, config \\ %Config{}) do
+    Paths.watching?(path, config)
   end
 end

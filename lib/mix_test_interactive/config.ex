@@ -4,71 +4,53 @@ defmodule MixTestInteractive.Config do
   """
   use TypedStruct
 
-  alias MixTestInteractive.AppConfig
-
-  @default_clear false
-  @default_command {"mix", []}
-  @default_exclude [~r/\.#/, ~r{priv/repo/migrations}]
-  @default_extra_extensions []
-  @default_runner MixTestInteractive.PortRunner
-  @default_show_timestamp false
-  @default_task "test"
+  @application :mix_test_interactive
 
   typedstruct do
-    field :clear?, boolean, default: @default_clear
-    field :command, {String.t(), [String.t()]}, default: @default_command
-    field :exclude, [Regex.t()], default: @default_exclude
-    field :extra_extensions, [String.t()], default: @default_extra_extensions
-    field :runner, module(), default: @default_runner
-    field :show_timestamp?, boolean(), default: @default_show_timestamp
-    field :task, String.t(), default: @default_task
+    field :clear?, boolean, default: false
+    field :command, {String.t(), [String.t()]}, default: {"mix", []}
+    field :exclude, [Regex.t()], default: [~r/\.#/, ~r{priv/repo/migrations}]
+    field :extra_extensions, [String.t()], default: []
+    field :runner, module(), default: MixTestInteractive.PortRunner
+    field :show_timestamp?, boolean(), default: false
+    field :task, String.t(), default: "test"
   end
 
   @doc """
   Create a new config struct, taking values from the application environment.
   """
-  @spec new() :: t()
-  def new do
-    %__MODULE__{
-      clear?: get_clear(),
-      command: get_command(),
-      exclude: get_excluded(),
-      extra_extensions: get_extra_extensions(),
-      runner: get_runner(),
-      show_timestamp?: get_show_timestamp(),
-      task: get_task()
-    }
+  @spec load_from_environment() :: t()
+  def load_from_environment do
+    %__MODULE__{}
+    |> load(:clear, rename: :clear?)
+    |> load(:command, transform: &parse_command/1)
+    |> load(:exclude)
+    |> load(:extra_extensions)
+    |> load(:runner)
+    |> load(:timestamp, rename: :show_timestamp?)
+    |> load(:task)
   end
 
-  defp get_clear do
-    AppConfig.get(:clear, @default_clear)
-  end
+  defp load(%__MODULE__{} = config, app_key, opts \\ []) do
+    config_key = Keyword.get(opts, :rename, app_key)
+    transform = Keyword.get(opts, :transform, & &1)
 
-  defp get_command do
-    case AppConfig.get(:command, @default_command) do
-      {cmd, args} = command when is_binary(cmd) and is_list(args) -> command
-      command when is_binary(command) -> {command, []}
-      _invalid_command -> raise ArgumentError, "command must be a binary or a {command, [arg, ...]} tuple"
+    case config(app_key) do
+      {:ok, value} -> Map.put(config, config_key, transform.(value))
+      :error -> config
     end
   end
 
-  defp get_excluded do
-    AppConfig.get(:exclude, @default_exclude)
+  defp config(key) do
+    case ProcessTree.get(key) do
+      nil -> Application.fetch_env(@application, key)
+      value -> {:ok, value}
+    end
   end
 
-  defp get_extra_extensions do
-    AppConfig.get(:extra_extensions, @default_extra_extensions)
-  end
+  defp parse_command({cmd, args} = command) when is_binary(cmd) and is_list(args), do: command
+  defp parse_command(command) when is_binary(command), do: {command, []}
 
-  defp get_runner do
-    AppConfig.get(:runner, @default_runner)
-  end
-
-  defp get_show_timestamp do
-    AppConfig.get(:timestamp, @default_show_timestamp)
-  end
-
-  defp get_task do
-    AppConfig.get(:task, @default_task)
-  end
+  defp parse_command(_invalid_command),
+    do: raise(ArgumentError, "command must be a binary or a {command, [arg, ...]} tuple")
 end
