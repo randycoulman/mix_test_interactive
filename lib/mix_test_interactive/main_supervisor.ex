@@ -2,7 +2,6 @@ defmodule MixTestInteractive.MainSupervisor do
   @moduledoc false
   use Supervisor
 
-  alias MixTestInteractive.Config
   alias MixTestInteractive.InteractiveMode
   alias MixTestInteractive.Watcher
 
@@ -12,8 +11,8 @@ defmodule MixTestInteractive.MainSupervisor do
 
   @impl Supervisor
   def init(opts) do
+    config = Keyword.fetch!(opts, :config)
     settings = Keyword.fetch!(opts, :settings)
-    config = Config.new()
 
     children = [
       {InteractiveMode, config: config, settings: settings},

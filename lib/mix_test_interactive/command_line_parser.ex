@@ -3,6 +3,7 @@ defmodule MixTestInteractive.CommandLineParser do
 
   use TypedStruct
 
+  alias MixTestInteractive.Config
   alias MixTestInteractive.Settings
 
   @options [
@@ -41,7 +42,7 @@ defmodule MixTestInteractive.CommandLineParser do
     warnings_as_errors: :boolean
   ]
 
-  @spec parse([String.t()]) :: Settings.t()
+  @spec parse([String.t()]) :: {Config.t(), Settings.t()}
   def parse(cli_args \\ []) do
     {opts, patterns} = OptionParser.parse!(cli_args, switches: @options ++ @mix_test_options)
     no_patterns? = Enum.empty?(patterns)
@@ -49,12 +50,14 @@ defmodule MixTestInteractive.CommandLineParser do
     {stale?, opts} = Keyword.pop(opts, :stale, false)
     {watching?, opts} = Keyword.pop(opts, :watch, true)
 
-    %Settings{
+    settings = %Settings{
       failed?: no_patterns? && failed?,
       initial_cli_args: OptionParser.to_argv(opts),
       patterns: patterns,
       stale?: no_patterns? && !failed? && stale?,
       watching?: watching?
     }
+
+    {Config.new(), settings}
   end
 end

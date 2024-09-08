@@ -6,7 +6,6 @@ defmodule MixTestInteractive do
   alias MixTestInteractive.InitialSupervisor
   alias MixTestInteractive.InteractiveMode
   alias MixTestInteractive.MainSupervisor
-  alias MixTestInteractive.Settings
 
   @application :mix_test_interactive
 
@@ -14,10 +13,12 @@ defmodule MixTestInteractive do
   Start the interactive test runner.
   """
   def run(args \\ []) when is_list(args) do
-    %Settings{} = settings = CommandLineParser.parse(args)
+    {config, settings} = CommandLineParser.parse(args)
 
     {:ok, _} = Application.ensure_all_started(@application)
-    {:ok, _supervisor} = DynamicSupervisor.start_child(InitialSupervisor, {MainSupervisor, settings: settings})
+
+    {:ok, _supervisor} =
+      DynamicSupervisor.start_child(InitialSupervisor, {MainSupervisor, config: config, settings: settings})
 
     loop()
   end
