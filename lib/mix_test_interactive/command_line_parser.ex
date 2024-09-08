@@ -25,6 +25,7 @@ defmodule MixTestInteractive.CommandLineParser do
   @mix_test_options [
     all_warnings: :boolean,
     archives_check: :boolean,
+    breakpoints: :boolean,
     color: :boolean,
     compile: :boolean,
     cover: :boolean,
@@ -45,13 +46,19 @@ defmodule MixTestInteractive.CommandLineParser do
     preload_modules: :boolean,
     profile_require: :string,
     raise: :boolean,
+    repeat_until_failure: :integer,
     seed: :integer,
     slowest: :integer,
+    slowest_modules: :integer,
     stale: :boolean,
     start: :boolean,
     timeout: :integer,
     trace: :boolean,
     warnings_as_errors: :boolean
+  ]
+
+  @mix_test_aliases [
+    b: :breakpoints
   ]
 
   @spec parse([String.t()]) :: {Config.t(), Settings.t()}
@@ -70,7 +77,10 @@ defmodule MixTestInteractive.CommandLineParser do
       end
 
     {mix_test_opts, patterns} =
-      OptionParser.parse!(mix_test_args, switches: @deprecated_combined_options ++ @mix_test_options)
+      OptionParser.parse!(mix_test_args,
+        aliases: @mix_test_aliases,
+        switches: @deprecated_combined_options ++ @mix_test_options
+      )
 
     {mti_opts, mix_test_opts} = check_for_deprecated_watch_option(mti_opts, mix_test_opts)
     config = build_config(mti_opts)
