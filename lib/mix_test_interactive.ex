@@ -13,14 +13,20 @@ defmodule MixTestInteractive do
   Start the interactive test runner.
   """
   def run(args \\ []) when is_list(args) do
-    {config, settings} = CommandLineParser.parse(args)
+    case CommandLineParser.parse(args) do
+      {:ok, %{config: config, settings: settings}} ->
+        {:ok, _} = Application.ensure_all_started(@application)
 
-    {:ok, _} = Application.ensure_all_started(@application)
+        {:ok, _supervisor} =
+          DynamicSupervisor.start_child(InitialSupervisor, {MainSupervisor, config: config, settings: settings})
 
-    {:ok, _supervisor} =
-      DynamicSupervisor.start_child(InitialSupervisor, {MainSupervisor, config: config, settings: settings})
+        loop()
 
-    loop()
+      {:error, error} ->
+        IO.puts(:standard_error, Exception.message(error))
+        IO.puts("")
+        IO.puts(CommandLineParser.usage_message())
+    end
   end
 
   defp loop do

@@ -3,6 +3,7 @@ defmodule MixTestInteractive.CommandLineParserTest do
 
   alias MixTestInteractive.CommandLineParser
   alias MixTestInteractive.Config
+  alias OptionParser.ParseError
 
   defmodule CustomRunner do
     @moduledoc false
@@ -15,49 +16,49 @@ defmodule MixTestInteractive.CommandLineParserTest do
 
   describe "mix test.interactive options" do
     test "retains original defaults when no options" do
-      {config, _settings} = CommandLineParser.parse([])
+      {:ok, %{config: config}} = CommandLineParser.parse([])
       assert config == %Config{}
     end
 
     test "sets clear? flag with --clear" do
-      {config, _settings} = CommandLineParser.parse(["--clear"])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--clear"])
       assert config.clear?
     end
 
     test "clears clear? flag with --no-clear" do
-      {config, _settings} = CommandLineParser.parse(["--no-clear"])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--no-clear"])
       refute config.clear?
     end
 
     test "configures custom command with --command" do
-      {config, _settings} = CommandLineParser.parse(["--command", "custom_command"])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--command", "custom_command"])
       assert config.command == {"custom_command", []}
     end
 
     test "configures custom command with single argument with --command and --arg" do
-      {config, _settings} = CommandLineParser.parse(["--command", "custom_command", "--arg", "custom_arg"])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--command", "custom_command", "--arg", "custom_arg"])
       assert config.command == {"custom_command", ["custom_arg"]}
     end
 
     test "configures custom command with multiple arguments with --command and repeated --arg options" do
-      {config, _settings} =
+      {:ok, %{config: config}} =
         CommandLineParser.parse(["--command", "custom_command", "--arg", "custom_arg1", "--arg", "custom_arg2"])
 
       assert config.command == {"custom_command", ["custom_arg1", "custom_arg2"]}
     end
 
     test "ignores custom command arguments if command is not specified" do
-      {config, _settings} = CommandLineParser.parse(["--arg", "arg_with_missing_command"])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--arg", "arg_with_missing_command"])
       assert config.command == %Config{}.command
     end
 
     test "configures watch exclusions with --exclude" do
-      {config, _settings} = CommandLineParser.parse(["--exclude", "~$"])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--exclude", "~$"])
       assert config.exclude == [~r/~$/]
     end
 
     test "configures multiple watch exclusions with repeated --exclude options" do
-      {config, _settings} = CommandLineParser.parse(["--exclude", "~$", "--exclude", "\.secret\.exs"])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--exclude", "~$", "--exclude", "\.secret\.exs"])
       assert config.exclude == [~r/~$/, ~r/.secret.exs/]
     end
 
@@ -68,17 +69,17 @@ defmodule MixTestInteractive.CommandLineParserTest do
     end
 
     test "configures additional extensions to watch with --extra-extensions" do
-      {config, _settings} = CommandLineParser.parse(["--extra-extensions", "md"])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--extra-extensions", "md"])
       assert config.extra_extensions == ["md"]
     end
 
     test "configures multiple additional extensions to watch with repeated --extra-extensions options" do
-      {config, _settings} = CommandLineParser.parse(["--extra-extensions", "md", "--extra-extensions", "json"])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--extra-extensions", "md", "--extra-extensions", "json"])
       assert config.extra_extensions == ["md", "json"]
     end
 
     test "configures custom runner module with --runner" do
-      {config, _setting} = CommandLineParser.parse(["--runner", inspect(CustomRunner)])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--runner", inspect(CustomRunner)])
       assert config.runner == CustomRunner
     end
 
@@ -95,39 +96,39 @@ defmodule MixTestInteractive.CommandLineParserTest do
     end
 
     test "sets show_timestamp? flag with --timestamp" do
-      {config, _settings} = CommandLineParser.parse(["--timestamp"])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--timestamp"])
       assert config.show_timestamp?
     end
 
     test "clears show_timestamp? flag with --no-timestamp" do
-      {config, _settings} = CommandLineParser.parse(["--no-timestamp"])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--no-timestamp"])
       refute config.show_timestamp?
     end
 
     test "configures custom mix task with --task" do
-      {config, _settings} = CommandLineParser.parse(["--task", "custom_task"])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--task", "custom_task"])
       assert config.task == "custom_task"
     end
 
     test "initially enables watch mode with --watch flag" do
-      {_config, settings} = CommandLineParser.parse(["--watch"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--watch"])
       assert settings.watching?
     end
 
     test "initially disables watch mode with --no-watch flag" do
-      {_config, settings} = CommandLineParser.parse(["--no-watch"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--no-watch"])
       refute settings.watching?
     end
 
     test "does not pass mti options to mix test" do
-      {_config, settings} =
+      {:ok, %{settings: settings}} =
         CommandLineParser.parse([
           "--clear",
           "--no-clear",
           "--command",
           "custom_command",
           "--arg",
-          "--custom_arg",
+          "custom_arg",
           "--exclude",
           "~$",
           "--extra-extensions",
@@ -146,47 +147,47 @@ defmodule MixTestInteractive.CommandLineParserTest do
 
   describe "mix test arguments" do
     test "records initial `mix test` arguments" do
-      {_config, settings} = CommandLineParser.parse(["--trace", "--raise"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--trace", "--raise"])
       assert settings.initial_cli_args == ["--trace", "--raise"]
     end
 
     test "records no `mix test` arguments by default" do
-      {_config, settings} = CommandLineParser.parse()
+      {:ok, %{settings: settings}} = CommandLineParser.parse()
       assert settings.initial_cli_args == []
     end
 
     test "omits unknown arguments" do
-      {_config, settings} = CommandLineParser.parse(["--unknown-arg"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--unknown-arg"])
 
       assert settings.initial_cli_args == []
     end
 
     test "extracts stale setting from arguments" do
-      {_config, settings} = CommandLineParser.parse(["--trace", "--stale", "--raise"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--trace", "--stale", "--raise"])
       assert settings.stale?
       assert settings.initial_cli_args == ["--trace", "--raise"]
     end
 
     test "extracts failed flag from arguments" do
-      {_config, settings} = CommandLineParser.parse(["--trace", "--failed", "--raise"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--trace", "--failed", "--raise"])
       assert settings.failed?
       assert settings.initial_cli_args == ["--trace", "--raise"]
     end
 
     test "extracts patterns from arguments" do
-      {_config, settings} = CommandLineParser.parse(["pattern1", "--trace", "pattern2"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["pattern1", "--trace", "pattern2"])
       assert settings.patterns == ["pattern1", "pattern2"]
       assert settings.initial_cli_args == ["--trace"]
     end
 
     test "failed takes precedence over stale" do
-      {_config, settings} = CommandLineParser.parse(["--failed", "--stale"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--failed", "--stale"])
       refute settings.stale?
       assert settings.failed?
     end
 
     test "patterns take precedence over stale/failed flags" do
-      {_config, settings} = CommandLineParser.parse(["--failed", "--stale", "pattern"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--failed", "--stale", "pattern"])
       assert settings.patterns == ["pattern"]
       refute settings.failed?
       refute settings.stale?
@@ -196,42 +197,40 @@ defmodule MixTestInteractive.CommandLineParserTest do
 
   describe "passing both mix test.interactive (mti) and mix test arguments" do
     test "process arguments for mti and mix test separately" do
-      {config, settings} = CommandLineParser.parse(["--clear", "--", "--stale"])
+      {:ok, %{config: config, settings: settings}} = CommandLineParser.parse(["--clear", "--", "--stale"])
       assert config.clear?
       assert settings.stale?
     end
 
     test "handles mti and mix test options with the same name" do
-      {config, settings} = CommandLineParser.parse(["--exclude", "~$", "--", "--exclude", "integration"])
+      {:ok, %{config: config, settings: settings}} =
+        CommandLineParser.parse(["--exclude", "~$", "--", "--exclude", "integration"])
+
       assert config.exclude == [~r/~$/]
       assert settings.initial_cli_args == ["--exclude", "integration"]
     end
 
     test "requires -- separator to distinguish the sets of arguments" do
-      {config, settings} = CommandLineParser.parse(["--clear", "--stale"])
-      assert config.clear?
-      refute settings.stale?
+      assert {:error, %ParseError{}} = CommandLineParser.parse(["--clear", "--stale"])
     end
 
     test "handles mix test options with leading `--` separator" do
-      {_config, settings} = CommandLineParser.parse(["--", "--stale"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--", "--stale"])
       assert settings.stale?
     end
 
     test "ignores --{no-}watch if specified in mix test options" do
-      {_config, settings} = CommandLineParser.parse(["--", "--no-watch"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--", "--no-watch"])
 
       assert settings.watching?
     end
 
-    test "omits unknown options before --" do
-      {_config, settings} = CommandLineParser.parse(["--unknown-arg", "--", "--stale"])
-
-      assert settings.stale?
+    test "fails with unknown options before --" do
+      assert {:error, %ParseError{}} = CommandLineParser.parse(["--unknown-arg", "--", "--stale"])
     end
 
     test "omits unknown options after --" do
-      {config, _settings} = CommandLineParser.parse(["--clear", "--", "--unknown-arg"])
+      {:ok, %{config: config}} = CommandLineParser.parse(["--clear", "--", "--unknown-arg"])
 
       assert config.clear?
     end

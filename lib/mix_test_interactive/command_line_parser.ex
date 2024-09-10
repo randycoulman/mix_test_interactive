@@ -5,6 +5,7 @@ defmodule MixTestInteractive.CommandLineParser do
 
   alias MixTestInteractive.Config
   alias MixTestInteractive.Settings
+  alias OptionParser.ParseError
 
   @options [
     arg: :keep,
@@ -17,6 +18,29 @@ defmodule MixTestInteractive.CommandLineParser do
     timestamp: :boolean,
     watch: :boolean
   ]
+
+  @usage """
+  Usage: mix_test_interactive <mti args> [-- <mix test args>]
+     or: mix_test_interactive <mix test args>
+
+  where:
+    <mti_args>:
+      --(no-)clear: Clear the console before each run (default `false`)
+      --command <command>/--arg <arg>: Custom command and arguments for running tests
+          (default: `"mix"` with no args)
+        NOTE: Use `--arg` multiple times to specify more than one argument
+      --exclude <regex>: Exclude files/directories from triggering test runs
+          (default: `--exclude "~r/\.#/" --exclude "~r{priv/repo/migrations}"`)
+        NOTE: Use `--exclude` multiple times to specify more than one regex
+      --extra-extensions <extension>: Watch files with additional extensions (default: [])
+        NOTE: Use `--extra-extensions` multiple times to specify more than one extension.
+      --runner <module name>: Use a custom runner module (default: `MixTestInteractive.PortRunner`)
+      --task <task name>: Run a different mix task (default: `"test"`)
+      --(no-)timestamp: Display the current time before running the tests (default: `false`)
+      --(no-)watch: Run tests when a watched file changes (default: `true`)
+
+    <mix_test_args>: any arguments accepted by `mix test`
+  """
 
   @mix_test_options [
     all_warnings: :boolean,
@@ -57,29 +81,19 @@ defmodule MixTestInteractive.CommandLineParser do
     b: :breakpoints
   ]
 
-  @spec parse([String.t()]) :: {Config.t(), Settings.t()}
+  @spec parse([String.t()]) :: {:ok, Config.t(), Settings.t()} | {:error, Exception.t()}
   def parse(cli_args \\ []) do
-    {mti_args, rest_args} = Enum.split_while(cli_args, &(&1 != "--"))
-    {mti_opts, _args, _invalid} = OptionParser.parse(mti_args, strict: @options)
+    with {:ok, mti_opts, mix_test_args} <- parse_mti_args(cli_args),
+         {:ok, mix_test_opts, patterns} <- parse_mix_test_args(mix_test_args) do
+      config = build_config(mti_opts)
+      settings = build_settings(mti_opts, mix_test_opts, patterns)
 
-    mix_test_args =
-      if rest_args == [] and mti_opts == [] do
-        # There was no separator, and none of the arguments were recognized by
-        # mix_test_interactive, so assume that they are all intended for mix
-        # test for convenience and backwards-compatibility.
-        mti_args
-      else
-        remove_leading_separator(rest_args)
-      end
-
-    {mix_test_opts, patterns} =
-      OptionParser.parse!(mix_test_args, aliases: @mix_test_aliases, switches: @mix_test_options)
-
-    config = build_config(mti_opts)
-    settings = build_settings(mti_opts, mix_test_opts, patterns)
-
-    {config, settings}
+      {:ok, %{config: config, settings: settings}}
+    end
   end
+
+  @spec usage_message :: String.t()
+  def usage_message, do: @usage
 
   defp build_config(mti_opts) do
     mti_opts
@@ -141,6 +155,49 @@ defmodule MixTestInteractive.CommandLineParser do
     end
   end
 
-  defp remove_leading_separator([]), do: []
-  defp remove_leading_separator(["--" | args]), do: args
+  defp parse_mix_test_args(mix_test_args) do
+    {mix_test_opts, patterns} =
+      OptionParser.parse!(mix_test_args, aliases: @mix_test_aliases, switches: @mix_test_options)
+
+    {:ok, mix_test_opts, patterns}
+  rescue
+    error in ParseError ->
+      {:error, error}
+  end
+
+  defp parse_mti_args(cli_args) do
+    case Enum.find_index(cli_args, &(&1 == "--")) do
+      nil ->
+        case try_parse_as_mti_args(cli_args) do
+          {:ok, mti_opts} -> {:ok, mti_opts, []}
+          {:error, :try_as_mix_test_args} -> {:ok, [], cli_args}
+          {:error, error} -> {:error, error}
+        end
+
+      index ->
+        mti_args = Enum.take(cli_args, index)
+
+        with {:ok, mti_opts} <- parse_as_mti_args(mti_args) do
+          mix_test_args = Enum.drop(cli_args, index + 1)
+          {:ok, mti_opts, mix_test_args}
+        end
+    end
+  end
+
+  defp parse_as_mti_args(args) do
+    {mti_opts, _args} = OptionParser.parse!(args, strict: @options)
+    {:ok, mti_opts}
+  rescue
+    error in ParseError -> {:error, error}
+  end
+
+  defp try_parse_as_mti_args(args) do
+    {mti_opts, _args, invalid} = OptionParser.parse(args, strict: @options)
+
+    cond do
+      invalid == [] -> {:ok, mti_opts}
+      mti_opts == [] -> {:error, :try_as_mix_test_args}
+      true -> parse_as_mti_args(args)
+    end
+  end
 end
