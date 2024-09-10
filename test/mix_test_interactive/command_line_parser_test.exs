@@ -63,9 +63,7 @@ defmodule MixTestInteractive.CommandLineParserTest do
     end
 
     test "fails if watch exclusion is an invalid Regex" do
-      assert_raise Regex.CompileError, fn ->
-        CommandLineParser.parse(["--exclude", "[A-Za-z"])
-      end
+      assert {:error, %Regex.CompileError{}} = CommandLineParser.parse(["--exclude", "[A-Za-z"])
     end
 
     test "configures additional extensions to watch with --extra-extensions" do
@@ -84,15 +82,11 @@ defmodule MixTestInteractive.CommandLineParserTest do
     end
 
     test "fails if custom runner doesn't have a run function" do
-      assert_raise ArgumentError, fn ->
-        CommandLineParser.parse(["--runner", inspect(NotARunner)])
-      end
+      assert {:error, %ArgumentError{}} = CommandLineParser.parse(["--runner", inspect(NotARunner)])
     end
 
     test "fails if custom runner module doesn't exist" do
-      assert_raise ArgumentError, fn ->
-        CommandLineParser.parse(["--runner", "NotAModule"])
-      end
+      assert {:error, %ArgumentError{}} = CommandLineParser.parse(["--runner", "NotAModule"])
     end
 
     test "sets show_timestamp? flag with --timestamp" do

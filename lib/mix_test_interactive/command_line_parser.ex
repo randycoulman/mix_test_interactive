@@ -84,8 +84,8 @@ defmodule MixTestInteractive.CommandLineParser do
   @spec parse([String.t()]) :: {:ok, Config.t(), Settings.t()} | {:error, Exception.t()}
   def parse(cli_args \\ []) do
     with {:ok, mti_opts, mix_test_args} <- parse_mti_args(cli_args),
-         {:ok, mix_test_opts, patterns} <- parse_mix_test_args(mix_test_args) do
-      config = build_config(mti_opts)
+         {:ok, mix_test_opts, patterns} <- parse_mix_test_args(mix_test_args),
+         {:ok, config} <- build_config(mti_opts) do
       settings = build_settings(mti_opts, mix_test_opts, patterns)
 
       {:ok, %{config: config, settings: settings}}
@@ -96,17 +96,23 @@ defmodule MixTestInteractive.CommandLineParser do
   def usage_message, do: @usage
 
   defp build_config(mti_opts) do
-    mti_opts
-    |> Enum.reduce(Config.load_from_environment(), fn
-      {:clear, clear?}, config -> %{config | clear?: clear?}
-      {:runner, runner}, config -> %{config | runner: ensure_valid_runner(runner)}
-      {:timestamp, show_timestamp?}, config -> %{config | show_timestamp?: show_timestamp?}
-      {:task, task}, config -> %{config | task: task}
-      _pair, config -> config
-    end)
-    |> add_custom_command(mti_opts)
-    |> add_excludes(mti_opts)
-    |> add_extra_extensions(mti_opts)
+    config =
+      mti_opts
+      |> Enum.reduce(Config.load_from_environment(), fn
+        {:clear, clear?}, config -> %{config | clear?: clear?}
+        {:runner, runner}, config -> %{config | runner: ensure_valid_runner(runner)}
+        {:timestamp, show_timestamp?}, config -> %{config | show_timestamp?: show_timestamp?}
+        {:task, task}, config -> %{config | task: task}
+        _pair, config -> config
+      end)
+      |> add_custom_command(mti_opts)
+      |> add_excludes(mti_opts)
+      |> add_extra_extensions(mti_opts)
+
+    {:ok, config}
+  rescue
+    error ->
+      {:error, error}
   end
 
   defp add_custom_command(%Config{} = config, mti_opts) do
