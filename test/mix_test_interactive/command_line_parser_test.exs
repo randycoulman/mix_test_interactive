@@ -1,8 +1,6 @@
 defmodule MixTestInteractive.CommandLineParserTest do
   use ExUnit.Case, async: true
 
-  import ExUnit.CaptureIO
-
   alias MixTestInteractive.CommandLineParser
   alias MixTestInteractive.Config
 
@@ -220,24 +218,10 @@ defmodule MixTestInteractive.CommandLineParserTest do
       assert settings.stale?
     end
 
-    test "displays deprecation warning if --{no-}watch specified in mix test options" do
-      {{_config, settings}, output} =
-        with_io(:stderr, fn ->
-          CommandLineParser.parse(["--", "--no-watch"])
-        end)
+    test "ignores --{no-}watch if specified in mix test options" do
+      {_config, settings} = CommandLineParser.parse(["--", "--no-watch"])
 
-      assert output =~ "DEPRECATION WARNING"
-      refute settings.watching?
-    end
-
-    test "watch flag from mti options takes precedence over the flag from mix test options, but still displays deprecation warning" do
-      {{_config, settings}, output} =
-        with_io(:stderr, fn ->
-          CommandLineParser.parse(["--no-watch", "--", "--watch"])
-        end)
-
-      assert output =~ "DEPRECATION WARNING"
-      refute settings.watching?
+      assert settings.watching?
     end
 
     test "omits unknown options before --" do

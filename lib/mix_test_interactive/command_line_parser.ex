@@ -18,10 +18,6 @@ defmodule MixTestInteractive.CommandLineParser do
     watch: :boolean
   ]
 
-  @deprecated_combined_options [
-    watch: :boolean
-  ]
-
   @mix_test_options [
     all_warnings: :boolean,
     archives_check: :boolean,
@@ -77,12 +73,8 @@ defmodule MixTestInteractive.CommandLineParser do
       end
 
     {mix_test_opts, patterns} =
-      OptionParser.parse!(mix_test_args,
-        aliases: @mix_test_aliases,
-        switches: @deprecated_combined_options ++ @mix_test_options
-      )
+      OptionParser.parse!(mix_test_args, aliases: @mix_test_aliases, switches: @mix_test_options)
 
-    {mti_opts, mix_test_opts} = check_for_deprecated_watch_option(mti_opts, mix_test_opts)
     config = build_config(mti_opts)
     settings = build_settings(mti_opts, mix_test_opts, patterns)
 
@@ -137,22 +129,6 @@ defmodule MixTestInteractive.CommandLineParser do
       stale?: no_patterns? && !failed? && stale?,
       watching?: watching?
     }
-  end
-
-  defp check_for_deprecated_watch_option(mti_opts, mix_test_opts) do
-    case Keyword.pop(mix_test_opts, :watch, :not_found) do
-      {:not_found, opts} ->
-        {mti_opts, opts}
-
-      {value, opts} ->
-        IO.puts(:stderr, """
-        DEPRECATION WARNING: The `--watch` and `--no-watch` options must
-        now be separated from other `mix test` options using the `--` separator
-          e.g.: `mix test.interactive --no-watch -- --stale`
-        """)
-
-        {Keyword.put_new(mti_opts, :watch, value), opts}
-    end
   end
 
   defp ensure_valid_runner(runner) do
