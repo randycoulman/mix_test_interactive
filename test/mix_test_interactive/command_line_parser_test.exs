@@ -2,8 +2,8 @@ defmodule MixTestInteractive.CommandLineParserTest do
   use ExUnit.Case, async: true
 
   alias MixTestInteractive.CommandLineParser
+  alias MixTestInteractive.CommandLineParser.UsageError
   alias MixTestInteractive.Config
-  alias OptionParser.ParseError
 
   defmodule CustomRunner do
     @moduledoc false
@@ -63,7 +63,7 @@ defmodule MixTestInteractive.CommandLineParserTest do
     end
 
     test "fails if watch exclusion is an invalid Regex" do
-      assert {:error, %Regex.CompileError{}} = CommandLineParser.parse(["--exclude", "[A-Za-z"])
+      assert {:error, %UsageError{}} = CommandLineParser.parse(["--exclude", "[A-Za-z"])
     end
 
     test "configures additional extensions to watch with --extra-extensions" do
@@ -82,11 +82,11 @@ defmodule MixTestInteractive.CommandLineParserTest do
     end
 
     test "fails if custom runner doesn't have a run function" do
-      assert {:error, %ArgumentError{}} = CommandLineParser.parse(["--runner", inspect(NotARunner)])
+      assert {:error, %UsageError{}} = CommandLineParser.parse(["--runner", inspect(NotARunner)])
     end
 
     test "fails if custom runner module doesn't exist" do
-      assert {:error, %ArgumentError{}} = CommandLineParser.parse(["--runner", "NotAModule"])
+      assert {:error, %UsageError{}} = CommandLineParser.parse(["--runner", "NotAModule"])
     end
 
     test "sets show_timestamp? flag with --timestamp" do
@@ -205,7 +205,7 @@ defmodule MixTestInteractive.CommandLineParserTest do
     end
 
     test "requires -- separator to distinguish the sets of arguments" do
-      assert {:error, %ParseError{}} = CommandLineParser.parse(["--clear", "--stale"])
+      assert {:error, %UsageError{}} = CommandLineParser.parse(["--clear", "--stale"])
     end
 
     test "handles mix test options with leading `--` separator" do
@@ -220,7 +220,7 @@ defmodule MixTestInteractive.CommandLineParserTest do
     end
 
     test "fails with unknown options before --" do
-      assert {:error, %ParseError{}} = CommandLineParser.parse(["--unknown-arg", "--", "--stale"])
+      assert {:error, %UsageError{}} = CommandLineParser.parse(["--unknown-arg", "--", "--stale"])
     end
 
     test "omits unknown options after --" do

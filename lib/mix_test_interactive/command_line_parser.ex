@@ -7,6 +7,21 @@ defmodule MixTestInteractive.CommandLineParser do
   alias MixTestInteractive.Settings
   alias OptionParser.ParseError
 
+  defmodule UsageError do
+    @moduledoc false
+    defexception [:message]
+
+    @type t :: %__MODULE__{
+            message: String.t()
+          }
+
+    def exception(other) when is_exception(other) do
+      exception(Exception.message(other))
+    end
+
+    def exception(opts), do: super(opts)
+  end
+
   @options [
     arg: :keep,
     clear: :boolean,
@@ -93,7 +108,7 @@ defmodule MixTestInteractive.CommandLineParser do
     b: :breakpoints
   ]
 
-  @spec parse([String.t()]) :: {:ok, %{config: Config.t(), settings: Settings.t()}} | {:error, Exception.t()}
+  @spec parse([String.t()]) :: {:ok, %{config: Config.t(), settings: Settings.t()}} | {:error, UsageError.t()}
   def parse(cli_args \\ []) do
     with {:ok, mti_opts, mix_test_args} <- parse_mti_args(cli_args),
          {:ok, mix_test_opts, patterns} <- parse_mix_test_args(mix_test_args),
@@ -124,7 +139,7 @@ defmodule MixTestInteractive.CommandLineParser do
     {:ok, config}
   rescue
     error ->
-      {:error, error}
+      {:error, UsageError.exception(error)}
   end
 
   defp add_custom_command(%Config{} = config, mti_opts) do
@@ -180,7 +195,7 @@ defmodule MixTestInteractive.CommandLineParser do
     {:ok, mix_test_opts, patterns}
   rescue
     error in ParseError ->
-      {:error, error}
+      {:error, UsageError.exception(error)}
   end
 
   defp parse_mti_args(cli_args) do
@@ -206,7 +221,7 @@ defmodule MixTestInteractive.CommandLineParser do
     {mti_opts, _args} = OptionParser.parse!(args, strict: @options)
     {:ok, mti_opts}
   rescue
-    error in ParseError -> {:error, error}
+    error in ParseError -> {:error, UsageError.exception(error)}
   end
 
   defp try_parse_as_mti_args(args) do
