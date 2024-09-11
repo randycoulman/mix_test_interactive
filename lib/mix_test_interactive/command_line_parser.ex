@@ -127,39 +127,22 @@ defmodule MixTestInteractive.CommandLineParser do
       mti_opts
       |> Enum.reduce(Config.load_from_environment(), fn
         {:clear, clear?}, config -> %{config | clear?: clear?}
-        {:runner, runner}, config -> %{config | runner: ensure_valid_runner(runner)}
+        {:exclude, excludes}, config -> %{config | exclude: excludes}
+        {:extra_extensions, extra_extensions}, config -> %{config | extra_extensions: extra_extensions}
+        {:runner, runner}, config -> %{config | runner: runner}
         {:timestamp, show_timestamp?}, config -> %{config | show_timestamp?: show_timestamp?}
         {:task, task}, config -> %{config | task: task}
         _pair, config -> config
       end)
-      |> add_custom_command(mti_opts)
-      |> add_excludes(mti_opts)
-      |> add_extra_extensions(mti_opts)
+      |> handle_custom_command(mti_opts)
 
     {:ok, config}
-  rescue
-    error ->
-      {:error, UsageError.exception(error)}
   end
 
-  defp add_custom_command(%Config{} = config, mti_opts) do
+  defp handle_custom_command(%Config{} = config, mti_opts) do
     case Keyword.fetch(mti_opts, :command) do
-      {:ok, command} -> %{config | command: {command, Keyword.get_values(mti_opts, :arg)}}
+      {:ok, command} -> %{config | command: {command, Keyword.get(mti_opts, :arg, [])}}
       :error -> config
-    end
-  end
-
-  defp add_excludes(%Config{} = config, mti_opts) do
-    case Keyword.get_values(mti_opts, :exclude) do
-      [] -> config
-      excludes -> %{config | exclude: Enum.map(excludes, &Regex.compile!/1)}
-    end
-  end
-
-  defp add_extra_extensions(%Config{} = config, mti_opts) do
-    case Keyword.get_values(mti_opts, :extra_extensions) do
-      [] -> config
-      extensions -> %{config | extra_extensions: extensions}
     end
   end
 
@@ -178,46 +161,40 @@ defmodule MixTestInteractive.CommandLineParser do
     }
   end
 
-  defp ensure_valid_runner(runner) do
-    module = runner |> String.split(".") |> Module.concat()
-
-    if function_exported?(module, :run, 2) do
-      module
-    else
-      raise ArgumentError, message: "--runner must name a module that implements a `run/2` function"
-    end
-  end
-
   defp parse_mix_test_args(mix_test_args) do
     {mix_test_opts, patterns} =
       OptionParser.parse!(mix_test_args, aliases: @mix_test_aliases, switches: @mix_test_options)
 
     {:ok, mix_test_opts, patterns}
-  rescue
-    error in ParseError ->
-      {:error, UsageError.exception(error)}
   end
 
   defp parse_mti_args(cli_args) do
+    with {:ok, mti_opts, mix_test_args} <- parse_mti_args_raw(cli_args),
+         {:ok, parsed} <- parse_mti_option_values(mti_opts) do
+      {:ok, combine_multiples(parsed), mix_test_args}
+    end
+  end
+
+  defp parse_mti_args_raw(cli_args) do
     case Enum.find_index(cli_args, &(&1 == "--")) do
       nil ->
         case try_parse_as_mti_args(cli_args) do
           {:ok, mti_opts} -> {:ok, mti_opts, []}
-          {:error, :try_as_mix_test_args} -> {:ok, [], cli_args}
+          {:error, :maybe_mix_test_args} -> {:ok, [], cli_args}
           {:error, error} -> {:error, error}
         end
 
       index ->
         mti_args = Enum.take(cli_args, index)
 
-        with {:ok, mti_opts} <- parse_as_mti_args(mti_args) do
+        with {:ok, mti_opts} <- force_parse_as_mti_args(mti_args) do
           mix_test_args = Enum.drop(cli_args, index + 1)
           {:ok, mti_opts, mix_test_args}
         end
     end
   end
 
-  defp parse_as_mti_args(args) do
+  defp force_parse_as_mti_args(args) do
     {mti_opts, _args} = OptionParser.parse!(args, strict: @options)
     {:ok, mti_opts}
   rescue
@@ -229,8 +206,44 @@ defmodule MixTestInteractive.CommandLineParser do
 
     cond do
       invalid == [] -> {:ok, mti_opts}
-      mti_opts == [] -> {:error, :try_as_mix_test_args}
-      true -> parse_as_mti_args(args)
+      mti_opts == [] -> {:error, :maybe_mix_test_args}
+      true -> force_parse_as_mti_args(args)
     end
+  end
+
+  defp parse_mti_option_values(mti_opts) do
+    {:ok, Enum.map(mti_opts, &parse_one_option_value!/1)}
+  rescue
+    error in UsageError -> {:error, error}
+  end
+
+  defp parse_one_option_value!({:exclude, exclude}) do
+    {:exclude, Regex.compile!(exclude)}
+  rescue
+    error ->
+      raise UsageError, "--exclude '#{exclude}': #{Exception.message(error)}"
+  end
+
+  defp parse_one_option_value!({:runner, runner}) do
+    module = runner |> String.split(".") |> Module.concat()
+
+    if function_exported?(module, :run, 2) do
+      {:runner, module}
+    else
+      raise UsageError, message: "--runner: '#{runner}' must name a module that implements a `run/2` function"
+    end
+  end
+
+  defp parse_one_option_value!(option), do: option
+
+  defp combine_multiples(mti_opts) do
+    @options
+    |> Enum.filter(fn {_name, type} -> type == :keep end)
+    |> Enum.reduce(mti_opts, fn {name, _type}, acc ->
+      case Keyword.pop_values(acc, name) do
+        {[], _new_opts} -> acc
+        {values, new_opts} -> Keyword.put(new_opts, name, values)
+      end
+    end)
   end
 end
