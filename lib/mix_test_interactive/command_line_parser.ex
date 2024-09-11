@@ -20,26 +20,38 @@ defmodule MixTestInteractive.CommandLineParser do
   ]
 
   @usage """
-  Usage: mix_test_interactive <mti args> [-- <mix test args>]
-     or: mix_test_interactive <mix test args>
+  Usage:
+    mix_test_interactive <mti args> [-- <mix test args>]
+    mix_test_interactive <mix test args>
 
   where:
     <mti_args>:
-      --(no-)clear: Clear the console before each run (default `false`)
-      --command <command>/--arg <arg>: Custom command and arguments for running tests
-          (default: `"mix"` with no args)
-        NOTE: Use `--arg` multiple times to specify more than one argument
-      --exclude <regex>: Exclude files/directories from triggering test runs
-          (default: `--exclude "~r/\.#/" --exclude "~r{priv/repo/migrations}"`)
-        NOTE: Use `--exclude` multiple times to specify more than one regex
-      --extra-extensions <extension>: Watch files with additional extensions (default: [])
-        NOTE: Use `--extra-extensions` multiple times to specify more than one extension.
-      --runner <module name>: Use a custom runner module (default: `MixTestInteractive.PortRunner`)
-      --task <task name>: Run a different mix task (default: `"test"`)
-      --(no-)timestamp: Display the current time before running the tests (default: `false`)
-      --(no-)watch: Run tests when a watched file changes (default: `true`)
+      --(no-)clear                    Clear the console before each run
+                                      (default `false`)
+      --command <command>/
+      --arg <arg>                     Custom command and arguments for running
+                                      tests (default: `"mix"` with no args)
+                                      NOTE: Use `--arg` multiple times to specify
+                                      more than one argument
+      --exclude <regex>               Exclude files/directories from triggering
+                                      test runs
+                                      (default: `["~r/\.#/", "~r{priv/repo/migrations}"`])
+                                      NOTE: Use `--exclude` multiple times to
+                                      specify more than one regex
+      --extra-extensions <extension>  Watch files with additional extensions
+                                      (default: [])
+                                      NOTE: Use `--extra-extensions` multiple times
+                                      to specify more than one extension.
+      --runner <module name>          Use a custom runner module
+                                      (default: `MixTestInteractive.PortRunner`)
+      --task <task name>              Run a different mix task (default: `"test"`)
+      --(no-)timestamp                Display the current time before running the
+                                      tests (default: `false`)
+      --(no-)watch                    Run tests when a watched file changes
+                                      (default: `true`)
 
-    <mix_test_args>: any arguments accepted by `mix test`
+    <mix_test_args>:
+      any arguments accepted by `mix test`
   """
 
   @mix_test_options [
