@@ -212,29 +212,37 @@ defmodule MixTestInteractive.CommandLineParser do
   end
 
   defp parse_mti_option_values(mti_opts) do
-    {:ok, Enum.map(mti_opts, &parse_one_option_value!/1)}
-  rescue
-    error in UsageError -> {:error, error}
-  end
-
-  defp parse_one_option_value!({:exclude, exclude}) do
-    {:exclude, Regex.compile!(exclude)}
-  rescue
-    error ->
-      raise UsageError, "--exclude '#{exclude}': #{Exception.message(error)}"
-  end
-
-  defp parse_one_option_value!({:runner, runner}) do
-    module = runner |> String.split(".") |> Module.concat()
-
-    if function_exported?(module, :run, 2) do
-      {:runner, module}
-    else
-      raise UsageError, message: "--runner: '#{runner}' must name a module that implements a `run/2` function"
+    mti_opts
+    |> Enum.reduce_while([], fn {name, value}, acc ->
+      case parse_one_option_value(name, value) do
+        {:ok, parsed} -> {:cont, [{name, parsed} | acc]}
+        error -> {:halt, error}
+      end
+    end)
+    |> case do
+      {:error, _error} = error -> error
+      new_opts -> {:ok, Enum.reverse(new_opts)}
     end
   end
 
-  defp parse_one_option_value!(option), do: option
+  defp parse_one_option_value(:exclude, exclude) do
+    {:ok, Regex.compile!(exclude)}
+  rescue
+    error ->
+      {:error, UsageError.exception("--exclude '#{exclude}': #{Exception.message(error)}")}
+  end
+
+  defp parse_one_option_value(:runner, runner) do
+    module = runner |> String.split(".") |> Module.concat()
+
+    if function_exported?(module, :run, 2) do
+      {:ok, module}
+    else
+      {:error, UsageError.exception("--runner: '#{runner}' must name a module that implements a `run/2` function")}
+    end
+  end
+
+  defp parse_one_option_value(_name, value), do: {:ok, value}
 
   defp combine_multiples(mti_opts) do
     @options
