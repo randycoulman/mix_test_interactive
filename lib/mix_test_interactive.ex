@@ -15,7 +15,7 @@ defmodule MixTestInteractive do
   def run(args \\ []) when is_list(args) do
     case CommandLineParser.parse(args) do
       {:ok, %{config: config, settings: settings}} ->
-        {:ok, _} = Application.ensure_all_started(@application)
+        {:ok, _apps} = Application.ensure_all_started(@application)
 
         {:ok, _supervisor} =
           DynamicSupervisor.start_child(InitialSupervisor, {MainSupervisor, config: config, settings: settings})

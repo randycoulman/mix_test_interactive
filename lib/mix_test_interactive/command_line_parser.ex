@@ -81,7 +81,7 @@ defmodule MixTestInteractive.CommandLineParser do
     b: :breakpoints
   ]
 
-  @spec parse([String.t()]) :: {:ok, Config.t(), Settings.t()} | {:error, Exception.t()}
+  @spec parse([String.t()]) :: {:ok, %{config: Config.t(), settings: Settings.t()}} | {:error, Exception.t()}
   def parse(cli_args \\ []) do
     with {:ok, mti_opts, mix_test_args} <- parse_mti_args(cli_args),
          {:ok, mix_test_opts, patterns} <- parse_mix_test_args(mix_test_args),
