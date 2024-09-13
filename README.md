@@ -25,19 +25,55 @@ end
 
 ## Usage
 
-Run the mix task:
-
 ```shell
-mix test.interactive
+mix test.interactive <options> [-- <mix test arguments>]
+mix test.interactive <mix test arguments>
+mix test.interactive --help
+mix test.interactive --version
 ```
 
 Your tests will run immediately (and every time a file changes).
 
-If you don't want tests to run automatically when files change, you can start `mix test.interactive` with the `--no-watch` flag:
+### Options
 
-```shell
-mix test.interactive --no-watch
-```
+`mix test.interactive` understands the following options, most of which
+correspond to configuration settings below.
+
+Note that, if you want to pass both mix test.interactive options and mix test
+arguments, you must separate them with `--`.
+
+If an option is provided on the command line, it will override the same option
+specified in the configuration.
+
+- `--(no-)clear`: Clear the console before each run (default `false`).
+- `--command <command> [--arg <arg>]`: Custom command and arguments for
+  running tests (default: "mix" with no arguments). NOTE: Use `--arg` multiple
+  times to specify more than one argument.
+- `--exclude <regex>`: Exclude files/directories from triggering test runs
+  (default: `["~r/\.#/", "~r{priv/repo/migrations}"`]) NOTE: Use `--exclude`
+  multiple times to specify more than one regex.
+- `--extra-extensions <extension>`: Watch files with additional extensions
+  (default: []).
+- `--runner <module name>`: Use a custom runner module (default:
+  `MixTestInteractive.PortRunner`).
+- `--task <task name>`: Run a different mix task (default: `"test"`).
+- `--(no-)timestamp`: Display the current time before running the tests
+  (default: `false`).
+- `--(no-)watch`: Don't run tests when a file changes (default: `true`).
+
+All of the `<mix test arguments>` are passed through to `mix test` on every
+test run.
+
+`mix test.interactive` will detect the `--stale` and `--failed` flags and use those as initial settings in interactive mode. You can then toggle those flags on and off as needed. It will also detect any filename or pattern arguments and use those as initial settings. However, it does not detect any filenames passed with `--include` or `--only`. Note that if you specify a pattern on the command-line, `mix test.interactive` will find all test files matching that pattern and pass those to `mix test` as if you had used the `p` command.
+
+### Patterns and filenames
+
+`mix test.interactive` can take the same filename or filename:line_number
+patterns that `mix test` understands. It also allows you to specify one or
+more "patterns" - strings that match one or more test files. When you provide
+one or more patterns on the command-line, `mix test.interactive` will find all
+test files matching those patterns and pass them to `mix test` as if you had
+used the `p` command (described below).
 
 After the tests run, you can use the interactive mode to change which tests will run.
 
@@ -62,21 +98,11 @@ Use the `Enter` key to re-run the current set of tests without requiring a file 
 
 Use the `q` command, or press `Ctrl-D` to exit the program.
 
-## Passing Arguments To Tasks
-
-Any command line arguments passed to the `mix test.interactive` task will be passed
-through to the task being run, along with any arguments added by interactive mode. If I want to see detailed trace information for my tests, I can run:
-
-```
-mix test.interactive --trace
-```
-
-`mix test.interactive` will detect the `--stale` and `--failed` flags and use those as initial settings in interactive mode. You can then toggle those flags on and off as needed. It will also detect any filename or pattern arguments and use those as initial settings. However, it does not detect any filenames passed with `--include` or `--only`. Note that if you specify a pattern on the command-line, `mix test.interactive` will find all test files matching that pattern and pass those to `mix test` as if you had used the `p` command.
-
 ## Configuration
 
 `mix test.interactive` can be configured with various options using application
-configuration.
+configuration. You can also use command line arguments to specify these
+configuration options, or to override configured options.
 
 ### `clear`: Clear the console before each run
 

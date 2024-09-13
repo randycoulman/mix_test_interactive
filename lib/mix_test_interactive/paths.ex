@@ -10,7 +10,7 @@ defmodule MixTestInteractive.Paths do
   Determines if we should respond to changes in a file.
   """
   @spec watching?(String.t(), Config.t()) :: boolean
-  def watching?(path, config \\ %Config{}) do
+  def watching?(path, config) do
     watched_directory?(path) and elixir_extension?(path, config.extra_extensions) and
       not excluded?(config, path)
   end

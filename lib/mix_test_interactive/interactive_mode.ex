@@ -25,17 +25,9 @@ defmodule MixTestInteractive.InteractiveMode do
   def start_link(options) do
     name = Keyword.get(options, :name, __MODULE__)
     config = Keyword.fetch!(options, :config)
-    initial_state = %{config: config, settings: Settings.new()}
+    settings = Keyword.fetch!(options, :settings)
+    initial_state = %{config: config, settings: settings}
     GenServer.start_link(__MODULE__, initial_state, name: name)
-  end
-
-  @doc """
-  Process command-line arguments.
-  """
-  @spec command_line_arguments([String.t()]) :: :ok
-  @spec command_line_arguments(GenServer.server(), [String.t()]) :: :ok
-  def command_line_arguments(server \\ __MODULE__, cli_args) do
-    GenServer.call(server, {:command_line_arguments, cli_args})
   end
 
   @doc """
@@ -58,13 +50,7 @@ defmodule MixTestInteractive.InteractiveMode do
 
   @impl GenServer
   def init(initial_state) do
-    {:ok, initial_state}
-  end
-
-  @impl GenServer
-  def handle_call({:command_line_arguments, cli_args}, _from, state) do
-    settings = Settings.new(cli_args)
-    {:reply, :ok, %{state | settings: settings}, {:continue, :run_tests}}
+    {:ok, initial_state, {:continue, :run_tests}}
   end
 
   @impl GenServer
@@ -123,9 +109,6 @@ defmodule MixTestInteractive.InteractiveMode do
         |> IO.puts()
 
         :ok
-
-      error ->
-        error
     end
   end
 

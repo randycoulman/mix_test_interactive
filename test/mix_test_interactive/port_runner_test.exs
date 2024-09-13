@@ -5,7 +5,7 @@ defmodule MixTestInteractive.PortRunnerTest do
   alias MixTestInteractive.PortRunner
 
   defp run(os_type, options) do
-    config = Keyword.get(options, :config, Config.new())
+    config = Keyword.get(options, :config, %Config{})
     args = Keyword.get(options, :args, [])
 
     runner = fn command, args, options ->
