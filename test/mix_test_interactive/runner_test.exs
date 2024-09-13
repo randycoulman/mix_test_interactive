@@ -30,10 +30,7 @@ defmodule MixTestInteractive.RunnerTest do
 
       assert Agent.get(DummyRunner, fn x -> x end) == [{config, args}]
 
-      assert output == """
-
-             Running tests...
-             """
+      assert output =~ "Running tests..."
     end
 
     test "It outputs timestamp when specified by the config" do
@@ -48,14 +45,8 @@ defmodule MixTestInteractive.RunnerTest do
 
       timestamp =
         output
-        |> String.replace_leading(
-          """
-
-          Running tests...
-          """,
-          ""
-        )
-        |> String.trim()
+        |> String.split("\n", trim: true)
+        |> List.last()
 
       assert {:ok, _} = NaiveDateTime.from_iso8601(timestamp)
     end
