@@ -17,6 +17,9 @@ defmodule MixTestInteractive do
       {:ok, :help} ->
         IO.puts(CommandLineParser.usage_message())
 
+      {:ok, :version} ->
+        IO.puts("mix test.interactive v#{Application.spec(@application, :vsn)}")
+
       {:ok, %{config: config, settings: settings}} ->
         {:ok, _apps} = Application.ensure_all_started(@application)
 

@@ -32,14 +32,16 @@ defmodule MixTestInteractive.CommandLineParser do
     runner: :string,
     task: :string,
     timestamp: :boolean,
+    version: :boolean,
     watch: :boolean
   ]
 
   @usage """
   Usage:
     mix test.interactive <mti args> [-- <mix test args>]
-    mix test.interactive --help
     mix test.interactive <mix test args>
+    mix test.interactive --help
+    mix test.interactive --version
 
   where:
     <mti_args>:
@@ -110,19 +112,24 @@ defmodule MixTestInteractive.CommandLineParser do
     b: :breakpoints
   ]
 
-  @type parse_result :: {:ok, %{config: Config.t(), settings: Settings.t()} | :help} | {:error, UsageError.t()}
+  @type parse_result :: {:ok, %{config: Config.t(), settings: Settings.t()} | :help | :version} | {:error, UsageError.t()}
 
   @spec parse([String.t()]) :: parse_result()
   def parse(cli_args \\ []) do
     with {:ok, mti_opts, mix_test_args} <- parse_mti_args(cli_args),
          {:ok, mix_test_opts, patterns} <- parse_mix_test_args(mix_test_args) do
-      if Keyword.get(mti_opts, :help, false) do
-        {:ok, :help}
-      else
-        with {:ok, config} <- build_config(mti_opts) do
-          settings = build_settings(mti_opts, mix_test_opts, patterns)
-          {:ok, %{config: config, settings: settings}}
-        end
+      cond do
+        Keyword.get(mti_opts, :help, false) ->
+          {:ok, :help}
+
+        Keyword.get(mti_opts, :version, false) ->
+          {:ok, :version}
+
+        true ->
+          with {:ok, config} <- build_config(mti_opts) do
+            settings = build_settings(mti_opts, mix_test_opts, patterns)
+            {:ok, %{config: config, settings: settings}}
+          end
       end
     end
   end
@@ -214,7 +221,7 @@ defmodule MixTestInteractive.CommandLineParser do
 
     cond do
       invalid == [] -> {:ok, mti_opts}
-      mti_opts[:help] -> {:ok, mti_opts}
+      mti_opts[:help] || mti_opts[:version] -> {:ok, mti_opts}
       mti_opts == [] -> {:error, :maybe_mix_test_args}
       true -> force_parse_as_mti_args(args)
     end

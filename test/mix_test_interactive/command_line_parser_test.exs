@@ -15,20 +15,42 @@ defmodule MixTestInteractive.CommandLineParserTest do
   end
 
   describe "help option" do
-    test "returns help with --help" do
+    test "returns :help with --help" do
       assert {:ok, :help} == CommandLineParser.parse(["--help"])
     end
 
-    test "returns help even with other options" do
+    test "returns :help even with other options" do
       assert {:ok, :help} == CommandLineParser.parse(["--clear", "--help", "--no-watch"])
     end
 
-    test "returns help even with unknown options" do
+    test "returns :help even with unknown options" do
       assert {:ok, :help} == CommandLineParser.parse(["--unknown", "--help"])
     end
 
-    test "returns help even with mix test options only" do
+    test "returns :help even with mix test options only" do
       assert {:ok, :help} == CommandLineParser.parse(["--stale", "--help"])
+    end
+  end
+
+  describe "version option" do
+    test "returns :version with --version" do
+      assert {:ok, :version} == CommandLineParser.parse(["--version"])
+    end
+
+    test "returns :help with both --help and --version" do
+      assert {:ok, :help} == CommandLineParser.parse(["--version", "--help"])
+    end
+
+    test "returns :version even with other options" do
+      assert {:ok, :version} == CommandLineParser.parse(["--clear", "--version", "--no-watch"])
+    end
+
+    test "returns :version even with unknown options" do
+      assert {:ok, :version} == CommandLineParser.parse(["--unknown", "--version"])
+    end
+
+    test "returns :version even with mix test options only" do
+      assert {:ok, :version} == CommandLineParser.parse(["--stale", "--version"])
     end
   end
 
