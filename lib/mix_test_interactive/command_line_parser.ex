@@ -46,7 +46,7 @@ defmodule MixTestInteractive.CommandLineParser do
   where:
     <mti_args>:
       --(no-)clear                    Clear the console before each run
-                                      (default `false`)
+                                      (default: `false`)
       --command <command>/--arg <arg> Custom command and arguments for running
                                       tests (default: `"mix"` with no args)
                                       NOTE: Use `--arg` multiple times to

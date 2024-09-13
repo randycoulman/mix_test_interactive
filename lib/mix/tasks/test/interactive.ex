@@ -11,17 +11,43 @@ defmodule Mix.Tasks.Test.Interactive do
   ## Usage
 
   ```shell
-  mix test.interactive [options] pattern...
+  mix test.interactive <options> [-- <mix test arguments>]
+  mix test.interactive <mix test arguments>
+  mix test.interactive --help
+  mix test.interactive --version
   ```
 
   Your tests will run immediately (and every time a file changes).
 
   ### Options
 
-  `mix test.interactive` understands the following options:
-  - `--no-watch`: Don't run tests when a file changes
+  `mix test.interactive` understands the following options, most of which
+  correspond to configuration settings below.
 
-  All other options are passed through to `mix test` on every test run.
+  Note that, if you want to pass both mix test.interactive options and mix test
+  arguments, you must separate them with `--`.
+
+  If an option is provided on the command line, it will override the same option
+  specified in the configuration.
+
+  - `--(no-)clear`: Clear the console before each run (default `false`).
+  - `--command <command> [--arg <arg>]`: Custom command and arguments for
+    running tests (default: "mix" with no arguments). NOTE: Use `--arg` multiple
+    times to specify more than one argument.
+  - `--exclude <regex>`: Exclude files/directories from triggering test runs
+    (default: `["~r/\.#/", "~r{priv/repo/migrations}"`]) NOTE: Use `--exclude`
+    multiple times to specify more than one regex.
+  - `--extra-extensions <extension>`: Watch files with additional extensions
+    (default: []).
+  - `--runner <module name>`: Use a custom runner module (default:
+    `MixTestInteractive.PortRunner`).
+  - `--task <task name>`: Run a different mix task (default: `"test"`).
+  - `--(no-)timestamp`: Display the current time before running the tests
+    (default: `false`).
+  - `--(no-)watch`: Don't run tests when a file changes (default: `true`).
+
+  All of the `<mix test arguments>` are passed through to `mix test` on every
+  test run.
 
   `mix test.interactive` will detect the `--stale` and `--failed` flags and use
   those as initial settings in interactive mode. You can then toggle those flags
@@ -61,8 +87,8 @@ defmodule Mix.Tasks.Test.Interactive do
   operation of `mix test.interactive` with the following settings:
 
   - `clear: true`: Clear the console before each run (default: `false`).
-  - `command: <program>` or `command: {<program>, [<arg>, ...]}`:
-    Use the provided command and arguments to run the test task (default: `mix`).
+  - `command: <program>` or `command: {<program>, [<arg>, ...]}`: Use the
+    provided command and arguments to run the test task (default: `mix`).
   - `exclude: [patterns...]`: A list of `Regex`es to ignore when watching for
     changes (default: `[~r/\.#/, ~r{priv/repo/migrations}]`).
   - `extra_extensions: [<ext>...]`: Additional filename extensions to include
