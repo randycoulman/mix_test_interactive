@@ -14,6 +14,24 @@ defmodule MixTestInteractive.CommandLineParserTest do
     @moduledoc false
   end
 
+  describe "help option" do
+    test "returns help with --help" do
+      assert {:ok, :help} == CommandLineParser.parse(["--help"])
+    end
+
+    test "returns help even with other options" do
+      assert {:ok, :help} == CommandLineParser.parse(["--clear", "--help", "--no-watch"])
+    end
+
+    test "returns help even with unknown options" do
+      assert {:ok, :help} == CommandLineParser.parse(["--unknown", "--help"])
+    end
+
+    test "returns help even with mix test options only" do
+      assert {:ok, :help} == CommandLineParser.parse(["--stale", "--help"])
+    end
+  end
+
   describe "mix test.interactive options" do
     test "retains original defaults when no options" do
       {:ok, %{config: config}} = CommandLineParser.parse([])

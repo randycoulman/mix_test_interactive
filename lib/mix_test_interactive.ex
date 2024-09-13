@@ -14,6 +14,9 @@ defmodule MixTestInteractive do
   """
   def run(args \\ []) when is_list(args) do
     case CommandLineParser.parse(args) do
+      {:ok, :help} ->
+        IO.puts(CommandLineParser.usage_message())
+
       {:ok, %{config: config, settings: settings}} ->
         {:ok, _apps} = Application.ensure_all_started(@application)
 
@@ -23,9 +26,17 @@ defmodule MixTestInteractive do
         loop()
 
       {:error, error} ->
-        IO.puts(:standard_error, Exception.message(error))
-        IO.puts("")
-        IO.puts(CommandLineParser.usage_message())
+        message = [
+          :bright,
+          :red,
+          Exception.message(error),
+          :reset,
+          "\n\nTry `mix test.interactive --help` for more information"
+        ]
+
+        formatted = IO.ANSI.format(message)
+        IO.puts(:standard_error, formatted)
+        exit({:shutdown, 1})
     end
   end
 
