@@ -13,7 +13,13 @@ defmodule MixTestInteractive.Runner do
   @spec run(Config.t(), [String.t()]) :: :ok
   def run(config, args) do
     :ok = maybe_clear_terminal(config)
-    IO.puts("\nRunning tests...")
+
+    IO.puts("")
+
+    [:cyan, :bright, "Running tests..."]
+    |> IO.ANSI.format()
+    |> IO.puts()
+
     :ok = maybe_print_timestamp(config)
     config.runner.run(config, args)
   end
