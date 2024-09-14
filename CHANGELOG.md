@@ -5,7 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v3.2.1...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v4.0.0...HEAD)
+
+## [v4.0.0](https://github.com/randycoulman/mix_test_interactive/compare/v3.2.1...v4.0.0) - 2024-09-13
+
+### 💥 BREAKING CHANGE 💥
+
+This version introduces the option of "config-less" operation. All configuration settings can now be supplied on the command-line instead. To avoid confusion and clashes with `mix test`'s command-line options, it is now necessary to separate `mix test.interactive`'s options from `mix test`'s options with `--` separator.
+
+For example, to use the new `--clear` option as well as `mix test`'s `--stale` option, it is necessary to use:
+
+```shell
+mix test.interactive --clear -- --stale
+```
+
+This affects two of the command-line options that were available in previous versions:
+
+- `mix test.interactive`'s `--no-watch` flag. Previously, you could run (for example) `mix test.interactive --no-watch --stale`. This will no longer work. You must now use `mix test.interactive --no-watch -- --stale` instead.
+- `mix test`'s `--exclude` option. `mix test.interactive` now has its own `--exclude` option. Previously, you could run (for example) `mix test.interactive --exclude some_test_tag` and that argument would be forwarded on to `mix test`. Now you must use `mix test.interactive -- --exclude some_test_tag` instead.
+
+If you don't use either of these two options, everything should work as before.
+
+To upgrade to this version, you'll need to update any `mix` aliases or other scripts you may have defined for `mix test.interactive`. In addition, you and everyone who works in your codebase will need to update any shell aliases they have defined.
+
+### Added
+
+- This version introduces the option of "config-less" operation. All configuration settings can now be supplied on the command-line instead. See the [README](https://github.com/randycoulman/mix_test_interactive/blob/main/README.md) or run `mix help test.interactive` for more information. Also, see the 💥 BREAKING CHANGE 💥` section above. ([#108](https://github.com/randycoulman/mix_test_interactive/pull/108))
+
+### Changed
+
+- The `Running tests...` message that `mix test.interactive` displays before each test run is displayed in color. This makes it easier to find the most recent test run when scrolling back in your shell. ([#109](https://github.com/randycoulman/mix_test_interactive/pull/109))
 
 ## [v3.2.1](https://github.com/randycoulman/mix_test_interactive/compare/v3.2.0...v3.2.1) - 2024-09-07
 
