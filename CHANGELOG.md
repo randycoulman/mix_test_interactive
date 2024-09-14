@@ -30,7 +30,7 @@ To upgrade to this version, you'll need to update any `mix` aliases or other scr
 
 ### Added
 
-- This version introduces the option of "config-less" operation. All configuration settings can now be supplied on the command-line instead. See the [README](https://github.com/randycoulman/mix_test_interactive/blob/main/README.md) or run `mix help test.interactive` for more information. Also, see the 💥 BREAKING CHANGE 💥` section above. ([#108](https://github.com/randycoulman/mix_test_interactive/pull/108))
+- This version introduces the option of "config-less" operation. All configuration settings can now be supplied on the command-line instead. See the [README](https://github.com/randycoulman/mix_test_interactive/blob/main/README.md) or run `mix help test.interactive` for more information. Also, see the `💥 BREAKING CHANGE 💥` section above. ([#108](https://github.com/randycoulman/mix_test_interactive/pull/108))
 
 ### Changed
 
