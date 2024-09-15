@@ -49,9 +49,9 @@ defmodule Mix.Tasks.Test.Interactive do
   All of the `<mix test arguments>` are passed through to `mix test` on every
   test run.
 
-  `mix test.interactive` will detect the `--stale` and `--failed` flags and use
-  those as initial settings in interactive mode. You can then toggle those flags
-  on and off as needed.
+  `mix test.interactive` will detect the `--failed`, `--seed`, and `--stale`
+  options and use those as initial settings in interactive mode. You can then
+  use the interactive mode commands to adjust those options as needed.
 
   ### Patterns and filenames
 
@@ -67,17 +67,20 @@ defmodule Mix.Tasks.Test.Interactive do
   After the tests run, you can use the interactive mode to change which tests
   will run.
 
-  - `a`: Run all tests.
+  - `a`: Run all tests. Clears the `--failed` and `--stale` options as well as
+    any patterns.
+  - `d <seed>`: Run the tests with a specific seed.
+  - `d`: Clear any previously specified seed.
   - `f`: Run only tests that failed on the last run (equivalent to the
   `--failed` option of `mix test`).
   - `p`: Run only test files that match one or more provided patterns. A pattern
-  is the project-root-relative path to a test file (with or without a line
-  number specification) or a string that matches a portion of full pathname.
-  e.g. `test/my_project/my_test.exs`, `test/my_project/my_test.exs:12:24` or
-  `my`.
+    is the project-root-relative path to a test file (with or without a line
+    number specification) or a string that matches a portion of full pathname.
+    e.g. `test/my_project/my_test.exs`, `test/my_project/my_test.exs:12:24` or
+    `my`.
   - `q`: Exit the program. (Can also use `Ctrl-D`.)
   - `s`: Run only test files that reference modules that have changed since the
-  last run (equivalent to the `--stale` option of `mix test`).
+    last run (equivalent to the `--stale` option of `mix test`).
   - `w`: Turn file-watching mode on or off.
   - `Enter`: Re-run the current set of tests without requiring a file change.
 
