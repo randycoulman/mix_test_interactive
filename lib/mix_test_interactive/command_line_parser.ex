@@ -164,6 +164,7 @@ defmodule MixTestInteractive.CommandLineParser do
   defp build_settings(mti_opts, mix_test_opts, patterns) do
     no_patterns? = Enum.empty?(patterns)
     {failed?, mix_test_opts} = Keyword.pop(mix_test_opts, :failed, false)
+    {seed, mix_test_opts} = Keyword.pop(mix_test_opts, :seed)
     {stale?, mix_test_opts} = Keyword.pop(mix_test_opts, :stale, false)
     watching? = Keyword.get(mti_opts, :watch, true)
 
@@ -171,6 +172,7 @@ defmodule MixTestInteractive.CommandLineParser do
       failed?: no_patterns? && failed?,
       initial_cli_args: OptionParser.to_argv(mix_test_opts),
       patterns: patterns,
+      seed: seed && to_string(seed),
       stale?: no_patterns? && !failed? && stale?,
       watching?: watching?
     }

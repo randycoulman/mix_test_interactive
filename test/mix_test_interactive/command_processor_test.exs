@@ -22,6 +22,34 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^settings} = process_command("", settings)
     end
 
+    test "a runs all tests" do
+      {:ok, settings} = process_command("s", %Settings{})
+      expected = Settings.all_tests(settings)
+
+      assert {:ok, ^expected} = process_command("a", settings)
+    end
+
+    test "d <seed> sets the test seed" do
+      settings = %Settings{}
+      expected = Settings.with_seed(settings, "4258")
+
+      assert {:ok, ^expected} = process_command("d 4258", settings)
+    end
+
+    test "d with no seed clears the test seed" do
+      {:ok, settings} = process_command("d 1234", %Settings{})
+      expected = Settings.clear_seed(settings)
+
+      assert {:ok, ^expected} = process_command("d", settings)
+    end
+
+    test "f runs only failed tests" do
+      settings = %Settings{}
+      expected = Settings.only_failed(settings)
+
+      assert {:ok, ^expected} = process_command("f", settings)
+    end
+
     test "p filters test files to those matching provided pattern" do
       settings = %Settings{}
       expected = Settings.only_patterns(settings, ["pattern"])
@@ -42,20 +70,6 @@ defmodule MixTestInteractive.CommandProcessorTest do
       expected = Settings.only_stale(settings)
 
       assert {:ok, ^expected} = process_command("s", settings)
-    end
-
-    test "f runs only failed tests" do
-      settings = %Settings{}
-      expected = Settings.only_failed(settings)
-
-      assert {:ok, ^expected} = process_command("f", settings)
-    end
-
-    test "a runs all tests" do
-      {:ok, settings} = process_command("s", %Settings{})
-      expected = Settings.all_tests(settings)
-
-      assert {:ok, ^expected} = process_command("a", settings)
     end
 
     test "w toggles watch mode" do

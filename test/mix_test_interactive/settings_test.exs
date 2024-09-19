@@ -41,6 +41,14 @@ defmodule MixTestInteractive.SettingsTest do
       assert args == ["--trace", "--stale"]
     end
 
+    test "runs with seed" do
+      seed = "5678"
+      settings = Settings.with_seed(%Settings{initial_cli_args: ["--trace"]}, seed)
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--trace", "--seed", seed]
+    end
+
     test "pattern filter clears failed flag" do
       settings =
         %Settings{}
@@ -145,10 +153,28 @@ defmodule MixTestInteractive.SettingsTest do
       assert Settings.summary(settings) == "Ran all tests"
     end
 
+    test "ran all tests with seed" do
+      seed = "4242"
+      settings = Settings.with_seed(%Settings{}, seed)
+
+      assert Settings.summary(settings) == "Ran all tests with seed: #{seed}"
+    end
+
     test "ran failed tests" do
       settings = Settings.only_failed(%Settings{})
 
       assert Settings.summary(settings) == "Ran only failed tests"
+    end
+
+    test "ran failed tests with seed" do
+      seed = "4242"
+
+      settings =
+        %Settings{}
+        |> Settings.only_failed()
+        |> Settings.with_seed(seed)
+
+      assert Settings.summary(settings) == "Ran only failed tests with seed: #{seed}"
     end
 
     test "ran stale tests" do
@@ -157,10 +183,26 @@ defmodule MixTestInteractive.SettingsTest do
       assert Settings.summary(settings) == "Ran only stale tests"
     end
 
-    test "ran specific patterns" do
-      settings = Settings.only_patterns(%Settings{}, ["p1", "p2"])
+    test "ran stale tests with seed" do
+      seed = "4242"
 
-      assert Settings.summary(settings) == "Ran all test files matching p1, p2"
+      settings =
+        %Settings{}
+        |> Settings.only_stale()
+        |> Settings.with_seed(seed)
+
+      assert Settings.summary(settings) == "Ran only stale tests with seed: #{seed}"
+    end
+
+    test "ran specific patterns with seed" do
+      seed = "4242"
+
+      settings =
+        %Settings{}
+        |> Settings.only_patterns(["p1", "p2"])
+        |> Settings.with_seed(seed)
+
+      assert Settings.summary(settings) == "Ran all test files matching p1, p2 with seed: #{seed}"
     end
   end
 end

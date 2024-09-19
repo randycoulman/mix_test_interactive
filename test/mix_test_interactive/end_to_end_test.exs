@@ -61,6 +61,18 @@ defmodule MixTestInteractive.EndToEndTest do
 
     assert :ok = InteractiveMode.note_file_changed(pid)
     assert_ran_tests(["--stale"])
+
+    assert :ok = InteractiveMode.process_command(pid, "a")
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "d 4242")
+    assert_ran_tests(["--seed", "4242"])
+
+    assert :ok = InteractiveMode.note_file_changed(pid)
+    assert_ran_tests(["--seed", "4242"])
+
+    assert :ok = InteractiveMode.process_command(pid, "d")
+    assert_ran_tests()
   end
 
   defp assert_ran_tests(args \\ []) do

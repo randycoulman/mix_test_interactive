@@ -208,6 +208,12 @@ defmodule MixTestInteractive.CommandLineParserTest do
       assert settings.initial_cli_args == ["--trace", "--raise"]
     end
 
+    test "extracts seed from arguments" do
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--trace", "--seed", "5432", "--raise"])
+      assert settings.seed == "5432"
+      assert settings.initial_cli_args == ["--trace", "--raise"]
+    end
+
     test "extracts patterns from arguments" do
       {:ok, %{settings: settings}} = CommandLineParser.parse(["pattern1", "--trace", "pattern2"])
       assert settings.patterns == ["pattern1", "pattern2"]

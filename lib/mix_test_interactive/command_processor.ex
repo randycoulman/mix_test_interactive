@@ -10,6 +10,7 @@ defmodule MixTestInteractive.CommandProcessor do
   alias MixTestInteractive.Command.Pattern
   alias MixTestInteractive.Command.Quit
   alias MixTestInteractive.Command.RunTests
+  alias MixTestInteractive.Command.Seed
   alias MixTestInteractive.Command.Stale
   alias MixTestInteractive.Command.ToggleWatchMode
   alias MixTestInteractive.Settings
@@ -17,14 +18,15 @@ defmodule MixTestInteractive.CommandProcessor do
   @type response :: Command.response()
 
   @commands [
-    Pattern,
-    Stale,
-    Failed,
     AllTests,
-    ToggleWatchMode,
-    RunTests,
+    Failed,
     Help,
-    Quit
+    Pattern,
+    Quit,
+    RunTests,
+    Seed,
+    Stale,
+    ToggleWatchMode
   ]
 
   @doc """
