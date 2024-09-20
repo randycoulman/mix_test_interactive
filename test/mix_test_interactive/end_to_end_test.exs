@@ -29,7 +29,7 @@ defmodule MixTestInteractive.EndToEndTest do
     %{pid: pid}
   end
 
-  test "end to end workflow test", %{pid: pid} do
+  test "failed/stale/pattern workflow", %{pid: pid} do
     assert_ran_tests()
 
     assert :ok = InteractiveMode.process_command(pid, "")
@@ -49,6 +49,10 @@ defmodule MixTestInteractive.EndToEndTest do
 
     assert :ok = InteractiveMode.note_file_changed(pid)
     assert_ran_tests(["--stale"])
+  end
+
+  test "watch on/off workflow", %{pid: pid} do
+    assert_ran_tests()
 
     assert :ok = InteractiveMode.process_command(pid, "w")
     refute_ran_tests()
@@ -60,9 +64,10 @@ defmodule MixTestInteractive.EndToEndTest do
     refute_ran_tests()
 
     assert :ok = InteractiveMode.note_file_changed(pid)
-    assert_ran_tests(["--stale"])
+    assert_ran_tests()
+  end
 
-    assert :ok = InteractiveMode.process_command(pid, "a")
+  test "seed workflow", %{pid: pid} do
     assert_ran_tests()
 
     assert :ok = InteractiveMode.process_command(pid, "d 4242")
@@ -71,8 +76,11 @@ defmodule MixTestInteractive.EndToEndTest do
     assert :ok = InteractiveMode.note_file_changed(pid)
     assert_ran_tests(["--seed", "4242"])
 
+    assert :ok = InteractiveMode.process_command(pid, "s")
+    assert_ran_tests(["--seed", "4242", "--stale"])
+
     assert :ok = InteractiveMode.process_command(pid, "d")
-    assert_ran_tests()
+    assert_ran_tests(["--stale"])
   end
 
   defp assert_ran_tests(args \\ []) do
