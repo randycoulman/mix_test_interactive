@@ -14,9 +14,12 @@ defmodule MixTestInteractive.Settings do
   @default_list_all_files &TestFiles.list/0
 
   typedstruct do
+    field :excludes, [String.t()], default: []
     field :failed?, boolean(), default: false
+    field :includes, [String.t()], default: []
     field :initial_cli_args, [String.t()], default: []
     field :list_all_files, (-> [String.t()]), default: @default_list_all_files
+    field :only, [String.t()], default: []
     field :patterns, [String.t()], default: []
     field :seed, String.t()
     field :stale?, boolean(), default: false
@@ -29,6 +32,30 @@ defmodule MixTestInteractive.Settings do
   @spec all_tests(t()) :: t()
   def all_tests(%__MODULE__{} = settings) do
     %{settings | failed?: false, patterns: [], stale?: false}
+  end
+
+  @doc """
+  Update settings to clear any excluded tags.
+  """
+  @spec clear_excludes(t()) :: t()
+  def clear_excludes(%__MODULE__{} = settings) do
+    %{settings | excludes: []}
+  end
+
+  @doc """
+  Update settings to clear any included tags.
+  """
+  @spec clear_includes(t()) :: t()
+  def clear_includes(%__MODULE__{} = settings) do
+    %{settings | includes: []}
+  end
+
+  @doc """
+  Update settings to clear any "only" tags.
+  """
+  @spec clear_only(t()) :: t()
+  def clear_only(%__MODULE__{} = settings) do
+    %{settings | only: []}
   end
 
   @doc """
@@ -120,6 +147,36 @@ defmodule MixTestInteractive.Settings do
   end
 
   @doc """
+  Exclude tests with the specified tags.
+
+  Corresponds to `mix test --exclude <tag1> --exclude <tag2> ...`.
+  """
+  @spec with_excludes(t(), [String.t()]) :: t()
+  def with_excludes(%__MODULE__{} = settings, excludes) do
+    %{settings | excludes: excludes}
+  end
+
+  @doc """
+  Include tests with the specified tags.
+
+  Corresponds to `mix test --include <tag1> --include <tag2> ...`.
+  """
+  @spec with_includes(t(), [String.t()]) :: t()
+  def with_includes(%__MODULE__{} = settings, includes) do
+    %{settings | includes: includes}
+  end
+
+  @doc """
+  Run only the tests with the specified tags.
+
+  Corresponds to `mix test --only <tag1> --only <tag2> ...`.
+  """
+  @spec with_only(t(), [String.t()]) :: t()
+  def with_only(%__MODULE__{} = settings, only) do
+    %{settings | only: only}
+  end
+
+  @doc """
   Update settings to run tests with a specific seed.
 
   Corresponds to `mix test --seed <seed>`.
@@ -155,8 +212,31 @@ defmodule MixTestInteractive.Settings do
   end
 
   defp opts_from_settings(%__MODULE__{} = settings) do
-    [settings.failed? && "--failed", settings.seed && ["--seed", to_string(settings.seed)], settings.stale? && "--stale"]
-    |> Enum.filter(& &1)
-    |> List.flatten()
+    settings
+    |> Map.from_struct()
+    |> Enum.flat_map(&opts_from_single_setting/1)
   end
+
+  defp opts_from_single_setting({:excludes, excludes}) do
+    Enum.flat_map(excludes, &["--exclude", &1])
+  end
+
+  defp opts_from_single_setting({:failed?, false}), do: []
+  defp opts_from_single_setting({:failed?, true}), do: ["--failed"]
+
+  defp opts_from_single_setting({:includes, includes}) do
+    Enum.flat_map(includes, &["--include", &1])
+  end
+
+  defp opts_from_single_setting({:only, only}) do
+    Enum.flat_map(only, &["--only", &1])
+  end
+
+  defp opts_from_single_setting({:seed, nil}), do: []
+  defp opts_from_single_setting({:seed, seed}), do: ["--seed", seed]
+
+  defp opts_from_single_setting({:stale?, false}), do: []
+  defp opts_from_single_setting({:stale?, true}), do: ["--stale"]
+
+  defp opts_from_single_setting({_key, _value}), do: []
 end

@@ -3,7 +3,7 @@ defmodule MixTestInteractive.SettingsTest do
 
   alias MixTestInteractive.Settings
 
-  describe "filtering tests" do
+  describe "filtering test files" do
     test "filters to files matching patterns" do
       all_files = ~w(file1 file2 no_match other)
 
@@ -135,6 +135,62 @@ defmodule MixTestInteractive.SettingsTest do
 
     defp with_fake_file_list(settings, files) do
       Settings.list_files_with(settings, fn -> files end)
+    end
+  end
+
+  describe "filtering tests by tags" do
+    test "excludes specified tags" do
+      tags = ["tag1", "tag2"]
+      settings = Settings.with_excludes(%Settings{initial_cli_args: ["--trace"]}, tags)
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--trace", "--exclude", "tag1", "--exclude", "tag2"]
+    end
+
+    test "clears excluded tags" do
+      settings =
+        %Settings{}
+        |> Settings.with_excludes(["tag1"])
+        |> Settings.clear_excludes()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+
+    test "includes specified tags" do
+      tags = ["tag1", "tag2"]
+      settings = Settings.with_includes(%Settings{initial_cli_args: ["--trace"]}, tags)
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--trace", "--include", "tag1", "--include", "tag2"]
+    end
+
+    test "clears included tags" do
+      settings =
+        %Settings{}
+        |> Settings.with_includes(["tag1"])
+        |> Settings.clear_includes()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+
+    test "runs only specified tags" do
+      tags = ["tag1", "tag2"]
+      settings = Settings.with_only(%Settings{initial_cli_args: ["--trace"]}, tags)
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--trace", "--only", "tag1", "--only", "tag2"]
+    end
+
+    test "clears only tags" do
+      settings =
+        %Settings{}
+        |> Settings.with_only(["tag1"])
+        |> Settings.clear_only()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
     end
   end
 
