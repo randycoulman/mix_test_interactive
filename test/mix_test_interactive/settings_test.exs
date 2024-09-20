@@ -41,14 +41,6 @@ defmodule MixTestInteractive.SettingsTest do
       assert args == ["--trace", "--stale"]
     end
 
-    test "runs with seed" do
-      seed = "5678"
-      settings = Settings.with_seed(%Settings{initial_cli_args: ["--trace"]}, seed)
-
-      {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--trace", "--seed", seed]
-    end
-
     test "pattern filter clears failed flag" do
       settings =
         %Settings{}
@@ -143,6 +135,26 @@ defmodule MixTestInteractive.SettingsTest do
 
     defp with_fake_file_list(settings, files) do
       Settings.list_files_with(settings, fn -> files end)
+    end
+  end
+
+  describe "specifying the seed" do
+    test "runs with seed" do
+      seed = "5678"
+      settings = Settings.with_seed(%Settings{initial_cli_args: ["--trace"]}, seed)
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--trace", "--seed", seed]
+    end
+
+    test "clears the seed" do
+      settings =
+        %Settings{}
+        |> Settings.with_seed("1234")
+        |> Settings.clear_seed()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
     end
   end
 
