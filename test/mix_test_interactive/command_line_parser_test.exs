@@ -196,9 +196,22 @@ defmodule MixTestInteractive.CommandLineParserTest do
       assert settings.initial_cli_args == []
     end
 
-    test "extracts stale setting from arguments" do
-      {:ok, %{settings: settings}} = CommandLineParser.parse(["--trace", "--stale", "--raise"])
-      assert settings.stale?
+    test "extracts excludes from arguments" do
+      {:ok, %{settings: settings}} =
+        CommandLineParser.parse([
+          "--",
+          "--exclude",
+          "tag1",
+          "--trace",
+          "--exclude",
+          "tag2",
+          "--failed",
+          "--raise",
+          "--exclude",
+          "tag3"
+        ])
+
+      assert settings.excludes == ["tag1", "tag2", "tag3"]
       assert settings.initial_cli_args == ["--trace", "--raise"]
     end
 
@@ -208,9 +221,41 @@ defmodule MixTestInteractive.CommandLineParserTest do
       assert settings.initial_cli_args == ["--trace", "--raise"]
     end
 
+    test "extracts includes from arguments" do
+      {:ok, %{settings: settings}} =
+        CommandLineParser.parse([
+          "--include",
+          "tag1",
+          "--trace",
+          "--include",
+          "tag2",
+          "--failed",
+          "--raise",
+          "--include",
+          "tag3"
+        ])
+
+      assert settings.includes == ["tag1", "tag2", "tag3"]
+      assert settings.initial_cli_args == ["--trace", "--raise"]
+    end
+
+    test "extracts only from arguments" do
+      {:ok, %{settings: settings}} =
+        CommandLineParser.parse(["--only", "tag1", "--trace", "--only", "tag2", "--failed", "--raise", "--only", "tag3"])
+
+      assert settings.only == ["tag1", "tag2", "tag3"]
+      assert settings.initial_cli_args == ["--trace", "--raise"]
+    end
+
     test "extracts seed from arguments" do
       {:ok, %{settings: settings}} = CommandLineParser.parse(["--trace", "--seed", "5432", "--raise"])
       assert settings.seed == "5432"
+      assert settings.initial_cli_args == ["--trace", "--raise"]
+    end
+
+    test "extracts stale setting from arguments" do
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--trace", "--stale", "--raise"])
+      assert settings.stale?
       assert settings.initial_cli_args == ["--trace", "--raise"]
     end
 
@@ -247,7 +292,7 @@ defmodule MixTestInteractive.CommandLineParserTest do
         CommandLineParser.parse(["--exclude", "~$", "--", "--exclude", "integration"])
 
       assert config.exclude == [~r/~$/]
-      assert settings.initial_cli_args == ["--exclude", "integration"]
+      assert settings.excludes == ["integration"]
     end
 
     test "requires -- separator to distinguish the sets of arguments" do
