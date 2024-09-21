@@ -7,6 +7,12 @@ defmodule MixTestInteractive.EndToEndTest do
 
   defmodule DummyRunner do
     @moduledoc false
+    use Agent
+
+    def start_link(test_pid) do
+      Agent.start_link(fn -> test_pid end, name: __MODULE__)
+    end
+
     def run(config, args) do
       Agent.update(__MODULE__, fn test_pid ->
         send(test_pid, {config, args})
@@ -19,13 +25,12 @@ defmodule MixTestInteractive.EndToEndTest do
   @settings %Settings{}
 
   setup do
-    test_pid = self()
-    {:ok, _} = Agent.start_link(fn -> test_pid end, name: DummyRunner)
-
     {:ok, io} = StringIO.open("")
     Process.group_leader(self(), io)
 
-    {:ok, pid} = start_supervised({InteractiveMode, config: @config, name: :end_to_end, settings: @settings})
+    _pid = start_supervised!({DummyRunner, self()})
+    pid = start_supervised!({InteractiveMode, config: @config, name: :end_to_end, settings: @settings})
+
     %{pid: pid}
   end
 
