@@ -234,6 +234,7 @@ defmodule MixTestInteractive.Settings do
   defp opts_from_settings(%__MODULE__{} = settings) do
     settings
     |> Map.from_struct()
+    |> Enum.sort()
     |> Enum.flat_map(&opts_from_single_setting/1)
   end
 

@@ -63,20 +63,20 @@ defmodule MixTestInteractive.EndToEndTest do
     assert :ok = InteractiveMode.process_command(pid, "x tag4 tag5")
 
     assert_ran_tests([
+      "--exclude",
+      "tag4",
+      "--exclude",
+      "tag5",
       "--include",
       "tag1",
       "--include",
       "tag2",
       "--only",
-      "tag3",
-      "--exclude",
-      "tag4",
-      "--exclude",
-      "tag5"
+      "tag3"
     ])
 
     assert :ok = InteractiveMode.process_command(pid, "o")
-    assert_ran_tests(["--include", "tag1", "--include", "tag2", "--exclude", "tag4", "--exclude", "tag5"])
+    assert_ran_tests(["--exclude", "tag4", "--exclude", "tag5", "--include", "tag1", "--include", "tag2"])
 
     assert :ok = InteractiveMode.process_command(pid, "i")
     assert_ran_tests(["--exclude", "tag4", "--exclude", "tag5"])
