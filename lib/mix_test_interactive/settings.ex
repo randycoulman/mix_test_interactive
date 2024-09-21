@@ -140,10 +140,30 @@ defmodule MixTestInteractive.Settings do
           "Ran all tests"
       end
 
-    case settings.seed do
-      nil -> run_summary
-      seed -> run_summary <> " with seed: #{seed}"
-    end
+    case_result =
+      case settings.seed do
+        nil -> run_summary
+        seed -> run_summary <> " with seed: #{seed}"
+      end
+
+    append_tag_filters(case_result, settings)
+  end
+
+  defp append_tag_filters(summary, %__MODULE__{} = settings) do
+    [
+      summary,
+      tag_filters("Excluding tags", settings.excludes),
+      tag_filters("Including tags", settings.includes),
+      tag_filters("Only tags", settings.only)
+    ]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join("\n")
+  end
+
+  defp tag_filters(_label, []), do: nil
+
+  defp tag_filters(label, tags) do
+    label <> ": " <> inspect(tags)
   end
 
   @doc """

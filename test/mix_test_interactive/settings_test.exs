@@ -272,5 +272,19 @@ defmodule MixTestInteractive.SettingsTest do
 
       assert Settings.summary(settings) == "Ran all test files matching p1, p2 with seed: #{seed}"
     end
+
+    test "appends tag filters" do
+      settings =
+        %Settings{}
+        |> Settings.with_excludes(["tag1", "tag2"])
+        |> Settings.with_includes(["tag3", "tag4"])
+        |> Settings.with_only(["tag5", "tag6"])
+
+      summary = Settings.summary(settings)
+
+      assert summary =~ ~s(Excluding tags: ["tag1", "tag2"])
+      assert summary =~ ~s(Including tags: ["tag3", "tag4"])
+      assert summary =~ ~s(Only tags: ["tag5", "tag6"])
+    end
   end
 end
