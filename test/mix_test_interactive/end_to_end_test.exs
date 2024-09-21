@@ -29,7 +29,7 @@ defmodule MixTestInteractive.EndToEndTest do
     %{pid: pid}
   end
 
-  test "end to end workflow test", %{pid: pid} do
+  test "failed/stale/pattern workflow", %{pid: pid} do
     assert_ran_tests()
 
     assert :ok = InteractiveMode.process_command(pid, "")
@@ -49,20 +49,43 @@ defmodule MixTestInteractive.EndToEndTest do
 
     assert :ok = InteractiveMode.note_file_changed(pid)
     assert_ran_tests(["--stale"])
+  end
 
-    assert :ok = InteractiveMode.process_command(pid, "w")
-    refute_ran_tests()
+  test "tag workflow", %{pid: pid} do
+    assert_ran_tests()
 
-    assert :ok = InteractiveMode.note_file_changed(pid)
-    refute_ran_tests()
+    assert :ok = InteractiveMode.process_command(pid, "i tag1 tag2")
+    assert_ran_tests(["--include", "tag1", "--include", "tag2"])
 
-    assert :ok = InteractiveMode.process_command(pid, "w")
-    refute_ran_tests()
+    assert :ok = InteractiveMode.process_command(pid, "o tag3")
+    assert_ran_tests(["--include", "tag1", "--include", "tag2", "--only", "tag3"])
 
-    assert :ok = InteractiveMode.note_file_changed(pid)
-    assert_ran_tests(["--stale"])
+    assert :ok = InteractiveMode.process_command(pid, "x tag4 tag5")
 
-    assert :ok = InteractiveMode.process_command(pid, "a")
+    assert_ran_tests([
+      "--exclude",
+      "tag4",
+      "--exclude",
+      "tag5",
+      "--include",
+      "tag1",
+      "--include",
+      "tag2",
+      "--only",
+      "tag3"
+    ])
+
+    assert :ok = InteractiveMode.process_command(pid, "o")
+    assert_ran_tests(["--exclude", "tag4", "--exclude", "tag5", "--include", "tag1", "--include", "tag2"])
+
+    assert :ok = InteractiveMode.process_command(pid, "i")
+    assert_ran_tests(["--exclude", "tag4", "--exclude", "tag5"])
+
+    assert :ok = InteractiveMode.process_command(pid, "x")
+    assert_ran_tests()
+  end
+
+  test "seed workflow", %{pid: pid} do
     assert_ran_tests()
 
     assert :ok = InteractiveMode.process_command(pid, "d 4242")
@@ -71,7 +94,26 @@ defmodule MixTestInteractive.EndToEndTest do
     assert :ok = InteractiveMode.note_file_changed(pid)
     assert_ran_tests(["--seed", "4242"])
 
+    assert :ok = InteractiveMode.process_command(pid, "s")
+    assert_ran_tests(["--seed", "4242", "--stale"])
+
     assert :ok = InteractiveMode.process_command(pid, "d")
+    assert_ran_tests(["--stale"])
+  end
+
+  test "watch on/off workflow", %{pid: pid} do
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "w")
+    refute_ran_tests()
+
+    assert :ok = InteractiveMode.note_file_changed(pid)
+    refute_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "w")
+    refute_ran_tests()
+
+    assert :ok = InteractiveMode.note_file_changed(pid)
     assert_ran_tests()
   end
 

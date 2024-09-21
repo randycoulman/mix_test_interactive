@@ -3,7 +3,7 @@ defmodule MixTestInteractive.SettingsTest do
 
   alias MixTestInteractive.Settings
 
-  describe "filtering tests" do
+  describe "filtering test files" do
     test "filters to files matching patterns" do
       all_files = ~w(file1 file2 no_match other)
 
@@ -39,14 +39,6 @@ defmodule MixTestInteractive.SettingsTest do
 
       {:ok, args} = Settings.cli_args(settings)
       assert args == ["--trace", "--stale"]
-    end
-
-    test "runs with seed" do
-      seed = "5678"
-      settings = Settings.with_seed(%Settings{initial_cli_args: ["--trace"]}, seed)
-
-      {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--trace", "--seed", seed]
     end
 
     test "pattern filter clears failed flag" do
@@ -146,6 +138,82 @@ defmodule MixTestInteractive.SettingsTest do
     end
   end
 
+  describe "filtering tests by tags" do
+    test "excludes specified tags" do
+      tags = ["tag1", "tag2"]
+      settings = Settings.with_excludes(%Settings{initial_cli_args: ["--trace"]}, tags)
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--trace", "--exclude", "tag1", "--exclude", "tag2"]
+    end
+
+    test "clears excluded tags" do
+      settings =
+        %Settings{}
+        |> Settings.with_excludes(["tag1"])
+        |> Settings.clear_excludes()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+
+    test "includes specified tags" do
+      tags = ["tag1", "tag2"]
+      settings = Settings.with_includes(%Settings{initial_cli_args: ["--trace"]}, tags)
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--trace", "--include", "tag1", "--include", "tag2"]
+    end
+
+    test "clears included tags" do
+      settings =
+        %Settings{}
+        |> Settings.with_includes(["tag1"])
+        |> Settings.clear_includes()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+
+    test "runs only specified tags" do
+      tags = ["tag1", "tag2"]
+      settings = Settings.with_only(%Settings{initial_cli_args: ["--trace"]}, tags)
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--trace", "--only", "tag1", "--only", "tag2"]
+    end
+
+    test "clears only tags" do
+      settings =
+        %Settings{}
+        |> Settings.with_only(["tag1"])
+        |> Settings.clear_only()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+  end
+
+  describe "specifying the seed" do
+    test "runs with seed" do
+      seed = "5678"
+      settings = Settings.with_seed(%Settings{initial_cli_args: ["--trace"]}, seed)
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--trace", "--seed", seed]
+    end
+
+    test "clears the seed" do
+      settings =
+        %Settings{}
+        |> Settings.with_seed("1234")
+        |> Settings.clear_seed()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+  end
+
   describe "summary" do
     test "ran all tests" do
       settings = %Settings{}
@@ -203,6 +271,20 @@ defmodule MixTestInteractive.SettingsTest do
         |> Settings.with_seed(seed)
 
       assert Settings.summary(settings) == "Ran all test files matching p1, p2 with seed: #{seed}"
+    end
+
+    test "appends tag filters" do
+      settings =
+        %Settings{}
+        |> Settings.with_excludes(["tag1", "tag2"])
+        |> Settings.with_includes(["tag3", "tag4"])
+        |> Settings.with_only(["tag5", "tag6"])
+
+      summary = Settings.summary(settings)
+
+      assert summary =~ ~s(Excluding tags: ["tag1", "tag2"])
+      assert summary =~ ~s(Including tags: ["tag3", "tag4"])
+      assert summary =~ ~s(Only tags: ["tag5", "tag6"])
     end
   end
 end

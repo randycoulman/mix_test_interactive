@@ -5,8 +5,11 @@ defmodule MixTestInteractive.CommandProcessor do
 
   alias MixTestInteractive.Command
   alias MixTestInteractive.Command.AllTests
+  alias MixTestInteractive.Command.Exclude
   alias MixTestInteractive.Command.Failed
   alias MixTestInteractive.Command.Help
+  alias MixTestInteractive.Command.Include
+  alias MixTestInteractive.Command.Only
   alias MixTestInteractive.Command.Pattern
   alias MixTestInteractive.Command.Quit
   alias MixTestInteractive.Command.RunTests
@@ -19,8 +22,11 @@ defmodule MixTestInteractive.CommandProcessor do
 
   @commands [
     AllTests,
+    Exclude,
     Failed,
     Help,
+    Include,
+    Only,
     Pattern,
     Quit,
     RunTests,
@@ -52,6 +58,7 @@ defmodule MixTestInteractive.CommandProcessor do
     usage =
       settings
       |> applicable_commands()
+      |> Enum.sort_by(& &1.command())
       |> Enum.flat_map(&usage_line/1)
 
     IO.ANSI.format([:bright, "Usage:\n", :normal] ++ usage)

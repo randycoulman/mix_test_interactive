@@ -163,14 +163,20 @@ defmodule MixTestInteractive.CommandLineParser do
 
   defp build_settings(mti_opts, mix_test_opts, patterns) do
     no_patterns? = Enum.empty?(patterns)
+    {excludes, mix_test_opts} = Keyword.pop_values(mix_test_opts, :exclude)
     {failed?, mix_test_opts} = Keyword.pop(mix_test_opts, :failed, false)
+    {includes, mix_test_opts} = Keyword.pop_values(mix_test_opts, :include)
+    {only, mix_test_opts} = Keyword.pop_values(mix_test_opts, :only)
     {seed, mix_test_opts} = Keyword.pop(mix_test_opts, :seed)
     {stale?, mix_test_opts} = Keyword.pop(mix_test_opts, :stale, false)
     watching? = Keyword.get(mti_opts, :watch, true)
 
     %Settings{
+      excludes: excludes,
       failed?: no_patterns? && failed?,
+      includes: includes,
       initial_cli_args: OptionParser.to_argv(mix_test_opts),
+      only: only,
       patterns: patterns,
       seed: seed && to_string(seed),
       stale?: no_patterns? && !failed? && stale?,
@@ -262,10 +268,10 @@ defmodule MixTestInteractive.CommandLineParser do
 
   defp parse_one_option_value(_name, value), do: {:ok, value}
 
-  defp combine_multiples(mti_opts) do
+  defp combine_multiples(opts) do
     @options
     |> Enum.filter(fn {_name, type} -> type == :keep end)
-    |> Enum.reduce(mti_opts, fn {name, _type}, acc ->
+    |> Enum.reduce(opts, fn {name, _type}, acc ->
       case Keyword.pop_values(acc, name) do
         {[], _new_opts} -> acc
         {values, new_opts} -> Keyword.put(new_opts, name, values)
