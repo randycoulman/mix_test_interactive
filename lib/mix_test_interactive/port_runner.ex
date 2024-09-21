@@ -9,8 +9,10 @@ defmodule MixTestInteractive.PortRunner do
   On Windows, `mix` is run directly and ANSI mode is not enabled, as it is not always
   supported by Windows command processors.
   """
+  @behaviour MixTestInteractive.TestRunner
 
   alias MixTestInteractive.Config
+  alias MixTestInteractive.TestRunner
 
   @application :mix_test_interactive
 
@@ -22,7 +24,7 @@ defmodule MixTestInteractive.PortRunner do
   @doc """
   Run tests based on the current configuration.
   """
-  @spec run(Config.t(), [String.t()], os_type(), runner()) :: :ok
+  @impl TestRunner
   def run(%Config{} = config, task_args, os_type \\ :os.type(), runner \\ &System.cmd/3) do
     {command, command_args} = config.command
 

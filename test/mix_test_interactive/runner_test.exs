@@ -8,13 +8,24 @@ defmodule MixTestInteractive.RunnerTest do
 
   defmodule DummyRunner do
     @moduledoc false
+    @behaviour MixTestInteractive.TestRunner
+
+    use Agent
+
+    alias MixTestInteractive.TestRunner
+
+    def start_link(initial_state) do
+      Agent.start_link(fn -> initial_state end, name: __MODULE__)
+    end
+
+    @impl TestRunner
     def run(config, args) do
       Agent.get_and_update(__MODULE__, fn data -> {:ok, [{config, args} | data]} end)
     end
   end
 
   setup do
-    {:ok, _} = Agent.start_link(fn -> [] end, name: DummyRunner)
+    _pid = start_supervised!({DummyRunner, []})
     :ok
   end
 

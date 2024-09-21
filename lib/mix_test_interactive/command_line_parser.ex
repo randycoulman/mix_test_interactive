@@ -262,7 +262,10 @@ defmodule MixTestInteractive.CommandLineParser do
     if function_exported?(module, :run, 2) do
       {:ok, module}
     else
-      {:error, UsageError.exception("--runner: '#{runner}' must name a module that implements a `run/2` function")}
+      {:error,
+       UsageError.exception(
+         "--runner: '#{runner}' must name a module that implements the `MixTestInteractive.TestRunner` behaviour"
+       )}
     end
   end
 
