@@ -7,17 +7,24 @@ defmodule MixTestInteractive.EndToEndTest do
 
   defmodule DummyRunner do
     @moduledoc false
+    @behaviour MixTestInteractive.TestRunner
+
     use Agent
+
+    alias MixTestInteractive.TestRunner
 
     def start_link(test_pid) do
       Agent.start_link(fn -> test_pid end, name: __MODULE__)
     end
 
+    @impl TestRunner
     def run(config, args) do
       Agent.update(__MODULE__, fn test_pid ->
         send(test_pid, {config, args})
         test_pid
       end)
+
+      :ok
     end
   end
 

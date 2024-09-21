@@ -7,7 +7,12 @@ defmodule MixTestInteractive.CommandLineParserTest do
 
   defmodule CustomRunner do
     @moduledoc false
-    def run(_config, _args), do: :noop
+    @behaviour MixTestInteractive.TestRunner
+
+    alias MixTestInteractive.TestRunner
+
+    @impl TestRunner
+    def run(_config, _args), do: :ok
   end
 
   defmodule NotARunner do

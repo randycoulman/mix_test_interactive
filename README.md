@@ -231,8 +231,8 @@ ignore files with any of these extensions, you can specify an `exclude` regexp
 By default `mix test.interactive` uses an internal module named
 `MixTestInteractive.PortRunner` to run the tests. If you want to run the tests
 in a different way, you can supply your own runner module instead. Your module
-must implement a `run/2` function that takes a `MixTestInteractive.Config`
-struct and a list of `String.t()` arguments.
+must implement the `MixTestInteractive.TestRunner` behaviour, either implicitly
+or explicitly.
 
 ```elixir
 # config/config.exs
