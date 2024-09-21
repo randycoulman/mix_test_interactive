@@ -50,6 +50,34 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("f", settings)
     end
 
+    test "i <tag...> includes the given tags" do
+      settings = %Settings{}
+      expected = Settings.with_includes(settings, ["tag1", "tag2"])
+
+      assert {:ok, ^expected} = process_command("i tag1 tag2", settings)
+    end
+
+    test "i with no tags clears the includes" do
+      {:ok, settings} = process_command("i tag1", %Settings{})
+      expected = Settings.clear_includes(settings)
+
+      assert {:ok, ^expected} = process_command("i", settings)
+    end
+
+    test "o <tag...> runs with only the given tags" do
+      settings = %Settings{}
+      expected = Settings.with_only(settings, ["tag1", "tag2"])
+
+      assert {:ok, ^expected} = process_command("o tag1 tag2", settings)
+    end
+
+    test "o with no tags clears the only" do
+      {:ok, settings} = process_command("o tag1", %Settings{})
+      expected = Settings.clear_only(settings)
+
+      assert {:ok, ^expected} = process_command("o", settings)
+    end
+
     test "p filters test files to those matching provided pattern" do
       settings = %Settings{}
       expected = Settings.only_patterns(settings, ["pattern"])
@@ -77,6 +105,20 @@ defmodule MixTestInteractive.CommandProcessorTest do
       expected = Settings.toggle_watch_mode(settings)
 
       assert {:no_run, ^expected} = process_command("w", settings)
+    end
+
+    test "x <tag...> excludes the given tags" do
+      settings = %Settings{}
+      expected = Settings.with_excludes(settings, ["tag1", "tag2"])
+
+      assert {:ok, ^expected} = process_command("x tag1 tag2", settings)
+    end
+
+    test "x with no tags clears the excludes" do
+      {:ok, settings} = process_command("x tag1", %Settings{})
+      expected = Settings.clear_excludes(settings)
+
+      assert {:ok, ^expected} = process_command("x", settings)
     end
 
     test "? returns :help" do

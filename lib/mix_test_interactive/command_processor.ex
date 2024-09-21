@@ -5,8 +5,11 @@ defmodule MixTestInteractive.CommandProcessor do
 
   alias MixTestInteractive.Command
   alias MixTestInteractive.Command.AllTests
+  alias MixTestInteractive.Command.Exclude
   alias MixTestInteractive.Command.Failed
   alias MixTestInteractive.Command.Help
+  alias MixTestInteractive.Command.Include
+  alias MixTestInteractive.Command.Only
   alias MixTestInteractive.Command.Pattern
   alias MixTestInteractive.Command.Quit
   alias MixTestInteractive.Command.RunTests
@@ -19,8 +22,11 @@ defmodule MixTestInteractive.CommandProcessor do
 
   @commands [
     AllTests,
+    Exclude,
     Failed,
     Help,
+    Include,
+    Only,
     Pattern,
     Quit,
     RunTests,
