@@ -58,6 +58,7 @@ defmodule MixTestInteractive.CommandProcessor do
     usage =
       settings
       |> applicable_commands()
+      |> Enum.sort_by(& &1.command())
       |> Enum.flat_map(&usage_line/1)
 
     IO.ANSI.format([:bright, "Usage:\n", :normal] ++ usage)
