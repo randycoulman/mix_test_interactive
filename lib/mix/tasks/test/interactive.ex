@@ -5,8 +5,9 @@ defmodule Mix.Tasks.Test.Interactive do
 
   `mix test.interactive` allows you to easily switch between running all tests,
   stale tests, or failed tests. Or, you can run only the tests whose filenames
-  contain a substring. Includes an optional "watch mode" which runs tests after
-  every file change.
+  contain a substring. You can also control which tags are included or excluded
+  and easily specify the test seed to use. Includes an optional "watch mode"
+  which runs tests after every file change.
 
   ## Usage
 
@@ -49,9 +50,13 @@ defmodule Mix.Tasks.Test.Interactive do
   All of the `<mix test arguments>` are passed through to `mix test` on every
   test run.
 
-  `mix test.interactive` will detect the `--failed`, `--seed`, and `--stale`
-  options and use those as initial settings in interactive mode. You can then
-  use the interactive mode commands to adjust those options as needed.
+  `mix test.interactive` will detect the `--exclude`, `--failed`, `--include`,
+  `--only`, `--seed`, and `--stale` options and use those as initial settings in
+  interactive mode. You can then use the interactive mode commands to adjust
+  those options as needed. It will also detect any filename or pattern arguments
+  and use those as initial settings. Note that if you specify a pattern on the
+  command-line, `mix test.interactive` will find all test files matching that
+  pattern and pass those to `mix test` as if you had used the `p` command.
 
   ### Patterns and filenames
 
@@ -64,8 +69,8 @@ defmodule Mix.Tasks.Test.Interactive do
 
   ## Interactive Commands
 
-  After the tests run, you can use the interactive mode to change which tests
-  will run.
+  After the tests run, you can use the interactive commands to change which
+  tests will run.
 
   - `a`: Run all tests. Clears the `--failed` and `--stale` options as well as
     any patterns.
@@ -73,6 +78,12 @@ defmodule Mix.Tasks.Test.Interactive do
   - `d`: Clear any previously specified seed.
   - `f`: Run only tests that failed on the last run (equivalent to the
   `--failed` option of `mix test`).
+  - `i <tags...>`: Include tests tagged with the listed tags (equivalent to the
+    `--include` option of `mix test`).
+  - `i`: Clear any included tags.
+  - `o <tags...>`: Run only tests tagged with the listed tags (equivalent to the
+    `--only` option of `mix test`).
+  - `o`: Clear any "only" tags.
   - `p`: Run only test files that match one or more provided patterns. A pattern
     is the project-root-relative path to a test file (with or without a line
     number specification) or a string that matches a portion of full pathname.
@@ -81,8 +92,12 @@ defmodule Mix.Tasks.Test.Interactive do
   - `q`: Exit the program. (Can also use `Ctrl-D`.)
   - `s`: Run only test files that reference modules that have changed since the
     last run (equivalent to the `--stale` option of `mix test`).
+  - `x <tags...>`: Exclude tests tagged with the listed tags (equivalent to the
+    `--exclude` option of `mix test`).
+  - `x`: Clear any excluded tags.
   - `w`: Turn file-watching mode on or off.
   - `Enter`: Re-run the current set of tests without requiring a file change.
+  - `?`: Show usage help.
 
   ## Configuration
 
