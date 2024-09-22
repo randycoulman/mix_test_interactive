@@ -5,7 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v4.0.0...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.0...HEAD)
+
+## [v4.1.0](https://github.com/randycoulman/mix_test_interactive/compare/v4.0.0...v4.1.0) - 2024-09-21
+
+### Added
+
+- This version adds a number of new commands for controlling additional `mix test` options interactively:
+
+  - `d <seed>`/`d`: Set or clear the seed to use when running tests (`mix test --seed <seed>`). ([#112](https://github.com/randycoulman/mix_test_interactive/pull/112))
+  - `i <tags...>`/`i`: Set or clear tags to include (`mix test --include <tag1> --include <tag2>...`). ([#113](https://github.com/randycoulman/mix_test_interactive/pull/113))
+  - `o <tags...>`/`o`: Set or clear "only" tags (`mix test --only <tag1> --only <tag2>...`). ([#113](https://github.com/randycoulman/mix_test_interactive/pull/113))
+  - `x <tags...>`/`x`: Set or clear tags to exclude (`mix test --exclude <tag1> --exclude <tag2>...`). ([#113](https://github.com/randycoulman/mix_test_interactive/pull/113))
+  - `m <max>`/`m`: Set or clear the maximum number of failures to allow (`mix test --max-failures <max>`). ([#116](https://github.com/randycoulman/mix_test_interactive/pull/116))
+  - `r <count>/`/`r`: Set or clear the maximum number of repeated runs until a test failure (`mix test --repeat-until-failure <count>`). **NOTE:** `mix test` only supports this option in v1.17.0 and later. ([#118](https://github.com/randycoulman/mix_test_interactive/pull/118))
+  - `t`: Toggle test tracing on/off (`mix test --trace`). ([#117](https://github.com/randycoulman/mix_test_interactive/pull/112))
+
+- There is now a `MixTestInteractive.TestRunner` behaviour for use in custom test runners. Up until now, custom test runners needed to implement a single `run/2` function. This release adds a behaviour that custom test runners can implement to ensure that they've correctly conformed to the interface. Custom test runners don't have to explicitly implement the behaviour, but must implicitly do so as before. ([#115](https://github.com/randycoulman/mix_test_interactive/pull/115))
 
 ## [v4.0.0](https://github.com/randycoulman/mix_test_interactive/compare/v3.2.1...v4.0.0) - 2024-09-13
 

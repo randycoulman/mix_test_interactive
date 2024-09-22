@@ -101,7 +101,7 @@ defmodule Mix.Tasks.Test.Interactive do
   - `s`: Run only test files that reference modules that have changed since the
     last run (equivalent to the `--stale` option of `mix test`).
   - `t`: Turn test tracing on or off (equivalent to the `--trace` option of `mix
-    test).
+    test`).
   - `x <tags...>`: Exclude tests tagged with the listed tags (equivalent to the
     `--exclude` option of `mix test`).
   - `x`: Clear any excluded tags.
