@@ -63,6 +63,32 @@ defmodule MixTestInteractive.EndToEndTest do
     assert_ran_tests(["--stale"])
   end
 
+  test "max failures workflow", %{pid: pid} do
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "m 3")
+    assert_ran_tests(["--max-failures", "3"])
+
+    assert :ok = InteractiveMode.process_command(pid, "m")
+    assert_ran_tests()
+  end
+
+  test "seed workflow", %{pid: pid} do
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "d 4242")
+    assert_ran_tests(["--seed", "4242"])
+
+    assert :ok = InteractiveMode.note_file_changed(pid)
+    assert_ran_tests(["--seed", "4242"])
+
+    assert :ok = InteractiveMode.process_command(pid, "s")
+    assert_ran_tests(["--seed", "4242", "--stale"])
+
+    assert :ok = InteractiveMode.process_command(pid, "d")
+    assert_ran_tests(["--stale"])
+  end
+
   test "tag workflow", %{pid: pid} do
     assert_ran_tests()
 
@@ -95,22 +121,6 @@ defmodule MixTestInteractive.EndToEndTest do
 
     assert :ok = InteractiveMode.process_command(pid, "x")
     assert_ran_tests()
-  end
-
-  test "seed workflow", %{pid: pid} do
-    assert_ran_tests()
-
-    assert :ok = InteractiveMode.process_command(pid, "d 4242")
-    assert_ran_tests(["--seed", "4242"])
-
-    assert :ok = InteractiveMode.note_file_changed(pid)
-    assert_ran_tests(["--seed", "4242"])
-
-    assert :ok = InteractiveMode.process_command(pid, "s")
-    assert_ran_tests(["--seed", "4242", "--stale"])
-
-    assert :ok = InteractiveMode.process_command(pid, "d")
-    assert_ran_tests(["--stale"])
   end
 
   test "watch on/off workflow", %{pid: pid} do

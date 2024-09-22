@@ -64,6 +64,20 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("i", settings)
     end
 
+    test "m <max> sets max-failures" do
+      settings = %Settings{}
+      expected = Settings.with_max_failures(settings, "4")
+
+      assert {:ok, ^expected} = process_command("m 4", settings)
+    end
+
+    test "m with no seed clears max-failures" do
+      {:ok, settings} = process_command("m 1", %Settings{})
+      expected = Settings.clear_max_failures(settings)
+
+      assert {:ok, ^expected} = process_command("m", settings)
+    end
+
     test "o <tag...> runs with only the given tags" do
       settings = %Settings{}
       expected = Settings.with_only(settings, ["tag1", "tag2"])

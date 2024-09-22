@@ -244,6 +244,12 @@ defmodule MixTestInteractive.CommandLineParserTest do
       assert settings.initial_cli_args == ["--trace", "--raise"]
     end
 
+    test "extracts max-failures from arguments" do
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--trace", "--max-failures", "7", "--raise"])
+      assert settings.max_failures == "7"
+      assert settings.initial_cli_args == ["--trace", "--raise"]
+    end
+
     test "extracts only from arguments" do
       {:ok, %{settings: settings}} =
         CommandLineParser.parse(["--only", "tag1", "--trace", "--only", "tag2", "--failed", "--raise", "--only", "tag3"])

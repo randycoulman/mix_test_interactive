@@ -19,6 +19,7 @@ defmodule MixTestInteractive.Settings do
     field :includes, [String.t()], default: []
     field :initial_cli_args, [String.t()], default: []
     field :list_all_files, (-> [String.t()]), default: @default_list_all_files
+    field :max_failures, String.t()
     field :only, [String.t()], default: []
     field :patterns, [String.t()], default: []
     field :seed, String.t()
@@ -48,6 +49,15 @@ defmodule MixTestInteractive.Settings do
   @spec clear_includes(t()) :: t()
   def clear_includes(%__MODULE__{} = settings) do
     %{settings | includes: []}
+  end
+
+  @doc """
+  Update settings to run with unlimited failures, clearing any specified maximum
+  number of failures.
+  """
+  @spec clear_max_failures(t()) :: t()
+  def clear_max_failures(%__MODULE__{} = settings) do
+    %{settings | max_failures: nil}
   end
 
   @doc """
@@ -140,13 +150,23 @@ defmodule MixTestInteractive.Settings do
           "Ran all tests"
       end
 
-    case_result =
+    with_seed =
       case settings.seed do
         nil -> run_summary
         seed -> run_summary <> " with seed: #{seed}"
       end
 
-    append_tag_filters(case_result, settings)
+    with_seed
+    |> append_max_failures(settings)
+    |> append_tag_filters(settings)
+  end
+
+  defp append_max_failures(summary, %__MODULE__{max_failures: nil} = _settings) do
+    summary
+  end
+
+  defp append_max_failures(summary, %__MODULE__{} = settings) do
+    summary <> "\nMax failures: #{settings.max_failures}"
   end
 
   defp append_tag_filters(summary, %__MODULE__{} = settings) do
@@ -184,6 +204,16 @@ defmodule MixTestInteractive.Settings do
   @spec with_includes(t(), [String.t()]) :: t()
   def with_includes(%__MODULE__{} = settings, includes) do
     %{settings | includes: includes}
+  end
+
+  @doc """
+  Stop running tests after a maximum number of failures.
+
+  Corresponds to `mix test --max-failures <max>`.
+  """
+  @spec with_max_failures(t(), String.t()) :: t()
+  def with_max_failures(%__MODULE__{} = settings, max) do
+    %{settings | max_failures: max}
   end
 
   @doc """
@@ -248,6 +278,9 @@ defmodule MixTestInteractive.Settings do
   defp opts_from_single_setting({:includes, includes}) do
     Enum.flat_map(includes, &["--include", &1])
   end
+
+  defp opts_from_single_setting({:max_failures, nil}), do: []
+  defp opts_from_single_setting({:max_failures, max}), do: ["--max-failures", max]
 
   defp opts_from_single_setting({:only, only}) do
     Enum.flat_map(only, &["--only", &1])

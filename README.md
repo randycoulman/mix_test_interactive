@@ -17,9 +17,9 @@ which tests should be run with a few keystrokes.
 
 It allows you to easily switch between running all tests, stale tests, or failed
 tests. Or, you can run only the tests whose filenames contain a substring. You
-can also control which tags are included or excluded and easily specify the test
-seed to use.
-Includes an optional "watch mode" which runs tests after every file change.
+can also control which tags are included or excluded, modify the maximum number
+of failures allowed, and specify the test seed to use. Includes an optional
+"watch mode" which runs tests after every file change.
 
 ## Installation
 
@@ -92,6 +92,8 @@ more patterns on the command-line, `mix test.interactive` will find all test
 files matching those patterns and pass them to `mix test` as if you had used the
 `p` command (described below).
 
+## Interactive Commands
+
 After the tests run, you can use the interactive commands to change which tests
 will run.
 
@@ -104,6 +106,9 @@ will run.
 - `i <tags...>`: Include tests tagged with the listed tags (equivalent to the
   `--include` option of `mix test`).
 - `i`: Clear any included tags.
+- `m <max>`: Specify the maximum number of failures allowed (equivalent to the
+  `--max-failures` option of `mix test`).
+- `m`: Clear any previously specified maximum number of failures.
 - `o <tags...>`: Run only tests tagged with the listed tags (equivalent to the
   `--only` option of `mix test`).
 - `o`: Clear any "only" tags.

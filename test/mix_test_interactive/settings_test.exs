@@ -194,6 +194,26 @@ defmodule MixTestInteractive.SettingsTest do
     end
   end
 
+  describe "specifying maximum failures" do
+    test "stops after a specified number of failures" do
+      max = "3"
+      settings = Settings.with_max_failures(%Settings{initial_cli_args: ["--trace"]}, max)
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--trace", "--max-failures", max]
+    end
+
+    test "clears maximum failures" do
+      settings =
+        %Settings{}
+        |> Settings.with_max_failures("2")
+        |> Settings.clear_max_failures()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+  end
+
   describe "specifying the seed" do
     test "runs with seed" do
       seed = "5678"
@@ -271,6 +291,12 @@ defmodule MixTestInteractive.SettingsTest do
         |> Settings.with_seed(seed)
 
       assert Settings.summary(settings) == "Ran all test files matching p1, p2 with seed: #{seed}"
+    end
+
+    test "appends max failures" do
+      settings = Settings.with_max_failures(%Settings{}, "6")
+
+      assert Settings.summary(settings) =~ "Max failures: 6"
     end
 
     test "appends tag filters" do

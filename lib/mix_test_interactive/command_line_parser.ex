@@ -167,6 +167,7 @@ defmodule MixTestInteractive.CommandLineParser do
     {failed?, mix_test_opts} = Keyword.pop(mix_test_opts, :failed, false)
     {includes, mix_test_opts} = Keyword.pop_values(mix_test_opts, :include)
     {only, mix_test_opts} = Keyword.pop_values(mix_test_opts, :only)
+    {max_failures, mix_test_opts} = Keyword.pop(mix_test_opts, :max_failures)
     {seed, mix_test_opts} = Keyword.pop(mix_test_opts, :seed)
     {stale?, mix_test_opts} = Keyword.pop(mix_test_opts, :stale, false)
     watching? = Keyword.get(mti_opts, :watch, true)
@@ -176,6 +177,7 @@ defmodule MixTestInteractive.CommandLineParser do
       failed?: no_patterns? && failed?,
       includes: includes,
       initial_cli_args: OptionParser.to_argv(mix_test_opts),
+      max_failures: max_failures && to_string(max_failures),
       only: only,
       patterns: patterns,
       seed: seed && to_string(seed),
