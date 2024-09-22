@@ -107,6 +107,20 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("p second", first_config)
     end
 
+    test "r <count> sets the repeat until failure count" do
+      settings = %Settings{}
+      expected = Settings.with_repeat_count(settings, "4200")
+
+      assert {:ok, ^expected} = process_command("r 4200", settings)
+    end
+
+    test "r with no count clears the repeat until failure count" do
+      {:ok, settings} = process_command("r 1000", %Settings{})
+      expected = Settings.clear_repeat_count(settings)
+
+      assert {:ok, ^expected} = process_command("r", settings)
+    end
+
     test "s runs only stale tests" do
       settings = %Settings{}
       expected = Settings.only_stale(settings)

@@ -214,6 +214,26 @@ defmodule MixTestInteractive.SettingsTest do
     end
   end
 
+  describe "repeating until failure" do
+    test "re-runs up to specified times until failure" do
+      count = "56"
+      settings = Settings.with_repeat_count(%Settings{initial_cli_args: ["--color"]}, count)
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--color", "--repeat-until-failure", count]
+    end
+
+    test "clears the repeat count" do
+      settings =
+        %Settings{}
+        |> Settings.with_repeat_count("12")
+        |> Settings.clear_repeat_count()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+  end
+
   describe "specifying the seed" do
     test "runs with seed" do
       seed = "5678"
@@ -316,6 +336,12 @@ defmodule MixTestInteractive.SettingsTest do
       settings = Settings.with_max_failures(%Settings{}, "6")
 
       assert Settings.summary(settings) =~ "Max failures: 6"
+    end
+
+    test "appends repeat count" do
+      settings = Settings.with_repeat_count(%Settings{}, "150")
+
+      assert Settings.summary(settings) =~ "Repeat until failure: 150"
     end
 
     test "appends tag filters" do

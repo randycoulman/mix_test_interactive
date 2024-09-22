@@ -168,6 +168,7 @@ defmodule MixTestInteractive.CommandLineParser do
     {includes, mix_test_opts} = Keyword.pop_values(mix_test_opts, :include)
     {only, mix_test_opts} = Keyword.pop_values(mix_test_opts, :only)
     {max_failures, mix_test_opts} = Keyword.pop(mix_test_opts, :max_failures)
+    {repeat_count, mix_test_opts} = Keyword.pop(mix_test_opts, :repeat_until_failure)
     {seed, mix_test_opts} = Keyword.pop(mix_test_opts, :seed)
     {stale?, mix_test_opts} = Keyword.pop(mix_test_opts, :stale, false)
     {trace?, mix_test_opts} = Keyword.pop(mix_test_opts, :trace, false)
@@ -181,6 +182,7 @@ defmodule MixTestInteractive.CommandLineParser do
       max_failures: max_failures && to_string(max_failures),
       only: only,
       patterns: patterns,
+      repeat_count: repeat_count && to_string(repeat_count),
       seed: seed && to_string(seed),
       stale?: no_patterns? && !failed? && stale?,
       tracing?: trace?,

@@ -22,6 +22,7 @@ defmodule MixTestInteractive.Settings do
     field :max_failures, String.t()
     field :only, [String.t()], default: []
     field :patterns, [String.t()], default: []
+    field :repeat_count, String.t()
     field :seed, String.t()
     field :stale?, boolean(), default: false
     field :tracing?, boolean(), default: false
@@ -67,6 +68,15 @@ defmodule MixTestInteractive.Settings do
   @spec clear_only(t()) :: t()
   def clear_only(%__MODULE__{} = settings) do
     %{settings | only: []}
+  end
+
+  @doc """
+  Update settings to run tests only once, clearing any repeat-until-failure
+  count.
+  """
+  @spec clear_repeat_count(t()) :: t()
+  def clear_repeat_count(%__MODULE__{} = settings) do
+    %{settings | repeat_count: nil}
   end
 
   @doc """
@@ -160,6 +170,7 @@ defmodule MixTestInteractive.Settings do
     with_seed
     |> append_tag_filters(settings)
     |> append_max_failures(settings)
+    |> append_repeat_count(settings)
     |> append_tracing(settings)
   end
 
@@ -169,6 +180,12 @@ defmodule MixTestInteractive.Settings do
 
   defp append_max_failures(summary, %__MODULE__{} = settings) do
     summary <> "\nMax failures: #{settings.max_failures}"
+  end
+
+  defp append_repeat_count(summary, %__MODULE__{repeat_count: nil}), do: summary
+
+  defp append_repeat_count(summary, %__MODULE__{} = settings) do
+    summary <> "\nRepeat until failure: #{settings.repeat_count}"
   end
 
   defp append_tag_filters(summary, %__MODULE__{} = settings) do
@@ -251,6 +268,16 @@ defmodule MixTestInteractive.Settings do
   end
 
   @doc """
+  Update settings to run tests <count> times until failure.
+
+  Corresponds to `mix test --repeat-until-failure <count>`.
+  """
+  @spec with_repeat_count(t(), String.t()) :: t()
+  def with_repeat_count(%__MODULE__{} = settings, count) do
+    %{settings | repeat_count: count}
+  end
+
+  @doc """
   Update settings to run tests with a specific seed.
 
   Corresponds to `mix test --seed <seed>`.
@@ -301,6 +328,9 @@ defmodule MixTestInteractive.Settings do
   defp opts_from_single_setting({:only, only}) do
     Enum.flat_map(only, &["--only", &1])
   end
+
+  defp opts_from_single_setting({:repeat_count, nil}), do: []
+  defp opts_from_single_setting({:repeat_count, count}), do: ["--repeat-until-failure", count]
 
   defp opts_from_single_setting({:seed, nil}), do: []
   defp opts_from_single_setting({:seed, seed}), do: ["--seed", seed]

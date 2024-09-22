@@ -258,6 +258,12 @@ defmodule MixTestInteractive.CommandLineParserTest do
       assert settings.initial_cli_args == ["--color", "--raise"]
     end
 
+    test "extracts repeat-until-failure from arguments" do
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--color", "--repeat-until-failure", "1000", "--raise"])
+      assert settings.repeat_count == "1000"
+      assert settings.initial_cli_args == ["--color", "--raise"]
+    end
+
     test "extracts seed from arguments" do
       {:ok, %{settings: settings}} = CommandLineParser.parse(["--color", "--seed", "5432", "--raise"])
       assert settings.seed == "5432"
