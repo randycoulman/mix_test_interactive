@@ -170,6 +170,7 @@ defmodule MixTestInteractive.CommandLineParser do
     {max_failures, mix_test_opts} = Keyword.pop(mix_test_opts, :max_failures)
     {seed, mix_test_opts} = Keyword.pop(mix_test_opts, :seed)
     {stale?, mix_test_opts} = Keyword.pop(mix_test_opts, :stale, false)
+    {trace?, mix_test_opts} = Keyword.pop(mix_test_opts, :trace, false)
     watching? = Keyword.get(mti_opts, :watch, true)
 
     %Settings{
@@ -182,6 +183,7 @@ defmodule MixTestInteractive.CommandLineParser do
       patterns: patterns,
       seed: seed && to_string(seed),
       stale?: no_patterns? && !failed? && stale?,
+      tracing?: trace?,
       watching?: watching?
     }
   end

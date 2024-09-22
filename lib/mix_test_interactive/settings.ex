@@ -24,6 +24,7 @@ defmodule MixTestInteractive.Settings do
     field :patterns, [String.t()], default: []
     field :seed, String.t()
     field :stale?, boolean(), default: false
+    field :tracing?, boolean(), default: false
     field :watching?, boolean(), default: true
   end
 
@@ -157,8 +158,9 @@ defmodule MixTestInteractive.Settings do
       end
 
     with_seed
-    |> append_max_failures(settings)
     |> append_tag_filters(settings)
+    |> append_max_failures(settings)
+    |> append_tracing(settings)
   end
 
   defp append_max_failures(summary, %__MODULE__{max_failures: nil} = _settings) do
@@ -180,10 +182,32 @@ defmodule MixTestInteractive.Settings do
     |> Enum.join("\n")
   end
 
+  defp append_tracing(summary, %__MODULE__{tracing?: false}), do: summary
+
+  defp append_tracing(summary, %__MODULE__{tracing?: true}) do
+    summary <> "\nTracing: ON"
+  end
+
   defp tag_filters(_label, []), do: nil
 
   defp tag_filters(label, tags) do
     label <> ": " <> inspect(tags)
+  end
+
+  @doc """
+  Toggle test tracing on or off.
+  """
+  @spec toggle_tracing(t()) :: t()
+  def toggle_tracing(%__MODULE__{} = settings) do
+    %{settings | tracing?: !settings.tracing?}
+  end
+
+  @doc """
+  Toggle file-watching mode on or off.
+  """
+  @spec toggle_watch_mode(t()) :: t()
+  def toggle_watch_mode(%__MODULE__{} = settings) do
+    %{settings | watching?: !settings.watching?}
   end
 
   @doc """
@@ -236,14 +260,6 @@ defmodule MixTestInteractive.Settings do
     %{settings | seed: seed}
   end
 
-  @doc """
-  Toggle file-watching mode on or off.
-  """
-  @spec toggle_watch_mode(t()) :: t()
-  def toggle_watch_mode(%__MODULE__{} = settings) do
-    %{settings | watching?: !settings.watching?}
-  end
-
   defp args_from_settings(%__MODULE{} = settings) do
     with {:ok, files} <- files_from_patterns(settings) do
       {:ok, opts_from_settings(settings) ++ files}
@@ -291,6 +307,9 @@ defmodule MixTestInteractive.Settings do
 
   defp opts_from_single_setting({:stale?, false}), do: []
   defp opts_from_single_setting({:stale?, true}), do: ["--stale"]
+
+  defp opts_from_single_setting({:tracing?, false}), do: []
+  defp opts_from_single_setting({:tracing?, true}), do: ["--trace"]
 
   defp opts_from_single_setting({_key, _value}), do: []
 end

@@ -186,8 +186,8 @@ defmodule MixTestInteractive.CommandLineParserTest do
 
   describe "mix test arguments" do
     test "records initial `mix test` arguments" do
-      {:ok, %{settings: settings}} = CommandLineParser.parse(["--trace", "--raise"])
-      assert settings.initial_cli_args == ["--trace", "--raise"]
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--color", "--raise"])
+      assert settings.initial_cli_args == ["--color", "--raise"]
     end
 
     test "records no `mix test` arguments by default" do
@@ -207,7 +207,7 @@ defmodule MixTestInteractive.CommandLineParserTest do
           "--",
           "--exclude",
           "tag1",
-          "--trace",
+          "--color",
           "--exclude",
           "tag2",
           "--failed",
@@ -217,13 +217,13 @@ defmodule MixTestInteractive.CommandLineParserTest do
         ])
 
       assert settings.excludes == ["tag1", "tag2", "tag3"]
-      assert settings.initial_cli_args == ["--trace", "--raise"]
+      assert settings.initial_cli_args == ["--color", "--raise"]
     end
 
     test "extracts failed flag from arguments" do
-      {:ok, %{settings: settings}} = CommandLineParser.parse(["--trace", "--failed", "--raise"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--color", "--failed", "--raise"])
       assert settings.failed?
-      assert settings.initial_cli_args == ["--trace", "--raise"]
+      assert settings.initial_cli_args == ["--color", "--raise"]
     end
 
     test "extracts includes from arguments" do
@@ -231,7 +231,7 @@ defmodule MixTestInteractive.CommandLineParserTest do
         CommandLineParser.parse([
           "--include",
           "tag1",
-          "--trace",
+          "--color",
           "--include",
           "tag2",
           "--failed",
@@ -241,39 +241,45 @@ defmodule MixTestInteractive.CommandLineParserTest do
         ])
 
       assert settings.includes == ["tag1", "tag2", "tag3"]
-      assert settings.initial_cli_args == ["--trace", "--raise"]
+      assert settings.initial_cli_args == ["--color", "--raise"]
     end
 
     test "extracts max-failures from arguments" do
-      {:ok, %{settings: settings}} = CommandLineParser.parse(["--trace", "--max-failures", "7", "--raise"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--color", "--max-failures", "7", "--raise"])
       assert settings.max_failures == "7"
-      assert settings.initial_cli_args == ["--trace", "--raise"]
+      assert settings.initial_cli_args == ["--color", "--raise"]
     end
 
     test "extracts only from arguments" do
       {:ok, %{settings: settings}} =
-        CommandLineParser.parse(["--only", "tag1", "--trace", "--only", "tag2", "--failed", "--raise", "--only", "tag3"])
+        CommandLineParser.parse(["--only", "tag1", "--color", "--only", "tag2", "--failed", "--raise", "--only", "tag3"])
 
       assert settings.only == ["tag1", "tag2", "tag3"]
-      assert settings.initial_cli_args == ["--trace", "--raise"]
+      assert settings.initial_cli_args == ["--color", "--raise"]
     end
 
     test "extracts seed from arguments" do
-      {:ok, %{settings: settings}} = CommandLineParser.parse(["--trace", "--seed", "5432", "--raise"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--color", "--seed", "5432", "--raise"])
       assert settings.seed == "5432"
-      assert settings.initial_cli_args == ["--trace", "--raise"]
+      assert settings.initial_cli_args == ["--color", "--raise"]
     end
 
     test "extracts stale setting from arguments" do
-      {:ok, %{settings: settings}} = CommandLineParser.parse(["--trace", "--stale", "--raise"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--color", "--stale", "--raise"])
       assert settings.stale?
-      assert settings.initial_cli_args == ["--trace", "--raise"]
+      assert settings.initial_cli_args == ["--color", "--raise"]
+    end
+
+    test "extracts trace flag from arguments" do
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--color", "--trace", "--raise"])
+      assert settings.tracing?
+      assert settings.initial_cli_args == ["--color", "--raise"]
     end
 
     test "extracts patterns from arguments" do
-      {:ok, %{settings: settings}} = CommandLineParser.parse(["pattern1", "--trace", "pattern2"])
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["pattern1", "--color", "pattern2"])
       assert settings.patterns == ["pattern1", "pattern2"]
-      assert settings.initial_cli_args == ["--trace"]
+      assert settings.initial_cli_args == ["--color"]
     end
 
     test "failed takes precedence over stale" do

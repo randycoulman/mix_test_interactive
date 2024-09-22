@@ -16,6 +16,7 @@ defmodule MixTestInteractive.CommandProcessor do
   alias MixTestInteractive.Command.RunTests
   alias MixTestInteractive.Command.Seed
   alias MixTestInteractive.Command.Stale
+  alias MixTestInteractive.Command.ToggleTracing
   alias MixTestInteractive.Command.ToggleWatchMode
   alias MixTestInteractive.Settings
 
@@ -34,6 +35,7 @@ defmodule MixTestInteractive.CommandProcessor do
     RunTests,
     Seed,
     Stale,
+    ToggleTracing,
     ToggleWatchMode
   ]
 

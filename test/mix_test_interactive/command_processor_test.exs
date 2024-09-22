@@ -114,6 +114,13 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("s", settings)
     end
 
+    test "t toggles tracing" do
+      settings = %Settings{}
+      expected = Settings.toggle_tracing(settings)
+
+      assert {:ok, ^expected} = process_command("t", settings)
+    end
+
     test "w toggles watch mode" do
       settings = %Settings{}
       expected = Settings.toggle_watch_mode(settings)

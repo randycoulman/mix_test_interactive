@@ -8,12 +8,12 @@ defmodule MixTestInteractive.SettingsTest do
       all_files = ~w(file1 file2 no_match other)
 
       settings =
-        %Settings{initial_cli_args: ["--trace"]}
+        %Settings{initial_cli_args: ["--color"]}
         |> with_fake_file_list(all_files)
         |> Settings.only_patterns(["file", "other"])
 
       {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--trace", "file1", "file2", "other"]
+      assert args == ["--color", "file1", "file2", "other"]
     end
 
     test "returns error if no files match pattern" do
@@ -27,18 +27,18 @@ defmodule MixTestInteractive.SettingsTest do
 
     test "restricts to failed tests" do
       settings =
-        Settings.only_failed(%Settings{initial_cli_args: ["--trace"]})
+        Settings.only_failed(%Settings{initial_cli_args: ["--color"]})
 
       {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--trace", "--failed"]
+      assert args == ["--color", "--failed"]
     end
 
     test "restricts to stale tests" do
       settings =
-        Settings.only_stale(%Settings{initial_cli_args: ["--trace"]})
+        Settings.only_stale(%Settings{initial_cli_args: ["--color"]})
 
       {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--trace", "--stale"]
+      assert args == ["--color", "--stale"]
     end
 
     test "pattern filter clears failed flag" do
@@ -141,10 +141,10 @@ defmodule MixTestInteractive.SettingsTest do
   describe "filtering tests by tags" do
     test "excludes specified tags" do
       tags = ["tag1", "tag2"]
-      settings = Settings.with_excludes(%Settings{initial_cli_args: ["--trace"]}, tags)
+      settings = Settings.with_excludes(%Settings{initial_cli_args: ["--color"]}, tags)
 
       {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--trace", "--exclude", "tag1", "--exclude", "tag2"]
+      assert args == ["--color", "--exclude", "tag1", "--exclude", "tag2"]
     end
 
     test "clears excluded tags" do
@@ -159,10 +159,10 @@ defmodule MixTestInteractive.SettingsTest do
 
     test "includes specified tags" do
       tags = ["tag1", "tag2"]
-      settings = Settings.with_includes(%Settings{initial_cli_args: ["--trace"]}, tags)
+      settings = Settings.with_includes(%Settings{initial_cli_args: ["--color"]}, tags)
 
       {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--trace", "--include", "tag1", "--include", "tag2"]
+      assert args == ["--color", "--include", "tag1", "--include", "tag2"]
     end
 
     test "clears included tags" do
@@ -177,10 +177,10 @@ defmodule MixTestInteractive.SettingsTest do
 
     test "runs only specified tags" do
       tags = ["tag1", "tag2"]
-      settings = Settings.with_only(%Settings{initial_cli_args: ["--trace"]}, tags)
+      settings = Settings.with_only(%Settings{initial_cli_args: ["--color"]}, tags)
 
       {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--trace", "--only", "tag1", "--only", "tag2"]
+      assert args == ["--color", "--only", "tag1", "--only", "tag2"]
     end
 
     test "clears only tags" do
@@ -197,10 +197,10 @@ defmodule MixTestInteractive.SettingsTest do
   describe "specifying maximum failures" do
     test "stops after a specified number of failures" do
       max = "3"
-      settings = Settings.with_max_failures(%Settings{initial_cli_args: ["--trace"]}, max)
+      settings = Settings.with_max_failures(%Settings{initial_cli_args: ["--color"]}, max)
 
       {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--trace", "--max-failures", max]
+      assert args == ["--color", "--max-failures", max]
     end
 
     test "clears maximum failures" do
@@ -217,10 +217,10 @@ defmodule MixTestInteractive.SettingsTest do
   describe "specifying the seed" do
     test "runs with seed" do
       seed = "5678"
-      settings = Settings.with_seed(%Settings{initial_cli_args: ["--trace"]}, seed)
+      settings = Settings.with_seed(%Settings{initial_cli_args: ["--color"]}, seed)
 
       {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--trace", "--seed", seed]
+      assert args == ["--color", "--seed", seed]
     end
 
     test "clears the seed" do
@@ -228,6 +228,25 @@ defmodule MixTestInteractive.SettingsTest do
         %Settings{}
         |> Settings.with_seed("1234")
         |> Settings.clear_seed()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+  end
+
+  describe "tracing the test run" do
+    test "toggles tracing on" do
+      settings = Settings.toggle_tracing(%Settings{initial_cli_args: ["--color"]})
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--color", "--trace"]
+    end
+
+    test "toggles tracing off" do
+      settings =
+        %Settings{}
+        |> Settings.toggle_tracing()
+        |> Settings.toggle_tracing()
 
       {:ok, args} = Settings.cli_args(settings)
       assert args == []
@@ -311,6 +330,12 @@ defmodule MixTestInteractive.SettingsTest do
       assert summary =~ ~s(Excluding tags: ["tag1", "tag2"])
       assert summary =~ ~s(Including tags: ["tag3", "tag4"])
       assert summary =~ ~s(Only tags: ["tag5", "tag6"])
+    end
+
+    test "appends tracing" do
+      settings = Settings.toggle_tracing(%Settings{})
+
+      assert Settings.summary(settings) =~ "Tracing: ON"
     end
   end
 end
