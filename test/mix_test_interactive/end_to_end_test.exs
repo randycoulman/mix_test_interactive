@@ -73,6 +73,16 @@ defmodule MixTestInteractive.EndToEndTest do
     assert_ran_tests()
   end
 
+  test "repeat until failure workflow", %{pid: pid} do
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "r 1000")
+    assert_ran_tests(["--repeat-until-failure", "1000"])
+
+    assert :ok = InteractiveMode.process_command(pid, "r")
+    assert_ran_tests()
+  end
+
   test "seed workflow", %{pid: pid} do
     assert_ran_tests()
 

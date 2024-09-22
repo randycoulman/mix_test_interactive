@@ -18,8 +18,9 @@ which tests should be run with a few keystrokes.
 It allows you to easily switch between running all tests, stale tests, or failed
 tests. Or, you can run only the tests whose filenames contain a substring. You
 can also control which tags are included or excluded, modify the maximum number
-of failures allowed, specify the test seed to use, and toggle tracing on and
-off. Includes an optional "watch mode" which runs tests after every file change.
+of failures allowed, repeat the test suite until a failure occurs, specify the
+test seed to use, and toggle tracing on and off. Includes an optional "watch
+mode" which runs tests after every file change.
 
 ## Installation
 
@@ -118,6 +119,10 @@ will run.
   e.g. `test/my_project/my_test.exs`, `test/my_project/my_test.exs:12:24` or
   `my`.
 - `q`: Exit the program. (Can also use `Ctrl-D`.)
+- `r <count>`: (Elixir 1.17.0 and later) Run tests up to <count> times until a
+  failure occurs (equivalent to the `--repeat-until-failure` option of `mix
+test`).
+- `r`: (Elixir 1.17.0 and later) Clear the "repeat-until-failure" count.
 - `s`: Run only test files that reference modules that have changed since the
   last run (equivalent to the `--stale` option of `mix test`).
 - `t`: Turn test tracing on or off (equivalent to the `--trace` option of `mix

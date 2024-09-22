@@ -214,6 +214,26 @@ defmodule MixTestInteractive.SettingsTest do
     end
   end
 
+  describe "repeating until failure" do
+    test "re-runs up to specified times until failure" do
+      count = "56"
+      settings = Settings.with_repeat_count(%Settings{initial_cli_args: ["--color"]}, count)
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--color", "--repeat-until-failure", count]
+    end
+
+    test "clears the repeat count" do
+      settings =
+        %Settings{}
+        |> Settings.with_repeat_count("12")
+        |> Settings.clear_repeat_count()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+  end
+
   describe "specifying the seed" do
     test "runs with seed" do
       seed = "5678"
@@ -250,92 +270,6 @@ defmodule MixTestInteractive.SettingsTest do
 
       {:ok, args} = Settings.cli_args(settings)
       assert args == []
-    end
-  end
-
-  describe "summary" do
-    test "ran all tests" do
-      settings = %Settings{}
-
-      assert Settings.summary(settings) == "Ran all tests"
-    end
-
-    test "ran all tests with seed" do
-      seed = "4242"
-      settings = Settings.with_seed(%Settings{}, seed)
-
-      assert Settings.summary(settings) == "Ran all tests with seed: #{seed}"
-    end
-
-    test "ran failed tests" do
-      settings = Settings.only_failed(%Settings{})
-
-      assert Settings.summary(settings) == "Ran only failed tests"
-    end
-
-    test "ran failed tests with seed" do
-      seed = "4242"
-
-      settings =
-        %Settings{}
-        |> Settings.only_failed()
-        |> Settings.with_seed(seed)
-
-      assert Settings.summary(settings) == "Ran only failed tests with seed: #{seed}"
-    end
-
-    test "ran stale tests" do
-      settings = Settings.only_stale(%Settings{})
-
-      assert Settings.summary(settings) == "Ran only stale tests"
-    end
-
-    test "ran stale tests with seed" do
-      seed = "4242"
-
-      settings =
-        %Settings{}
-        |> Settings.only_stale()
-        |> Settings.with_seed(seed)
-
-      assert Settings.summary(settings) == "Ran only stale tests with seed: #{seed}"
-    end
-
-    test "ran specific patterns with seed" do
-      seed = "4242"
-
-      settings =
-        %Settings{}
-        |> Settings.only_patterns(["p1", "p2"])
-        |> Settings.with_seed(seed)
-
-      assert Settings.summary(settings) == "Ran all test files matching p1, p2 with seed: #{seed}"
-    end
-
-    test "appends max failures" do
-      settings = Settings.with_max_failures(%Settings{}, "6")
-
-      assert Settings.summary(settings) =~ "Max failures: 6"
-    end
-
-    test "appends tag filters" do
-      settings =
-        %Settings{}
-        |> Settings.with_excludes(["tag1", "tag2"])
-        |> Settings.with_includes(["tag3", "tag4"])
-        |> Settings.with_only(["tag5", "tag6"])
-
-      summary = Settings.summary(settings)
-
-      assert summary =~ ~s(Excluding tags: ["tag1", "tag2"])
-      assert summary =~ ~s(Including tags: ["tag3", "tag4"])
-      assert summary =~ ~s(Only tags: ["tag5", "tag6"])
-    end
-
-    test "appends tracing" do
-      settings = Settings.toggle_tracing(%Settings{})
-
-      assert Settings.summary(settings) =~ "Tracing: ON"
     end
   end
 end

@@ -14,6 +14,7 @@ defmodule MixTestInteractive.InteractiveMode do
   alias MixTestInteractive.CommandProcessor
   alias MixTestInteractive.Config
   alias MixTestInteractive.Runner
+  alias MixTestInteractive.RunSummary
   alias MixTestInteractive.Settings
 
   @type option :: {:config, Config.t()} | {:name | String.t()}
@@ -116,7 +117,7 @@ defmodule MixTestInteractive.InteractiveMode do
     IO.puts("")
 
     settings
-    |> Settings.summary()
+    |> RunSummary.from_settings()
     |> IO.puts()
   end
 

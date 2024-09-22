@@ -13,6 +13,7 @@ defmodule MixTestInteractive.CommandProcessor do
   alias MixTestInteractive.Command.Only
   alias MixTestInteractive.Command.Pattern
   alias MixTestInteractive.Command.Quit
+  alias MixTestInteractive.Command.RepeatUntilFailure
   alias MixTestInteractive.Command.RunTests
   alias MixTestInteractive.Command.Seed
   alias MixTestInteractive.Command.Stale
@@ -32,6 +33,7 @@ defmodule MixTestInteractive.CommandProcessor do
     Only,
     Pattern,
     Quit,
+    RepeatUntilFailure,
     RunTests,
     Seed,
     Stale,
