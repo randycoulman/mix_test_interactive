@@ -5,9 +5,9 @@ defmodule Mix.Tasks.Test.Interactive do
 
   `mix test.interactive` allows you to easily switch between running all tests,
   stale tests, or failed tests. Or, you can run only the tests whose filenames
-  contain a substring. You can also control which tags are included or excluded
-  and easily specify the test seed to use. Includes an optional "watch mode"
-  which runs tests after every file change.
+  contain a substring. You can also control which tags are included or excluded,
+  modify the maximum number of failures allowed, and specify the test seed to use.
+  Includes an optional "watch mode" which runs tests after every file change.
 
   ## Usage
 
@@ -81,6 +81,9 @@ defmodule Mix.Tasks.Test.Interactive do
   - `i <tags...>`: Include tests tagged with the listed tags (equivalent to the
     `--include` option of `mix test`).
   - `i`: Clear any included tags.
+  - `m <max>`: Specify the maximum number of failures allowed (equivalent to the
+    `--max-failures` option of `mix test`).
+  - `m`: Clear any previously specified maximum number of failures.
   - `o <tags...>`: Run only tests tagged with the listed tags (equivalent to the
     `--only` option of `mix test`).
   - `o`: Clear any "only" tags.
