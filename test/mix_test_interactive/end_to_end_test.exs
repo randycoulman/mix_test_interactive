@@ -123,6 +123,16 @@ defmodule MixTestInteractive.EndToEndTest do
     assert_ran_tests()
   end
 
+  test "trace on/off workflow", %{pid: pid} do
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "t")
+    assert_ran_tests(["--trace"])
+
+    assert :ok = InteractiveMode.process_command(pid, "t")
+    assert_ran_tests()
+  end
+
   test "watch on/off workflow", %{pid: pid} do
     assert_ran_tests()
 
