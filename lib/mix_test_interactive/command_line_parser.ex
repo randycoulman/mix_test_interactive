@@ -231,10 +231,10 @@ defmodule MixTestInteractive.CommandLineParser do
   end
 
   defp try_parse_as_mti_args(args) do
-    {mti_opts, _args, invalid} = OptionParser.parse(args, strict: @options)
+    {mti_opts, patterns, invalid} = OptionParser.parse(args, strict: @options)
 
     cond do
-      invalid == [] -> {:ok, mti_opts}
+      invalid == [] and patterns == [] -> {:ok, mti_opts}
       mti_opts[:help] || mti_opts[:version] -> {:ok, mti_opts}
       mti_opts == [] -> {:error, :maybe_mix_test_args}
       true -> force_parse_as_mti_args(args)

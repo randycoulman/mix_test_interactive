@@ -288,6 +288,12 @@ defmodule MixTestInteractive.CommandLineParserTest do
       assert settings.initial_cli_args == ["--color"]
     end
 
+    test "extracts patterns even when no other flags are present" do
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["pattern1", "pattern2"])
+      assert settings.patterns == ["pattern1", "pattern2"]
+      assert settings.initial_cli_args == []
+    end
+
     test "failed takes precedence over stale" do
       {:ok, %{settings: settings}} = CommandLineParser.parse(["--failed", "--stale"])
       refute settings.stale?
