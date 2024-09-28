@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.0...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.1...HEAD)
+
+## [v4.1.0](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.0...v4.1.1) - 2024-09-28
+
+### Fixed
+
+- Properly handle `mix test.interactive <files_or_patterns...>` case. The new command-line parsing added in v4.0 was not properly capturing the filenames/patterns and passing them on to `mix test`. ([#123](https://github.com/randycoulman/mix_test_interactive/pull/123) - Thanks [@jfpedroza](https://github.com/jfpedroza) for finding and reporting the bug!)
 
 ## [v4.1.0](https://github.com/randycoulman/mix_test_interactive/compare/v4.0.0...v4.1.0) - 2024-09-21
 
