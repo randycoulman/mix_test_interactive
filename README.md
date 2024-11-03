@@ -293,6 +293,29 @@ if Mix.env == :dev do
 end
 ```
 
+## Elixir Script Execution
+
+If you are working on a 3rd-party repo, you may not want to add
+`mix_text_interactive` as a `mix.exs` dependency. In this case, it is possible
+to invoke `mix_test_interactive` from an Elixir script.
+
+Put this executable script somewhere on your PATH. (let's call the script `mti_exec`)
+
+```elixir 
+#!/usr/bin/env elixir
+
+Mix.install([
+  {:mix_test_interactive, "~> 4.1"}
+])
+
+MixTestInteractive.run(System.argv())
+```
+
+Now cd to your project root, and type `mti_exec --help`.  The script will accept 
+`mix_test_interactive` [options](#options) and [interactive
+commands](#interactive-commands).
+
+
 ## Compatibility Notes
 
 On Linux you may need to install `inotify-tools`.
