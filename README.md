@@ -24,8 +24,14 @@ mode" which runs tests after every file change.
 
 ## Installation
 
-The package can be installed by adding `mix_test_interactive` to your list of
-dependencies in `mix.exs`:
+`mix test.interactive` can be added as a dependency to your project, or it can
+be run from an Elixir script without being added to your project.
+
+### Installing as a Dependency
+
+To install `mix test.interactive` as a dependency of your project, making it
+available to anyone working in the project, add `mix_test_interactive` to the
+list of dependencies in your project's `mix.exs` file:
 
 ```elixir
 def deps do
@@ -34,6 +40,31 @@ def deps do
   ]
 end
 ```
+
+### Running from an Elixir Script
+
+If you are working on a 3rd-party project, you may not be able to add
+`mix test.interactive` as a dependency. In this case, it is possible
+to invoke `mix test.interactive` from an Elixir script.
+
+To accomplish this, put the following script somewhere on your PATH and make it
+executable.
+
+```elixir
+#!/usr/bin/env elixir
+
+Mix.install([
+  {:mix_test_interactive, "~> 4.1"}
+])
+
+MixTestInteractive.run(System.argv())
+```
+
+As an example, let's assume you've named the script `mti_exec`.
+
+Now you can `cd` to the project's root directory, and run `mti_exec`. The script
+will accept all of `mix_test_interactive`'s [command-line options](#options) and
+allow you to use any of its [interactive commands](#interactive-commands).
 
 ## Usage
 
