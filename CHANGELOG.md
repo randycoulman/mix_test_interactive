@@ -5,9 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.1...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.2...HEAD)
 
-## [v4.1.0](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.0...v4.1.1) - 2024-09-28
+## [v4.1.2](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.1...v4.1.2) - 2024-12-14
+
+### Updated
+
+- Update README with instructions for running `mix test.interactive` as an independent script that doesn't require installing as a dependency in your application. ([#127](https://github.com/randycoulman/mix_test_interactive/pull/127) - Thanks [@andyl](https://github.com/andyl)!)
+
+- Allow process_tree versions v0.1.3 and v0.2.0 to provide more flexibility for upstream projects ([#128](https://github.com/randycoulman/mix_test_interactive/pull/128))
+
+## [v4.1.1](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.0...v4.1.1) - 2024-09-28
 
 ### Fixed
 
