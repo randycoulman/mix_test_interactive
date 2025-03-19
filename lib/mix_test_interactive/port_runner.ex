@@ -34,7 +34,7 @@ defmodule MixTestInteractive.PortRunner do
           {command, command_args ++ [config.task | task_args]}
 
         _ ->
-          {zombie_killer(), [command] ++ command_args ++ enable_ansi(config.task, task_args)}
+          {zombie_killer(), [command] ++ command_args ++ enable_ansi(config.task) ++ task_args}
       end
 
     runner.(runner_program, runner_program_args,
@@ -45,19 +45,10 @@ defmodule MixTestInteractive.PortRunner do
     :ok
   end
 
-  @no_start_flag "--no-start"
+  defp enable_ansi(task) do
+    enable_command = "Application.put_env(:elixir, :ansi_enabled, true)"
 
-  defp enable_ansi(task, args) do
-    enable_command = "Application.put_env(:elixir, :ansi_enabled, true);"
-
-    {run, task_args} =
-      if @no_start_flag in args do
-        {["run", @no_start_flag, "-e"], List.delete(args, @no_start_flag)}
-      else
-        {["run", "-e"], args}
-      end
-
-    ["do"] ++ run ++ [enable_command, ",", task] ++ task_args
+    ["do", "eval", enable_command, ",", task]
   end
 
   defp zombie_killer do
