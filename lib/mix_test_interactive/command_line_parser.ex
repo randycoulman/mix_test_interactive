@@ -23,6 +23,7 @@ defmodule MixTestInteractive.CommandLineParser do
   end
 
   @options [
+    ansi_enabled: :boolean,
     arg: :keep,
     clear: :boolean,
     command: :string,
@@ -45,6 +46,9 @@ defmodule MixTestInteractive.CommandLineParser do
 
   where:
     <mti_args>:
+      --(no-)ansi-enabled             Enable ANSI (colored) output when running tests
+                                      (default `false` on Windows; `true` on other
+                                      platforms).
       --(no-)clear                    Clear the console before each run
                                       (default: `false`)
       --command <command>/--arg <arg> Custom command and arguments for running
@@ -141,6 +145,7 @@ defmodule MixTestInteractive.CommandLineParser do
     config =
       mti_opts
       |> Enum.reduce(Config.load_from_environment(), fn
+        {:ansi_enabled, enabled?}, config -> %{config | ansi_enabled?: enabled?}
         {:clear, clear?}, config -> %{config | clear?: clear?}
         {:exclude, excludes}, config -> %{config | exclude: excludes}
         {:extra_extensions, extra_extensions}, config -> %{config | extra_extensions: extra_extensions}

@@ -4,6 +4,25 @@ defmodule MixTestInteractive.ConfigTest do
   alias MixTestInteractive.Config
 
   describe "loading from the environment" do
+    test "takes :ansi_enabled? from the env" do
+      Process.put(:os_type, {:unix, :darwin})
+      Process.put(:ansi_enabled, false)
+      config = Config.load_from_environment()
+      refute config.ansi_enabled?
+    end
+
+    test "defaults :ansi_enabled? to false on Windows" do
+      Process.put(:os_type, {:win32, :nt})
+      config = Config.load_from_environment()
+      refute config.ansi_enabled?
+    end
+
+    test "defaults :ansi_enabled? to true on other platforms" do
+      Process.put(:os_type, {:unix, :darwin})
+      config = Config.load_from_environment()
+      assert config.ansi_enabled?
+    end
+
     test "takes :clear? from the env" do
       Process.put(:clear, true)
       config = Config.load_from_environment()

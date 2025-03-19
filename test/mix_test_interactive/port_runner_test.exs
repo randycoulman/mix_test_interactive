@@ -4,15 +4,37 @@ defmodule MixTestInteractive.PortRunnerTest do
   alias MixTestInteractive.Config
   alias MixTestInteractive.PortRunner
 
-  defp run(os_type, options) do
-    config = Keyword.get(options, :config, %Config{})
+  @unix {:unix, :darwin}
+  @windows {:win32, :nt}
+
+  defp config(overrides \\ %{}) do
+    Map.merge(%Config{ansi_enabled?: false}, overrides)
+  end
+
+  defp run(options \\ []) do
+    case run_raw(options) do
+      :no_message_received = result ->
+        result
+
+      {command, args, options} = result ->
+        if command =~ ~r{/zombie_killer$} do
+          [real_command | rest] = args
+          {real_command, rest, options}
+        else
+          result
+        end
+    end
+  end
+
+  defp run_raw(options \\ []) do
+    config = Keyword.get(options, :config, config())
     args = Keyword.get(options, :args, [])
 
     runner = fn command, args, options ->
       send(self(), {command, args, options})
     end
 
-    PortRunner.run(config, args, os_type, runner)
+    PortRunner.run(config, args, runner)
 
     receive do
       message -> message
@@ -21,99 +43,69 @@ defmodule MixTestInteractive.PortRunnerTest do
     end
   end
 
-  describe "running on Windows" do
-    defp run_windows(options \\ []) do
-      run({:win32, :nt}, options)
-    end
+  test "on Unix-like operating systems, runs mix test via zombie killer" do
+    Process.put(:os_type, @unix)
 
-    test "runs mix test directly in test environment by default" do
-      assert {"mix", ["test"], options} = run_windows()
+    {command, ["mix", "test"], _options} = run_raw()
 
-      assert Keyword.get(options, :env) == [{"MIX_ENV", "test"}]
-    end
-
-    test "appends extra command-line arguments" do
-      assert {"mix", ["test", "--cover"], _options} = run_windows(args: ["--cover"])
-    end
-
-    test "uses custom task" do
-      config = %Config{task: "custom"}
-      assert {_command, ["custom"], _options} = run_windows(config: config)
-    end
-
-    test "uses custom command with no args" do
-      config = %Config{command: {"custom_command", []}}
-      assert {"custom_command", _args, _options} = run_windows(config: config)
-    end
-
-    test "uses custom command with args" do
-      config = %Config{command: {"custom_command", ["--custom_arg"]}}
-      assert {"custom_command", ["--custom_arg", "test"], _options} = run_windows(config: config)
-    end
-
-    test "prepends command args to test args" do
-      config = %Config{command: {"custom_command", ["--custom_arg"]}}
-
-      assert {"custom_command", ["--custom_arg", "test", "--cover"], _options} =
-               run_windows(args: ["--cover"], config: config)
-    end
+    assert command =~ ~r{/zombie_killer$}
   end
 
-  describe "running on Unix-like operating systems" do
-    defp run_unix(options \\ []) do
-      run({:unix, :darwin}, options)
-    end
+  test "on Windows, runs mix test directly" do
+    Process.put(:os_type, @windows)
 
-    test "runs mix test via zombie killer with ansi enabled in test environment by default" do
-      {command, ["mix", "do", "eval", ansi, ",", "test"], options} = run_unix()
+    assert {"mix", ["test"], _options} = run_raw()
+  end
 
-      assert command =~ ~r{/zombie_killer$}
-      assert ansi =~ ~r/:ansi_enabled/
-      assert Keyword.get(options, :env) == [{"MIX_ENV", "test"}]
-    end
+  for os_type <- [@unix, @windows] do
+    describe "running on #{inspect(os_type)}" do
+      setup do
+        Process.put(:os_type, unquote(os_type))
+        :ok
+      end
 
-    test "passes no-start flag to test task" do
-      assert {_command, args, _options} = run_unix(args: ["--no-start"])
+      test "runs in test environment" do
+        {_command, _args, options} = run()
 
-      assert ["mix", "do", "eval", _ansi, ",", "test", "--no-start"] = args
-    end
+        assert Keyword.get(options, :env) == [{"MIX_ENV", "test"}]
+      end
 
-    test "appends extra command-line arguments from settings" do
-      {_command, args, _options} = run_unix(args: ["--cover"])
+      test "enables ansi output when turned on" do
+        config = config(%{ansi_enabled?: true})
+        {"mix", ["do", "eval", ansi, ",", "test"], _options} = run(config: config)
 
-      assert ["mix", "do", "eval", _ansi, ",", "test", "--cover"] = args
-    end
+        assert ansi =~ ~r/:ansi_enabled/
+      end
 
-    test "uses custom task" do
-      config = %Config{task: "custom_task"}
+      test "passes no-start flag to test task" do
+        assert {_command, ["test", "--no-start"], _options} = run(args: ["--no-start"])
+      end
 
-      {_command, args, _options} = run_unix(config: config)
+      test "appends extra command-line arguments" do
+        assert {_command, ["test", "--cover"], _options} = run(args: ["--cover"])
+      end
 
-      assert ["mix", "do", "eval", _ansi, ",", "custom_task"] = args
-    end
+      test "uses custom task" do
+        config = config(%{task: "custom_task"})
+        assert {_command, ["custom_task"], _options} = run(config: config)
+      end
 
-    test "uses custom command with no args" do
-      config = %Config{command: {"custom_command", []}}
+      test "uses custom command with no args" do
+        config = config(%{command: {"custom_command", []}})
+        assert {"custom_command", _args, _options} = run(config: config)
+      end
 
-      {_command, args, _options} = run_unix(config: config)
+      test "uses custom command with args" do
+        config = config(%{command: {"custom_command", ["--custom_arg"]}})
+        assert {"custom_command", ["--custom_arg", "test"], _options} = run(config: config)
+      end
 
-      assert ["custom_command", "do", "eval", _ansi, ",", "test"] = args
-    end
+      test "prepends command args to test args" do
+        config = config(%{command: {"custom_command", ["--custom_arg"]}})
 
-    test "uses custom command with args" do
-      config = %Config{command: {"custom_command", ["--custom_arg"]}}
-
-      {_command, args, _options} = run_unix(config: config)
-
-      assert ["custom_command", "--custom_arg", "do", "eval", _ansi, ",", "test"] = args
-    end
-
-    test "prepends command args to test args" do
-      config = %Config{command: {"custom_command", ["--custom_arg"]}}
-
-      {_command, args, _options} = run_unix(args: ["--cover"], config: config)
-
-      assert ["custom_command", "--custom_arg", "do", "eval", _ansi, ",", "test", "--cover"] = args
+        assert {"custom_command", ["--custom_arg", "test", "--cover"], _options} =
+                 run(args: ["--cover"], config: config)
+      end
     end
   end
 end

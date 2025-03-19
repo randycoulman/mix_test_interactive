@@ -32,6 +32,8 @@ defmodule Mix.Tasks.Test.Interactive do
   If an option is provided on the command line, it will override the same option
   specified in the configuration.
 
+  - `--(no-)ansi-enabled`: Enable ANSI (colored) output when running tests
+  (default `false` on Windows; `true` on other platforms).
   - `--(no-)clear`: Clear the console before each run (default `false`).
   - `--command <command> [--arg <arg>]`: Custom command and arguments for
     running tests (default: "mix" with no arguments). NOTE: Use `--arg` multiple
@@ -114,6 +116,8 @@ defmodule Mix.Tasks.Test.Interactive do
   If your project has a `config/config.exs` file, you can customize the
   operation of `mix test.interactive` with the following settings:
 
+  - `ansi_enabled: true`: Enable ANSI (colored) output when running tests
+    (default `false` on Windows; `true` on other platforms).
   - `clear: true`: Clear the console before each run (default: `false`).
   - `command: <program>` or `command: {<program>, [<arg>, ...]}`: Use the
     provided command and arguments to run the test task (default: `mix`).

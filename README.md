@@ -88,6 +88,8 @@ arguments, you must separate them with `--`.
 If an option is provided on the command line, it will override the same option
 specified in the configuration.
 
+- `--(no-)ansi-enabled`: Enable ANSI (colored) output when running tests
+  (default `false` on Windows; `true` on other platforms).
 - `--(no-)clear`: Clear the console before each run (default `false`).
 - `--command <command> [--arg <arg>]`: Custom command and arguments for running
   tests (default: "mix" with no arguments). NOTE: Use `--arg` multiple times to
@@ -185,6 +187,23 @@ if Mix.env == :dev do
     clear: true
 end
 ```
+
+### `ansi_enabled`: Enable ANSI (colored) output when running tests
+
+When `ansi_enabled` is set to true, `mix test.interactive` will enable ANSI
+output when running tests, allowing for `mix test`'s normal colored output.
+
+```elixir
+# config/config.exs
+import Config
+
+if Mix.env == :dev do
+  config :mix_test_interactive,
+    ansi_enabled: false
+end
+```
+
+The default is `false` on Windows and `true` on other platforms.
 
 ### `command`: Use a custom command
 

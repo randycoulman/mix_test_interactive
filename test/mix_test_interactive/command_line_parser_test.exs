@@ -62,7 +62,19 @@ defmodule MixTestInteractive.CommandLineParserTest do
   describe "mix test.interactive options" do
     test "retains original defaults when no options" do
       {:ok, %{config: config}} = CommandLineParser.parse([])
-      assert config == %Config{}
+      assert config == Config.new()
+    end
+
+    test "sets ansi_enabled? flag with --ansi-enabled" do
+      Process.put(:os_type, {:win32, :nt})
+      {:ok, %{config: config}} = CommandLineParser.parse(["--ansi-enabled"])
+      assert config.ansi_enabled?
+    end
+
+    test "clears ansi_enabled? flag with --no-ansi-enabled" do
+      Process.put(:os_type, {:unix, :darwin})
+      {:ok, %{config: config}} = CommandLineParser.parse(["--no-ansi-enabled"])
+      refute config.ansi_enabled?
     end
 
     test "sets clear? flag with --clear" do
