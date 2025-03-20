@@ -19,22 +19,22 @@ defmodule MixTestInteractive.PortRunner do
   @type runner ::
           (String.t(), [String.t()], keyword() ->
              {Collectable.t(), exit_status :: non_neg_integer()})
-  @type os_type :: {atom(), atom()}
 
   @doc """
   Run tests based on the current configuration.
   """
   @impl TestRunner
-  def run(%Config{} = config, task_args, os_type \\ :os.type(), runner \\ &System.cmd/3) do
+  def run(%Config{} = config, task_args, runner \\ &System.cmd/3) do
     {command, command_args} = config.command
+    task = if config.ansi_enabled?, do: enable_ansi(config.task), else: [config.task]
 
     {runner_program, runner_program_args} =
-      case os_type do
+      case Process.get(:os_type, default: :os.type()) do
         {:win32, _} ->
-          {command, command_args ++ [config.task | task_args]}
+          {command, command_args ++ task ++ task_args}
 
         _ ->
-          {zombie_killer(), [command] ++ command_args ++ enable_ansi(config.task) ++ task_args}
+          {zombie_killer(), [command] ++ command_args ++ task ++ task_args}
       end
 
     runner.(runner_program, runner_program_args,

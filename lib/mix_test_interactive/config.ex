@@ -7,6 +7,7 @@ defmodule MixTestInteractive.Config do
   @application :mix_test_interactive
 
   typedstruct do
+    field :ansi_enabled?, boolean
     field :clear?, boolean, default: false
     field :command, {String.t(), [String.t()]}, default: {"mix", []}
     field :exclude, [Regex.t()], default: [~r/\.#/, ~r{priv/repo/migrations}]
@@ -19,9 +20,10 @@ defmodule MixTestInteractive.Config do
   @doc """
   Create a new config struct, taking values from the application environment.
   """
-  @spec load_from_environment() :: t()
+  @spec load_from_environment :: t()
   def load_from_environment do
-    %__MODULE__{}
+    new()
+    |> load(:ansi_enabled, rename: :ansi_enabled?)
     |> load(:clear, rename: :clear?)
     |> load(:command, transform: &parse_command/1)
     |> load(:exclude)
@@ -29,6 +31,13 @@ defmodule MixTestInteractive.Config do
     |> load(:runner)
     |> load(:timestamp, rename: :show_timestamp?)
     |> load(:task)
+  end
+
+  @doc false
+  def new do
+    os_type = ProcessTree.get(:os_type, default: :os.type())
+
+    default_ansi_enabled(%__MODULE__{}, os_type)
   end
 
   defp load(%__MODULE__{} = config, app_key, opts \\ []) do
@@ -46,6 +55,14 @@ defmodule MixTestInteractive.Config do
       nil -> Application.fetch_env(@application, key)
       value -> {:ok, value}
     end
+  end
+
+  defp default_ansi_enabled(%__MODULE__{} = config, {:win32, _os_name} = _os_type) do
+    %{config | ansi_enabled?: false}
+  end
+
+  defp default_ansi_enabled(%__MODULE__{} = config, _os_type) do
+    %{config | ansi_enabled?: true}
   end
 
   defp parse_command({cmd, args} = command) when is_binary(cmd) and is_list(args), do: command
