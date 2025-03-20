@@ -5,7 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.2...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v4.2.0...HEAD)
+
+## [v4.2.0](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.2...v4.2.0) - 2024-03-19
+
+### Fixed
+
+- On Unix-like system we no longer start the client application prematurely. Previously, we'd run (essentially) `mix do run -e 'Application.put_env(:elixir, :ansi_enabled, true)', test` in order to enable ANSI control codes/colors when running tests. However, `mix run` by default starts the application. Normally this would be fine, but in some cases it can cause problems. We now use `mix do eval 'Application.put_env(:elixir, :ansi_enabled, true)', test` instead, which delays starting the application until the `mix test` task runs. ([#132](https://github.com/randycoulman/mix_test_interactive/pull/132))
+
+- Properly handle the `--no-start` option to `mix test` on Unix-like systems. Previously, we were using that option for the `mix run -e` command we were using to enable ANSI output, but not passing it through to `mix test` itself. ([#132](https://github.com/randycoulman/mix_test_interactive/pull/132))
+
+### Added
+
+- We make the use of ANSI control code output configurable by adding the `--(no-)ansi-enabled` command-line option and `ansi_enabled` configuration setting. Previously, we'd enable ANSI output automatically on Unix-like systems and not on Windows. This is still the default, but now Windows users can opt into ANSI output. Since Windows 10, ANSI support has been available if the [appropriate registry key is set](https://hexdocs.pm/elixir/IO.ANSI.html). Additional, users on Unix-like systems can opt out of ANSI output if desired. ([#133](https://github.com/randycoulman/mix_test_interactive/pull/133))
 
 ## [v4.1.2](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.1...v4.1.2) - 2024-12-14
 
