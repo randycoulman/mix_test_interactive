@@ -36,7 +36,7 @@ list of dependencies in your project's `mix.exs` file:
 ```elixir
 def deps do
   [
-    {:mix_test_interactive, "~> 4.1", only: :dev, runtime: false}
+    {:mix_test_interactive, "~> 4.2", only: :dev, runtime: false}
   ]
 end
 ```
@@ -173,21 +173,6 @@ test`).
 configuration. You can also use command line arguments to specify these
 configuration options, or to override configured options.
 
-### `clear`: Clear the console before each run
-
-If you want `mix test.interactive` to clear the console before each run, you can
-enable this option in your config/dev.exs as follows:
-
-```elixir
-# config/config.exs
-import Config
-
-if Mix.env == :dev do
-  config :mix_test_interactive,
-    clear: true
-end
-```
-
 ### `ansi_enabled`: Enable ANSI (colored) output when running tests
 
 When `ansi_enabled` is set to true, `mix test.interactive` will enable ANSI
@@ -204,6 +189,21 @@ end
 ```
 
 The default is `false` on Windows and `true` on other platforms.
+
+### `clear`: Clear the console before each run
+
+If you want `mix test.interactive` to clear the console before each run, you can
+enable this option in your config/dev.exs as follows:
+
+```elixir
+# config/config.exs
+import Config
+
+if Mix.env == :dev do
+  config :mix_test_interactive,
+    clear: true
+end
+```
 
 ### `command`: Use a custom command
 
