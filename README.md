@@ -104,6 +104,8 @@ specified in the configuration.
 - `--task <task name>`: Run a different mix task (default: `"test"`).
 - `--(no-)timestamp`: Display the current time before running the tests
   (default: `false`).
+- `--(no-)verbose`: Display the command to be run before running the tests
+  (default: `false`).
 - `--(no-)watch`: Don't run tests when a file changes (default: `true`).
 
 All of the `<mix test arguments>` are passed through to `mix test` on every test
@@ -340,6 +342,21 @@ import Config
 if Mix.env == :dev do
   config :mix_test_interactive,
     timestamp: true
+end
+```
+
+### `verbose`: Display the command to be run before running the tests
+
+When `verbose` is set to true, `mix test.interactive` will display the command
+line it is about to execute just before running the tests.
+
+```elixir
+# config/config.exs
+import Config
+
+if Mix.env == :dev do
+  config :mix_test_interactive,
+    verbose: true
 end
 ```
 

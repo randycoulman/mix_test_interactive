@@ -156,6 +156,16 @@ defmodule MixTestInteractive.CommandLineParserTest do
       refute config.show_timestamp?
     end
 
+    test "sets verbose? flag with --verbose" do
+      {:ok, %{config: config}} = CommandLineParser.parse(["--verbose"])
+      assert config.verbose?
+    end
+
+    test "clears verbose? flag with --no-verbose" do
+      {:ok, %{config: config}} = CommandLineParser.parse(["--no-verbose"])
+      refute config.verbose?
+    end
+
     test "configures custom mix task with --task" do
       {:ok, %{config: config}} = CommandLineParser.parse(["--task", "custom_task"])
       assert config.task == "custom_task"

@@ -33,6 +33,7 @@ defmodule MixTestInteractive.CommandLineParser do
     runner: :string,
     task: :string,
     timestamp: :boolean,
+    verbose: :boolean,
     version: :boolean,
     watch: :boolean
   ]
@@ -70,6 +71,8 @@ defmodule MixTestInteractive.CommandLineParser do
                                       (default: `"test"`)
       --(no-)timestamp                Display the current time before running
                                       the tests (default: `false`)
+      --(no-)verbose                  Display the command to be run before
+                                      running the tests (default: `false`)
       --(no-)watch                    Run tests when a watched file changes
                                       (default: `true`)
 
@@ -152,6 +155,7 @@ defmodule MixTestInteractive.CommandLineParser do
         {:runner, runner}, config -> %{config | runner: runner}
         {:timestamp, show_timestamp?}, config -> %{config | show_timestamp?: show_timestamp?}
         {:task, task}, config -> %{config | task: task}
+        {:verbose, verbose}, config -> %{config | verbose?: verbose}
         _pair, config -> config
       end)
       |> handle_custom_command(mti_opts)

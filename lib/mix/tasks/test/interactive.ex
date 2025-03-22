@@ -48,6 +48,8 @@ defmodule Mix.Tasks.Test.Interactive do
   - `--task <task name>`: Run a different mix task (default: `"test"`).
   - `--(no-)timestamp`: Display the current time before running the tests
     (default: `false`).
+  - `--(no-)verbose`: Display the command to be run before running the tests
+    (default: `false`).
   - `--(no-)watch`: Don't run tests when a file changes (default: `true`).
 
   All of the `<mix test arguments>` are passed through to `mix test` on every
@@ -129,8 +131,10 @@ defmodule Mix.Tasks.Test.Interactive do
     `MixTestInteractive.PortRunner`).
   - `task: <task name>`: The mix task to use when running tests (default:
     `"test"`).
-  - `timestamp: true`: Print current time (UTC) before running tests (default:
-    false).
+  - `timestamp: true`: Display the current time (UTC) before running the tests
+    (default: false).
+  - `verbose: true`: Display the command to be run before running the tests
+    (default: `false`)
   """
 
   use Mix.Task

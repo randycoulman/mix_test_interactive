@@ -11,6 +11,7 @@ defmodule MixTestInteractive.PortRunner do
   """
   @behaviour MixTestInteractive.TestRunner
 
+  alias MixTestInteractive.CommandLineFormatter
   alias MixTestInteractive.Config
   alias MixTestInteractive.TestRunner
 
@@ -37,6 +38,8 @@ defmodule MixTestInteractive.PortRunner do
           {zombie_killer(), [command] ++ command_args ++ task ++ task_args}
       end
 
+    maybe_print_command(config, runner_program, runner_program_args)
+
     runner.(runner_program, runner_program_args,
       env: [{"MIX_ENV", "test"}],
       into: IO.stream(:stdio, :line)
@@ -49,6 +52,14 @@ defmodule MixTestInteractive.PortRunner do
     enable_command = "Application.put_env(:elixir, :ansi_enabled, true)"
 
     ["do", "eval", enable_command, ",", task]
+  end
+
+  defp maybe_print_command(%Config{verbose?: false} = _config, _runner_program, _runner_program_args), do: :ok
+
+  defp maybe_print_command(%Config{} = _config, runner_program, runner_program_args) do
+    runner_program
+    |> CommandLineFormatter.call(runner_program_args)
+    |> IO.puts()
   end
 
   defp zombie_killer do

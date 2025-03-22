@@ -1,6 +1,8 @@
 defmodule MixTestInteractive.PortRunnerTest do
   use ExUnit.Case, async: true
 
+  import ExUnit.CaptureIO
+
   alias MixTestInteractive.Config
   alias MixTestInteractive.PortRunner
 
@@ -105,6 +107,22 @@ defmodule MixTestInteractive.PortRunnerTest do
 
         assert {"custom_command", ["--custom_arg", "test", "--cover"], _options} =
                  run(args: ["--cover"], config: config)
+      end
+
+      test "does not display command by default" do
+        {result, output} = with_io(fn -> run() end)
+
+        assert {"mix", _args, _env} = result
+        assert output == ""
+      end
+
+      test "displays command in verbose mode" do
+        config = config(%{verbose?: true})
+
+        {result, output} = with_io(fn -> run(config: config) end)
+
+        assert {"mix", _args, _env} = result
+        assert output =~ "mix test"
       end
     end
   end
