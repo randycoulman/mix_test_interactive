@@ -5,7 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v4.2.0...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v4.3.0...HEAD)
+
+## [v4.3.0](https://github.com/randycoulman/mix_test_interactive/compare/v4.2.0...v4.3.0) - 2024-03-21
+
+### Added
+
+- Add a new `verbose` configuration setting and command-line option, disabled by default. When enabled, `mix test.interactive` will print the command it is about to run just before running the tests. ([#135](https://github.com/randycoulman/mix_test_interactive/pull/135))
 
 ## [v4.2.0](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.2...v4.2.0) - 2024-03-19
 

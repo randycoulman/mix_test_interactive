@@ -36,7 +36,7 @@ list of dependencies in your project's `mix.exs` file:
 ```elixir
 def deps do
   [
-    {:mix_test_interactive, "~> 4.2", only: :dev, runtime: false}
+    {:mix_test_interactive, "~> 4.3", only: :dev, runtime: false}
   ]
 end
 ```
