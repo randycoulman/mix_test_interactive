@@ -29,6 +29,8 @@ jobs:
             otp: '27'
           - elixir: '1.18'
             otp: '27'
+          - elixir: main
+            otp: '27'
     steps:
       - name: Set up Elixir
         id: setup
