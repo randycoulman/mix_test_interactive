@@ -97,5 +97,16 @@ defmodule MixTestInteractive.ConfigTest do
       config = Config.load_from_environment()
       assert config.task == "test"
     end
+
+    test "takes :verbose from the env" do
+      Process.put(:verbose, true)
+      config = Config.load_from_environment()
+      assert config.verbose?
+    end
+
+    test "defaults verbose to false" do
+      config = Config.load_from_environment()
+      refute config.verbose?
+    end
   end
 end

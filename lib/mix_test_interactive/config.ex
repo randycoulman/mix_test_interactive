@@ -7,14 +7,15 @@ defmodule MixTestInteractive.Config do
   @application :mix_test_interactive
 
   typedstruct do
-    field :ansi_enabled?, boolean
-    field :clear?, boolean, default: false
+    field :ansi_enabled?, boolean()
+    field :clear?, boolean(), default: false
     field :command, {String.t(), [String.t()]}, default: {"mix", []}
     field :exclude, [Regex.t()], default: [~r/\.#/, ~r{priv/repo/migrations}]
     field :extra_extensions, [String.t()], default: []
     field :runner, module(), default: MixTestInteractive.PortRunner
     field :show_timestamp?, boolean(), default: false
     field :task, String.t(), default: "test"
+    field :verbose?, boolean(), default: false
   end
 
   @doc """
@@ -31,6 +32,7 @@ defmodule MixTestInteractive.Config do
     |> load(:runner)
     |> load(:timestamp, rename: :show_timestamp?)
     |> load(:task)
+    |> load(:verbose, rename: :verbose?)
   end
 
   @doc false
