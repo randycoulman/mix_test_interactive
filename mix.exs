@@ -10,7 +10,7 @@ defmodule MixTestInteractive.MixProject do
       deps: deps(),
       description: description(),
       docs: docs(),
-      elixir: "~> 1.13",
+      elixir: "~> 1.14",
       name: "mix test.interactive",
       package: package(),
       source_url: @source_url,
