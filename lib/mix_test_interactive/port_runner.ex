@@ -51,7 +51,7 @@ defmodule MixTestInteractive.PortRunner do
   defp enable_ansi(task) do
     enable_command = "Application.put_env(:elixir, :ansi_enabled, true)"
 
-    ["do", "eval", enable_command, ",", task]
+    ["do", "eval", enable_command, "+", task]
   end
 
   defp maybe_print_command(%Config{verbose?: false} = _config, _runner_program, _runner_program_args), do: :ok

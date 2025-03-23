@@ -74,7 +74,7 @@ defmodule MixTestInteractive.PortRunnerTest do
 
       test "enables ansi output when turned on" do
         config = config(%{ansi_enabled?: true})
-        {"mix", ["do", "eval", ansi, ",", "test"], _options} = run(config: config)
+        {"mix", ["do", "eval", ansi, "+", "test"], _options} = run(config: config)
 
         assert ansi =~ ~r/:ansi_enabled/
       end
