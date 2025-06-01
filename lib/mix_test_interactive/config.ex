@@ -10,7 +10,7 @@ defmodule MixTestInteractive.Config do
     field :ansi_enabled?, boolean()
     field :clear?, boolean(), default: false
     field :command, {String.t(), [String.t()]}, default: {"mix", []}
-    field :exclude, [Regex.t()], default: [~r/\.#/, ~r{priv/repo/migrations}]
+    field :exclude, [Regex.t()], default: nil
     field :extra_extensions, [String.t()], default: []
     field :runner, module(), default: MixTestInteractive.PortRunner
     field :show_timestamp?, boolean(), default: false
@@ -39,7 +39,7 @@ defmodule MixTestInteractive.Config do
   def new do
     os_type = ProcessTree.get(:os_type, default: :os.type())
 
-    default_ansi_enabled(%__MODULE__{}, os_type)
+    default_ansi_enabled(%__MODULE__{exclude: [~r/\.#/, ~r{priv/repo/migrations}]}, os_type)
   end
 
   defp load(%__MODULE__{} = config, app_key, opts \\ []) do

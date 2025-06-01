@@ -41,7 +41,7 @@ defmodule MixTestInteractive.PathsTest do
   end
 
   test "extra extensions are watched" do
-    config = %Config{extra_extensions: [".ex", ".haml", ".foo", ".txt"]}
+    config = Map.put(Config.new(), :extra_extensions, [".ex", ".haml", ".foo", ".txt"])
     assert watching?("foo.ex", config)
     assert watching?("index.html.haml", config)
     assert watching?("my.foo", config)
@@ -78,7 +78,11 @@ defmodule MixTestInteractive.PathsTest do
     assert watching?("app.ex", %Config{exclude: [~r/migrations_.*/]})
   end
 
-  defp watching?(path, config \\ %Config{}) do
+  defp watching?(path) do
+    Paths.watching?(path, Config.new())
+  end
+
+  defp watching?(path, config) do
     Paths.watching?(path, config)
   end
 end
