@@ -10,7 +10,7 @@ defmodule MixTestInteractive.Config do
     field :ansi_enabled?, boolean()
     field :clear?, boolean(), default: false
     field :command, {String.t(), [String.t()]}, default: {"mix", []}
-    field :exclude, [Regex.t()], default: [~r/\.#/, ~r{priv/repo/migrations}]
+    field :exclude, [Regex.t()]
     field :extra_extensions, [String.t()], default: []
     field :runner, module(), default: MixTestInteractive.PortRunner
     field :show_timestamp?, boolean(), default: false
@@ -39,7 +39,7 @@ defmodule MixTestInteractive.Config do
   def new(overrides \\ []) do
     os_type = ProcessTree.get(:os_type, default: :os.type())
 
-    defaults = [ansi_enabled?: not match?({:win32, _os_name}, os_type)]
+    defaults = [ansi_enabled?: not match?({:win32, _os_name}, os_type), exclude: [~r/\.#/, ~r{priv/repo/migrations}]]
     attrs = Keyword.merge(defaults, overrides)
 
     struct!(%__MODULE__{}, attrs)
