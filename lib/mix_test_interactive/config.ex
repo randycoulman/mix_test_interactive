@@ -36,10 +36,13 @@ defmodule MixTestInteractive.Config do
   end
 
   @doc false
-  def new do
+  def new(overrides \\ []) do
     os_type = ProcessTree.get(:os_type, default: :os.type())
 
-    default_ansi_enabled(%__MODULE__{}, os_type)
+    defaults = [ansi_enabled?: not match?({:win32, _os_name}, os_type)]
+    attrs = Keyword.merge(defaults, overrides)
+
+    struct!(%__MODULE__{}, attrs)
   end
 
   defp load(%__MODULE__{} = config, app_key, opts \\ []) do
@@ -57,14 +60,6 @@ defmodule MixTestInteractive.Config do
       nil -> Application.fetch_env(@application, key)
       value -> {:ok, value}
     end
-  end
-
-  defp default_ansi_enabled(%__MODULE__{} = config, {:win32, _os_name} = _os_type) do
-    %{config | ansi_enabled?: false}
-  end
-
-  defp default_ansi_enabled(%__MODULE__{} = config, _os_type) do
-    %{config | ansi_enabled?: true}
   end
 
   defp parse_command({cmd, args} = command) when is_binary(cmd) and is_list(args), do: command

@@ -106,7 +106,7 @@ defmodule MixTestInteractive.CommandLineParserTest do
 
     test "ignores custom command arguments if command is not specified" do
       {:ok, %{config: config}} = CommandLineParser.parse(["--arg", "arg_with_missing_command"])
-      assert config.command == %Config{}.command
+      assert config.command == Config.new().command
     end
 
     test "configures watch exclusions with --exclude" do

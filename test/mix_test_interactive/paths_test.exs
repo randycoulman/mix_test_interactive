@@ -41,7 +41,7 @@ defmodule MixTestInteractive.PathsTest do
   end
 
   test "extra extensions are watched" do
-    config = %Config{extra_extensions: [".ex", ".haml", ".foo", ".txt"]}
+    config = Config.new(extra_extensions: [".ex", ".haml", ".foo", ".txt"])
     assert watching?("foo.ex", config)
     assert watching?("index.html.haml", config)
     assert watching?("my.foo", config)
@@ -71,14 +71,15 @@ defmodule MixTestInteractive.PathsTest do
   end
 
   test "migrations_.* files should be excluded watched" do
-    refute watching?("migrations_files/foo.exs", %Config{exclude: [~r/migrations_.*/]})
+    refute watching?("migrations_files/foo.exs", Config.new(exclude: [~r/migrations_.*/]))
   end
 
   test "app.ex is not excluded by migrations_.* pattern" do
-    assert watching?("app.ex", %Config{exclude: [~r/migrations_.*/]})
+    assert watching?("app.ex", Config.new(exclude: [~r/migrations_.*/]))
   end
 
-  defp watching?(path, config \\ %Config{}) do
+  defp watching?(path, config \\ nil) do
+    config = config || Config.new()
     Paths.watching?(path, config)
   end
 end
