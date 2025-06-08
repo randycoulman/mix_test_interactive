@@ -17,6 +17,7 @@ jobs:
     name: Checks/Tests on OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - elixir: '1.14'
@@ -32,6 +33,7 @@ jobs:
           - elixir: '1.19'
             otp: '28'
           - elixir: main
+            experimental: true
             otp: '28'
     steps:
       - name: Set up Elixir
