@@ -45,6 +45,23 @@ defmodule MixTestInteractive.Config do
     struct!(%__MODULE__{}, attrs)
   end
 
+  @doc false
+  def equal?(%__MODULE__{} = left, %__MODULE__{} = right) do
+    %{left | exclude: nil} == %{right | exclude: nil} and exclude_matches?(left, right.exclude)
+  end
+
+  @doc false
+  def exclude_contains?(%__MODULE__{} = config, %Regex{} = regex) do
+    regex.source in sources(config.exclude)
+  end
+
+  @doc false
+  def exclude_matches?(%__MODULE__{} = config, exclude) do
+    sources(config.exclude) == sources(exclude)
+  end
+
+  defp sources(exclude), do: Enum.map(exclude, &Regex.source/1)
+
   defp load(%__MODULE__{} = config, app_key, opts \\ []) do
     config_key = Keyword.get(opts, :rename, app_key)
     transform = Keyword.get(opts, :transform, & &1)
