@@ -25,10 +25,19 @@ defmodule MixTestInteractive.PatternFilter do
     |> Kernel.++(with_line_number)
   end
 
-  defp is_line_number_pattern?(pattern) do
-    case ExUnit.Filters.parse_path(pattern) do
-      {_path, []} -> false
-      _ -> true
+  if Version.compare(System.version(), "1.20.0-dev") == :lt do
+    defp is_line_number_pattern?(pattern) do
+      case ExUnit.Filters.parse_path(pattern) do
+        {_path, []} -> false
+        _ -> true
+      end
+    end
+  else
+    defp is_line_number_pattern?(pattern) do
+      case ExUnit.Filters.parse_paths([pattern]) do
+        {_path, []} -> false
+        _ -> true
+      end
     end
   end
 end
