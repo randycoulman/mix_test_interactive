@@ -61,18 +61,18 @@ defmodule MixTestInteractive.ConfigTest do
     test "takes :exclude from the env" do
       Process.put(:exclude, [~r/migration_.*/])
       config = Config.load_from_environment()
-      assert config.exclude == [~r/migration_.*/]
+      assert Config.exclude_matches?(config, [~r/migration_.*/])
     end
 
     test ":exclude contains common editor temp/swap files by default" do
       config = Config.load_from_environment()
       # Emacs lock symlink
-      assert ~r/\.#/ in config.exclude
+      assert Config.exclude_contains?(config, ~r/\.#/)
     end
 
     test "excludes default Phoenix migrations directory by default" do
       config = Config.load_from_environment()
-      assert ~r{priv/repo/migrations} in config.exclude
+      assert Config.exclude_contains?(config, ~r{priv/repo/migrations})
     end
 
     test "takes :extra_extensions from the env" do

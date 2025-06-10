@@ -31,7 +31,7 @@ defmodule MixTestInteractive.RunnerTest do
 
   describe "run/1" do
     test "It delegates to the runner specified by the config" do
-      config = %Config{runner: DummyRunner}
+      config = Config.new(runner: DummyRunner)
       args = ["--cover", "--raise"]
 
       output =
@@ -45,7 +45,7 @@ defmodule MixTestInteractive.RunnerTest do
     end
 
     test "It outputs timestamp when specified by the config" do
-      config = %Config{runner: DummyRunner, show_timestamp?: true}
+      config = Config.new(runner: DummyRunner, show_timestamp?: true)
 
       output =
         capture_io(fn ->

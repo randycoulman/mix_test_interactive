@@ -17,6 +17,7 @@ jobs:
     name: Checks/Tests on OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - elixir: '1.14'
@@ -29,6 +30,11 @@ jobs:
             otp: '27'
           - elixir: '1.18'
             otp: '27'
+          - elixir: '1.19'
+            otp: '28'
+          - elixir: main
+            experimental: true
+            otp: '28'
     steps:
       - name: Set up Elixir
         id: setup
@@ -80,7 +86,7 @@ jobs:
         run: mix compile --warnings-as-errors
 
       - name: Check formatting
-        if: ${{matrix.elixir == '1.18'}}
+        if: ${{matrix.elixir == '1.19'}}
         run: mix format --check-formatted
 
       - name: Run tests

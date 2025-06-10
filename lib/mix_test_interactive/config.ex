@@ -10,7 +10,7 @@ defmodule MixTestInteractive.Config do
     field :ansi_enabled?, boolean()
     field :clear?, boolean(), default: false
     field :command, {String.t(), [String.t()]}, default: {"mix", []}
-    field :exclude, [Regex.t()], default: [~r/\.#/, ~r{priv/repo/migrations}]
+    field :exclude, [Regex.t()]
     field :extra_extensions, [String.t()], default: []
     field :runner, module(), default: MixTestInteractive.PortRunner
     field :show_timestamp?, boolean(), default: false
@@ -36,11 +36,31 @@ defmodule MixTestInteractive.Config do
   end
 
   @doc false
-  def new do
+  def new(overrides \\ []) do
     os_type = ProcessTree.get(:os_type, default: :os.type())
 
-    default_ansi_enabled(%__MODULE__{}, os_type)
+    defaults = [ansi_enabled?: not match?({:win32, _os_name}, os_type), exclude: [~r/\.#/, ~r{priv/repo/migrations}]]
+    attrs = Keyword.merge(defaults, overrides)
+
+    struct!(%__MODULE__{}, attrs)
   end
+
+  @doc false
+  def equal?(%__MODULE__{} = left, %__MODULE__{} = right) do
+    %{left | exclude: nil} == %{right | exclude: nil} and exclude_matches?(left, right.exclude)
+  end
+
+  @doc false
+  def exclude_contains?(%__MODULE__{} = config, %Regex{} = regex) do
+    regex.source in sources(config.exclude)
+  end
+
+  @doc false
+  def exclude_matches?(%__MODULE__{} = config, exclude) do
+    sources(config.exclude) == sources(exclude)
+  end
+
+  defp sources(exclude), do: Enum.map(exclude, &Regex.source/1)
 
   defp load(%__MODULE__{} = config, app_key, opts \\ []) do
     config_key = Keyword.get(opts, :rename, app_key)
@@ -57,14 +77,6 @@ defmodule MixTestInteractive.Config do
       nil -> Application.fetch_env(@application, key)
       value -> {:ok, value}
     end
-  end
-
-  defp default_ansi_enabled(%__MODULE__{} = config, {:win32, _os_name} = _os_type) do
-    %{config | ansi_enabled?: false}
-  end
-
-  defp default_ansi_enabled(%__MODULE__{} = config, _os_type) do
-    %{config | ansi_enabled?: true}
   end
 
   defp parse_command({cmd, args} = command) when is_binary(cmd) and is_list(args), do: command

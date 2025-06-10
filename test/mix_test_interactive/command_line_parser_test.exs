@@ -62,7 +62,7 @@ defmodule MixTestInteractive.CommandLineParserTest do
   describe "mix test.interactive options" do
     test "retains original defaults when no options" do
       {:ok, %{config: config}} = CommandLineParser.parse([])
-      assert config == Config.new()
+      assert Config.equal?(config, Config.new())
     end
 
     test "sets ansi_enabled? flag with --ansi-enabled" do
@@ -106,17 +106,17 @@ defmodule MixTestInteractive.CommandLineParserTest do
 
     test "ignores custom command arguments if command is not specified" do
       {:ok, %{config: config}} = CommandLineParser.parse(["--arg", "arg_with_missing_command"])
-      assert config.command == %Config{}.command
+      assert config.command == Config.new().command
     end
 
     test "configures watch exclusions with --exclude" do
       {:ok, %{config: config}} = CommandLineParser.parse(["--exclude", "~$"])
-      assert config.exclude == [~r/~$/]
+      assert Config.exclude_matches?(config, [~r/~$/])
     end
 
     test "configures multiple watch exclusions with repeated --exclude options" do
       {:ok, %{config: config}} = CommandLineParser.parse(["--exclude", "~$", "--exclude", "\.secret\.exs"])
-      assert config.exclude == [~r/~$/, ~r/.secret.exs/]
+      assert Config.exclude_matches?(config, [~r/~$/, ~r/.secret.exs/])
     end
 
     test "fails if watch exclusion is an invalid Regex" do
@@ -342,7 +342,7 @@ defmodule MixTestInteractive.CommandLineParserTest do
       {:ok, %{config: config, settings: settings}} =
         CommandLineParser.parse(["--exclude", "~$", "--", "--exclude", "integration"])
 
-      assert config.exclude == [~r/~$/]
+      assert Config.exclude_matches?(config, [~r/~$/])
       assert settings.excludes == ["integration"]
     end
 

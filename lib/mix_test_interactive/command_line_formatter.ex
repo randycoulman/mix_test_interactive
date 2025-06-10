@@ -1,15 +1,24 @@
 defmodule MixTestInteractive.CommandLineFormatter do
   @moduledoc false
 
-  @special_chars ~r/[\s&|;<>*?()\[\]{}$`'"]/
-  @whitespace ~r/\s/
-
   def call(command, args) do
     Enum.map_join([command | args], " ", &format_argument/1)
   end
 
+  defmacrop special_chars do
+    quote do
+      ~r/[\s&|;<>*?()\[\]{}$`'"]/
+    end
+  end
+
+  defmacrop whitespace do
+    quote do
+      ~r/\s/
+    end
+  end
+
   defp format_argument(arg) do
-    if arg =~ @special_chars do
+    if arg =~ special_chars() do
       quote_argument(arg)
     else
       arg
@@ -19,7 +28,7 @@ defmodule MixTestInteractive.CommandLineFormatter do
   defp quote_argument(arg) do
     cond do
       # Prefer double quotes for arguments with only spaces or special characters
-      String.match?(arg, @whitespace) and not String.contains?(arg, ~s(")) ->
+      String.match?(arg, whitespace()) and not String.contains?(arg, ~s(")) ->
         ~s("#{arg}")
 
       # Use single quotes if the argument contains double quotes but no single quotes

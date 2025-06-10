@@ -28,15 +28,15 @@ defmodule MixTestInteractive.EndToEndTest do
     end
   end
 
-  @config %Config{runner: DummyRunner}
-  @settings %Settings{}
-
   setup do
     {:ok, io} = StringIO.open("")
     Process.group_leader(self(), io)
 
+    config = Config.new(runner: DummyRunner)
+    settings = %Settings{}
+
     _pid = start_supervised!({DummyRunner, self()})
-    pid = start_supervised!({InteractiveMode, config: @config, name: :end_to_end, settings: @settings})
+    pid = start_supervised!({InteractiveMode, config: config, name: :end_to_end, settings: settings})
 
     %{pid: pid}
   end
@@ -160,7 +160,7 @@ defmodule MixTestInteractive.EndToEndTest do
   end
 
   defp assert_ran_tests(args \\ []) do
-    assert_receive {@config, ^args}, 100
+    assert_receive {%Config{}, ^args}, 100
   end
 
   defp refute_ran_tests do

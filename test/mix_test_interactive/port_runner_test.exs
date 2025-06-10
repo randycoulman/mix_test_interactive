@@ -9,8 +9,10 @@ defmodule MixTestInteractive.PortRunnerTest do
   @unix {:unix, :darwin}
   @windows {:win32, :nt}
 
-  defp config(overrides \\ %{}) do
-    Map.merge(%Config{ansi_enabled?: false}, overrides)
+  defp config(overrides \\ []) do
+    [ansi_enabled?: false]
+    |> Keyword.merge(overrides)
+    |> Config.new()
   end
 
   defp run(options \\ []) do
@@ -73,8 +75,8 @@ defmodule MixTestInteractive.PortRunnerTest do
       end
 
       test "enables ansi output when turned on" do
-        config = config(%{ansi_enabled?: true})
-        {"mix", ["do", "eval", ansi, ",", "test"], _options} = run(config: config)
+        config = config(ansi_enabled?: true)
+        {"mix", ["do", "eval", ansi, "+", "test"], _options} = run(config: config)
 
         assert ansi =~ ~r/:ansi_enabled/
       end
@@ -88,22 +90,22 @@ defmodule MixTestInteractive.PortRunnerTest do
       end
 
       test "uses custom task" do
-        config = config(%{task: "custom_task"})
+        config = config(task: "custom_task")
         assert {_command, ["custom_task"], _options} = run(config: config)
       end
 
       test "uses custom command with no args" do
-        config = config(%{command: {"custom_command", []}})
+        config = config(command: {"custom_command", []})
         assert {"custom_command", _args, _options} = run(config: config)
       end
 
       test "uses custom command with args" do
-        config = config(%{command: {"custom_command", ["--custom_arg"]}})
+        config = config(command: {"custom_command", ["--custom_arg"]})
         assert {"custom_command", ["--custom_arg", "test"], _options} = run(config: config)
       end
 
       test "prepends command args to test args" do
-        config = config(%{command: {"custom_command", ["--custom_arg"]}})
+        config = config(command: {"custom_command", ["--custom_arg"]})
 
         assert {"custom_command", ["--custom_arg", "test", "--cover"], _options} =
                  run(args: ["--cover"], config: config)
@@ -117,7 +119,7 @@ defmodule MixTestInteractive.PortRunnerTest do
       end
 
       test "displays command in verbose mode" do
-        config = config(%{verbose?: true})
+        config = config(verbose?: true)
 
         {result, output} = with_io(fn -> run(config: config) end)
 
