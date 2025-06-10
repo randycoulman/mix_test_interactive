@@ -5,15 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v4.3.0...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v5.0.0...HEAD)
 
-## [v4.3.0](https://github.com/randycoulman/mix_test_interactive/compare/v4.2.0...v4.3.0) - 2024-03-21
+## [v5.0.0](https://github.com/randycoulman/mix_test_interactive/compare/v4.3.0...v5.0.0) - 2025-06-09
+
+### 💥 BREAKING CHANGE 💥
+
+- This release drops support for Elixir 1.13. We officially support the
+  [same versions as Elixir itself](https://hexdocs.pm/elixir/compatibility-and-deprecations.html),
+  so support for Elixir 1.13 is no longer provided. ([#137](https://github.com/randycoulman/mix_test_interactive/pull/137))
+
+There are no actual breaking changes in the code itself, so as long as you're on
+Elixir 1.14 or later, you should have no problems upgrading to this version.
+
+### Updated
+
+- We address new deprecations and compiler warnings in Elixir 1.19. There are no
+  user-visible changes.
+  ([#137](https://github.com/randycoulman/mix_test_interactive/pull/137) -
+  Thanks [@frankdugan3](https://github.com/frankdugan3) for contributing to the fixes!)
+
+- We upgrade to the newest version of `ex_docs` to get the latest improvements.
+  ([#137](https://github.com/randycoulman/mix_test_interactive/pull/137))
+
+## [v4.3.0](https://github.com/randycoulman/mix_test_interactive/compare/v4.2.0...v4.3.0) - 2025-03-21
 
 ### Added
 
 - Add a new `verbose` configuration setting and command-line option, disabled by default. When enabled, `mix test.interactive` will print the command it is about to run just before running the tests. ([#135](https://github.com/randycoulman/mix_test_interactive/pull/135))
 
-## [v4.2.0](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.2...v4.2.0) - 2024-03-19
+## [v4.2.0](https://github.com/randycoulman/mix_test_interactive/compare/v4.1.2...v4.2.0) - 2025-03-19
 
 ### Fixed
 
@@ -187,7 +208,7 @@ have no problems upgrading to this version.
 
 No functional changes; purely administrative.
 
-## Changed
+### Changed
 
 - Migrated repository ownership from @influxdata to @randycoulman ([#60](https://github.com/randycoulman/mix_test_interactive/pull/60))
 
