@@ -52,7 +52,7 @@ defmodule MixTestInteractive.MixProject do
         Commands: [~r/^MixTestInteractive\.Command\..*/]
       ],
       main: "readme",
-      source_ref: "#{@version}"
+      source_ref: "v#{@version}"
     ]
   end
 
