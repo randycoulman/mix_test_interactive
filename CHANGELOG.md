@@ -5,7 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v5.0.0...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v5.1.0...HEAD)
+
+## [v5.1.0](https://github.com/randycoulman/mix_test_interactive/compare/v5.0.0...v5.1.0) - 2025-12-29
+
+### Updated
+
+- Loosen the version spec on `process_tree`. We now allow for any version >
+  v0.1.3. ([#147](https://github.com/randycoulman/mix_test_interactive/pull/147))
 
 ## [v5.0.0](https://github.com/randycoulman/mix_test_interactive/compare/v4.3.0...v5.0.0) - 2025-06-09
 
