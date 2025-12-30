@@ -1,8 +1,6 @@
 defmodule MixTestInteractive.CommandLineParser do
   @moduledoc false
 
-  use TypedStruct
-
   alias MixTestInteractive.Config
   alias MixTestInteractive.Settings
   alias OptionParser.ParseError
