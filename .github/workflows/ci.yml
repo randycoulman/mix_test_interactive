@@ -42,7 +42,6 @@ jobs:
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
-          version-type: strict
 
       - name: Checkout code
         uses: actions/checkout@v4
