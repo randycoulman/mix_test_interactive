@@ -54,7 +54,7 @@ executable.
 #!/usr/bin/env elixir
 
 Mix.install([
-  {:mix_test_interactive, "~> 4.1"}
+  {:mix_test_interactive, "~> 5.1"}
 ])
 
 MixTestInteractive.run(System.argv())
