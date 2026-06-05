@@ -32,9 +32,11 @@ jobs:
             otp: '27'
           - elixir: '1.19'
             otp: '28'
+          - elixir: '1.20'
+            otp: '29'
           - elixir: main
             experimental: true
-            otp: '28'
+            otp: '29'
     steps:
       - name: Set up Elixir
         id: setup
@@ -44,13 +46,13 @@ jobs:
           elixir-version: ${{matrix.elixir}}
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Cache dependencies
         id: cache-deps
         env:
           cache-name: cache-elixir-deps
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           key: ${{runner.os}}-mix-${{env.cache-name}}-${{steps.setup.outputs.otp-version}}-${{steps.setup.outputs.elixir-version}}-${{hashFiles('**/mix.lock')}}
           path: deps
@@ -63,7 +65,7 @@ jobs:
         id: cache-build
         env:
           cache-name: cache-compiled-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           key: ${{runner.os}}-mix-${{env.cache-name}}-${{steps.setup.outputs.otp-version}}-${{steps.setup.outputs.elixir-version}}-${{hashFiles('**/mix.lock')}}
           path: _build
