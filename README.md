@@ -5,7 +5,7 @@ Status](https://github.com/randycoulman/mix_test_interactive/actions/workflows/c
 [![Module
 Version](https://img.shields.io/hexpm/v/mix_test_interactive.svg)](https://hex.pm/packages/mix_test_interactive)
 [![Hex
-Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/mix_test_interactive/)
+Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://mix-test-interactive.hexdocs.pm)
 [![License](https://img.shields.io/hexpm/l/mix_test_interactive.svg)](https://github.com/randycoulman/mix_test_interactive/blob/master/LICENSE.md)
 
 `mix test.interactive` is an interactive test runner for ExUnit tests.
