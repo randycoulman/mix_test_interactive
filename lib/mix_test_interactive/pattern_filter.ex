@@ -18,11 +18,23 @@ defmodule MixTestInteractive.PatternFilter do
   end
 
   def matches(files, patterns) do
-    {with_line_number, simple} = Enum.split_with(patterns, &is_line_number_pattern?/1)
+    {with_line_number, simple} =
+      patterns
+      |> convert_relative_filenames_to_patterns()
+      |> Enum.split_with(&is_line_number_pattern?/1)
 
     files
     |> Enum.filter(&String.contains?(&1, simple))
-    |> Kernel.++(with_line_number)
+    |> Enum.concat(with_line_number)
+  end
+
+  defp convert_relative_filenames_to_patterns(patterns) do
+    for pattern <- patterns do
+      case Path.safe_relative(pattern) do
+        {:ok, filename} -> filename
+        :error -> pattern
+      end
+    end
   end
 
   if Version.compare(System.version(), "1.20.0-dev") == :lt do

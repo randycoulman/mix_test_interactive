@@ -34,8 +34,21 @@ defmodule MixTestInteractive.PatternFilterTest do
     assert matches == patterns
   end
 
-  test "returns a mix of matching files and files with line numbers" do
-    patterns = ["some_test.exs:42", "bc", "other_test.exs:58"]
+  test "returns files with relative pathnames" do
+    pattern = "./#{@abc}"
+    matches = PatternFilter.matches(@files, pattern)
+
+    assert matches == [@abc]
+  end
+
+  test "uses non-relative pathnames as normal patterns" do
+    pattern = Path.expand("./#{@bcd}")
+    matches = PatternFilter.matches(@files, pattern)
+    assert matches == []
+  end
+
+  test "returns a mix of matching files, relative pathnames, and files with line numbers" do
+    patterns = ["some_test.exs:42", "ab", "other_test.exs:58", "./#{@bcd}"]
     matches = PatternFilter.matches(@files, patterns)
 
     assert matches == [@abc, @bcd, "some_test.exs:42", "other_test.exs:58"]
