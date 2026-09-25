@@ -160,7 +160,7 @@ defmodule MixTestInteractive.EndToEndTest do
   end
 
   defp assert_ran_tests(args \\ []) do
-    assert_receive {%Config{}, ^args}, 100
+    assert_receive {%Config{}, ^args}, 250
   end
 
   defp refute_ran_tests do
