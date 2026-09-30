@@ -5,7 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v5.1.0...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v5.2.0...HEAD)
+
+## [v5.2.0](https://github.com/randycoulman/mix_test_interactive/compare/v5.1.0...v5.2.0) - 2026-09-30
+
+### Updated
+
+- We now allow relative pathnames (e.g. `./test/foo_test.exs`) as patterns, both
+  on the command-line and passed to the `p` command. This more closely matches
+  `mix test`'s behavior.
+  ([#143](https://github.com/randycoulman/mix_test_interactive/pull/143) - Thanks [@pauldemarco](https://github.com/pauldemarco) for the suggestion!)
+- Update hexdocs link to use new per-package subdomains.
+  ([#150](https://github.com/randycoulman/mix_test_interactive/pull/150))
 
 ## [v5.1.0](https://github.com/randycoulman/mix_test_interactive/compare/v5.0.0...v5.1.0) - 2025-12-29
 
@@ -72,7 +83,6 @@ Elixir 1.14 or later, you should have no problems upgrading to this version.
 ### Added
 
 - This version adds a number of new commands for controlling additional `mix test` options interactively:
-
   - `d <seed>`/`d`: Set or clear the seed to use when running tests (`mix test --seed <seed>`). ([#112](https://github.com/randycoulman/mix_test_interactive/pull/112))
   - `i <tags...>`/`i`: Set or clear tags to include (`mix test --include <tag1> --include <tag2>...`). ([#113](https://github.com/randycoulman/mix_test_interactive/pull/113))
   - `o <tags...>`/`o`: Set or clear "only" tags (`mix test --only <tag1> --only <tag2>...`). ([#113](https://github.com/randycoulman/mix_test_interactive/pull/113))
