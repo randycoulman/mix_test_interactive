@@ -20,10 +20,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - elixir: '1.14'
-            otp: '25'
-          - elixir: '1.15'
-            otp: '26'
           - elixir: '1.16'
             otp: '26'
           - elixir: '1.17'
