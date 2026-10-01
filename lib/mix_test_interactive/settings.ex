@@ -34,7 +34,7 @@ defmodule MixTestInteractive.Settings do
   """
   @spec all_tests(t()) :: t()
   def all_tests(%__MODULE__{} = settings) do
-    %{settings | failed?: false, patterns: [], stale?: false}
+    %{settings | excludes: [], failed?: false, includes: [], only: [], patterns: [], stale?: false}
   end
 
   @doc """
@@ -106,39 +106,13 @@ defmodule MixTestInteractive.Settings do
   end
 
   @doc """
-  Update settings to only run failing tests.
-
-  Corresponds to `mix test --failed`.
-  """
-  @spec only_failed(t()) :: t()
-  def only_failed(%__MODULE__{} = settings) do
-    settings
-    |> all_tests()
-    |> Map.put(:failed?, true)
-  end
-
-  @doc """
   Provide a list of file-name filter patterns.
 
   Only test filenames matching one or more patterns will be run.
   """
-  @spec only_patterns(t(), [String.t()]) :: t()
-  def only_patterns(%__MODULE__{} = settings, patterns) do
-    settings
-    |> all_tests()
-    |> Map.put(:patterns, patterns)
-  end
-
-  @doc """
-  Update settings to only run "stale" tests.
-
-  Corresponds to `mix test --stale`.
-  """
-  @spec only_stale(t()) :: t()
-  def only_stale(%__MODULE__{} = settings) do
-    settings
-    |> all_tests()
-    |> Map.put(:stale?, true)
+  @spec patterns(t(), [String.t()]) :: t()
+  def patterns(%__MODULE__{} = settings, patterns) do
+    %{settings | patterns: patterns}
   end
 
   @doc """
@@ -209,6 +183,26 @@ defmodule MixTestInteractive.Settings do
 
   defp tag_filters(label, tags) do
     label <> ": " <> inspect(tags)
+  end
+
+  @doc """
+  Toggle running of only failing tests on or off.
+
+  Corresponds to `mix test --failed`.
+  """
+  @spec toggle_failed(t()) :: t()
+  def toggle_failed(%__MODULE__{} = settings) do
+    %{settings | failed?: !settings.failed?}
+  end
+
+  @doc """
+  Toggle running of only stale tests on or off.
+
+  Corresponds to `mix test --stale`.
+  """
+  @spec toggle_stale(t()) :: t()
+  def toggle_stale(%__MODULE__{} = settings) do
+    %{settings | stale?: !settings.stale?}
   end
 
   @doc """

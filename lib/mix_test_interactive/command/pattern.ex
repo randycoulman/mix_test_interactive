@@ -19,6 +19,6 @@ defmodule MixTestInteractive.Command.Pattern do
 
   @impl Command
   def run(patterns, settings) do
-    {:ok, Settings.only_patterns(settings, patterns)}
+    {:ok, Settings.patterns(settings, patterns)}
   end
 end

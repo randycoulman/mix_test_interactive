@@ -78,11 +78,11 @@ defmodule Mix.Tasks.Test.Interactive do
   tests will run.
 
   - `a`: Run all tests. Clears the `--failed` and `--stale` options as well as
-    any patterns.
+    any filename patterns or tag filters.
   - `d <seed>`: Run the tests with a specific seed.
   - `d`: Clear any previously specified seed.
-  - `f`: Run only tests that failed on the last run (equivalent to the
-  `--failed` option of `mix test`).
+  - `f`: Toggle running of only tests that failed on the last run (equivalent to
+  the `--failed` option of `mix test`).
   - `i <tags...>`: Include tests tagged with the listed tags (equivalent to the
     `--include` option of `mix test`).
   - `i`: Clear any included tags.
@@ -96,14 +96,16 @@ defmodule Mix.Tasks.Test.Interactive do
     is the project-root-relative path to a test file (with or without a line
     number specification) or a string that matches a portion of full pathname.
     e.g. `test/my_project/my_test.exs`, `test/my_project/my_test.exs:12:24` or
-    `my`.
+    `my`. `p` with no patterns clears all pattern filters and runs all test
+    files.
   - `q`: Exit the program. (Can also use `Ctrl-D`.)
   - `r <count>`: (Elixir 1.17.0 and later) Run tests up to <count> times until a
     failure occurs (equivalent to the `--repeat-until-failure` option of `mix
     test`).
   - `r`: (Elixir 1.17.0 and later) Clear the "repeat-until-failure" count.
-  - `s`: Run only test files that reference modules that have changed since the
-    last run (equivalent to the `--stale` option of `mix test`).
+  - `s`: Toggle running of only test files that reference modules that have
+    changed since the last run (equivalent to the `--stale` option of `mix
+    test`).
   - `t`: Turn test tracing on or off (equivalent to the `--trace` option of `mix
     test`).
   - `x <tags...>`: Exclude tests tagged with the listed tags (equivalent to the

@@ -6,7 +6,6 @@ defmodule MixTestInteractive.CommandProcessor do
   alias MixTestInteractive.Command
   alias MixTestInteractive.Command.AllTests
   alias MixTestInteractive.Command.Exclude
-  alias MixTestInteractive.Command.Failed
   alias MixTestInteractive.Command.Help
   alias MixTestInteractive.Command.Include
   alias MixTestInteractive.Command.MaxFailures
@@ -16,7 +15,8 @@ defmodule MixTestInteractive.CommandProcessor do
   alias MixTestInteractive.Command.RepeatUntilFailure
   alias MixTestInteractive.Command.RunTests
   alias MixTestInteractive.Command.Seed
-  alias MixTestInteractive.Command.Stale
+  alias MixTestInteractive.Command.ToggleFailed
+  alias MixTestInteractive.Command.ToggleStale
   alias MixTestInteractive.Command.ToggleTracing
   alias MixTestInteractive.Command.ToggleWatchMode
   alias MixTestInteractive.Settings
@@ -26,7 +26,6 @@ defmodule MixTestInteractive.CommandProcessor do
   @commands [
     AllTests,
     Exclude,
-    Failed,
     Help,
     Include,
     MaxFailures,
@@ -36,7 +35,8 @@ defmodule MixTestInteractive.CommandProcessor do
     RepeatUntilFailure,
     RunTests,
     Seed,
-    Stale,
+    ToggleFailed,
+    ToggleStale,
     ToggleTracing,
     ToggleWatchMode
   ]
@@ -59,11 +59,10 @@ defmodule MixTestInteractive.CommandProcessor do
 
   Includes only commands that are applicable to the current configuration.
   """
-  @spec usage(Settings.t()) :: IO.chardata()
-  def usage(settings) do
+  @spec usage :: IO.chardata()
+  def usage do
     usage =
-      settings
-      |> applicable_commands()
+      @commands
       |> Enum.sort_by(& &1.command())
       |> Enum.flat_map(&usage_line/1)
 
@@ -75,15 +74,9 @@ defmodule MixTestInteractive.CommandProcessor do
   end
 
   defp process_command(command, args, settings) do
-    case settings
-         |> applicable_commands()
-         |> Enum.find(nil, &(&1.command() == command)) do
+    case Enum.find(@commands, nil, &(&1.command() == command)) do
       nil -> :unknown
       cmd -> cmd.run(args, settings)
     end
-  end
-
-  defp applicable_commands(settings) do
-    Enum.filter(@commands, & &1.applies?(settings))
   end
 end

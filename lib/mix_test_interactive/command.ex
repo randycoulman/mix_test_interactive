@@ -32,13 +32,6 @@ defmodule MixTestInteractive.Command do
   @type response :: {:ok, Settings.t()} | {:no_run, Settings.t()} | :help | :quit | :unknown
 
   @doc """
-  Is the command applicable given the current configuration?
-
-  Returns `true` by default if not overridden.
-  """
-  @callback applies?(Settings.t()) :: boolean()
-
-  @doc """
   The command's description.
 
   Descriptions should be written to fit the pattern `<command> to <description>`.
@@ -96,9 +89,6 @@ defmodule MixTestInteractive.Command do
       @behaviour MixTestInteractive.Command
 
       @impl true
-      def applies?(_settings), do: true
-
-      @impl true
       def description, do: unquote(description)
 
       @impl true
@@ -107,7 +97,7 @@ defmodule MixTestInteractive.Command do
       @impl true
       def name, do: unquote(command)
 
-      defoverridable applies?: 1, name: 0
+      defoverridable name: 0
     end
   end
 end

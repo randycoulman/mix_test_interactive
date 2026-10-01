@@ -41,19 +41,20 @@ defmodule MixTestInteractive.EndToEndTest do
     %{pid: pid}
   end
 
-  test "failed/stale/pattern workflow", %{pid: pid} do
+  test "failed test workflow", %{pid: pid} do
     assert_ran_tests()
-
-    assert :ok = InteractiveMode.process_command(pid, "")
-    assert_ran_tests()
-
-    assert :ok = InteractiveMode.process_command(pid, "p test_file:42")
-    assert_ran_tests(["test_file:42"])
 
     assert :ok = InteractiveMode.process_command(pid, "f")
     assert_ran_tests(["--failed"])
 
-    assert :ok = InteractiveMode.process_command(pid, "a")
+    assert :ok = InteractiveMode.note_file_changed(pid)
+    assert_ran_tests(["--failed"])
+
+    assert :ok = InteractiveMode.process_command(pid, "f")
+    assert_ran_tests()
+  end
+
+  test "stale test workflow", %{pid: pid} do
     assert_ran_tests()
 
     assert :ok = InteractiveMode.process_command(pid, "s")
@@ -61,6 +62,31 @@ defmodule MixTestInteractive.EndToEndTest do
 
     assert :ok = InteractiveMode.note_file_changed(pid)
     assert_ran_tests(["--stale"])
+
+    assert :ok = InteractiveMode.process_command(pid, "s")
+    assert_ran_tests()
+  end
+
+  test "pattern workflow", %{pid: pid} do
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "p test_file:42")
+    assert_ran_tests(["test_file:42"])
+
+    assert :ok = InteractiveMode.process_command(pid, "f")
+    assert_ran_tests(["--failed", "test_file:42"])
+
+    assert :ok = InteractiveMode.process_command(pid, "f")
+    assert_ran_tests(["test_file:42"])
+
+    assert :ok = InteractiveMode.process_command(pid, "s")
+    assert_ran_tests(["--stale", "test_file:42"])
+
+    assert :ok = InteractiveMode.process_command(pid, "s")
+    assert_ran_tests(["test_file:42"])
+
+    assert :ok = InteractiveMode.process_command(pid, "p")
+    assert_ran_tests()
   end
 
   test "max failures workflow", %{pid: pid} do
@@ -130,6 +156,47 @@ defmodule MixTestInteractive.EndToEndTest do
     assert_ran_tests(["--exclude", "tag4", "--exclude", "tag5"])
 
     assert :ok = InteractiveMode.process_command(pid, "x")
+    assert_ran_tests()
+  end
+
+  test "all tests workflow", %{pid: pid} do
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "f")
+    assert_ran_tests(["--failed"])
+
+    assert :ok = InteractiveMode.process_command(pid, "a")
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "s")
+    assert_ran_tests(["--stale"])
+
+    assert :ok = InteractiveMode.process_command(pid, "a")
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "p test_file:42")
+    assert_ran_tests(["test_file:42"])
+
+    assert :ok = InteractiveMode.process_command(pid, "a")
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "i tag1 tag2")
+    assert_ran_tests(["--include", "tag1", "--include", "tag2"])
+
+    assert :ok = InteractiveMode.process_command(pid, "a")
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "o tag3")
+    assert_ran_tests(["--only", "tag3"])
+
+    assert :ok = InteractiveMode.process_command(pid, "a")
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "x tag4 tag5")
+
+    assert_ran_tests(["--exclude", "tag4", "--exclude", "tag5"])
+
+    assert :ok = InteractiveMode.process_command(pid, "a")
     assert_ran_tests()
   end
 

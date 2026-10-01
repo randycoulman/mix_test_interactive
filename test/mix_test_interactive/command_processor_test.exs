@@ -43,11 +43,12 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("d", settings)
     end
 
-    test "f runs only failed tests" do
-      settings = %Settings{}
-      expected = Settings.only_failed(settings)
+    test "f toggles failed tests" do
+      initial = %Settings{}
+      with_failed = Settings.toggle_failed(initial)
 
-      assert {:ok, ^expected} = process_command("f", settings)
+      assert {:ok, ^with_failed} = process_command("f", initial)
+      assert {:ok, ^initial} = process_command("f", with_failed)
     end
 
     test "i <tag...> includes the given tags" do
@@ -94,7 +95,7 @@ defmodule MixTestInteractive.CommandProcessorTest do
 
     test "p filters test files to those matching provided pattern" do
       settings = %Settings{}
-      expected = Settings.only_patterns(settings, ["pattern"])
+      expected = Settings.patterns(settings, ["pattern"])
 
       assert {:ok, ^expected} = process_command("p pattern", settings)
     end
@@ -102,9 +103,16 @@ defmodule MixTestInteractive.CommandProcessorTest do
     test "p a second time replaces patterns with new ones" do
       settings = %Settings{}
       {:ok, first_config} = process_command("p first", %Settings{})
-      expected = Settings.only_patterns(settings, ["second"])
+      expected = Settings.patterns(settings, ["second"])
 
       assert {:ok, ^expected} = process_command("p second", first_config)
+    end
+
+    test "p with no patterns clears patterns" do
+      {:ok, settings} = process_command("p pattern", %Settings{})
+      expected = %Settings{}
+
+      assert {:ok, ^expected} = process_command("p", settings)
     end
 
     test "r <count> sets the repeat until failure count" do
@@ -121,18 +129,19 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("r", settings)
     end
 
-    test "s runs only stale tests" do
-      settings = %Settings{}
-      expected = Settings.only_stale(settings)
+    test "s toggles stale tests" do
+      initial = %Settings{}
+      with_stale = Settings.toggle_stale(initial)
 
-      assert {:ok, ^expected} = process_command("s", settings)
+      assert {:ok, ^with_stale} = process_command("s", initial)
+      assert {:ok, ^initial} = process_command("s", with_stale)
     end
 
     test "t toggles tracing" do
-      settings = %Settings{}
-      expected = Settings.toggle_tracing(settings)
+      initial = %Settings{}
+      with_tracing = Settings.toggle_tracing(initial)
 
-      assert {:ok, ^expected} = process_command("t", settings)
+      assert {:ok, ^with_tracing} = process_command("t", initial)
     end
 
     test "w toggles watch mode" do
@@ -164,60 +173,6 @@ defmodule MixTestInteractive.CommandProcessorTest do
 
     test "trims whitespace from commands" do
       assert :quit = process_command("\t  q   \n   \t")
-    end
-  end
-
-  describe "usage information" do
-    test "shows relevant commands when running all tests" do
-      settings = %Settings{}
-
-      assert_commands(settings, ["p <patterns>", "s", "f"], ~w(a))
-    end
-
-    test "shows relevant commands when filtering by pattern" do
-      settings =
-        Settings.only_patterns(%Settings{}, ["pattern"])
-
-      assert_commands(settings, ["p <patterns>", "s", "f", "a"], ~w(p))
-    end
-
-    test "shows relevant commands when running failed tests" do
-      settings =
-        Settings.only_failed(%Settings{})
-
-      assert_commands(settings, ["p <patterns>", "s", "a"], ~w(f))
-    end
-
-    test "shows relevant commands when running stale tests" do
-      settings =
-        Settings.only_stale(%Settings{})
-
-      assert_commands(settings, ["p <patterns>", "f", "a"], ~w(s))
-    end
-
-    defp assert_commands(settings, included, excluded) do
-      included = included ++ ~w(Enter ? q)
-      usage = CommandProcessor.usage(settings)
-
-      assert contains?(usage, "Usage:\n")
-
-      for command <- included do
-        assert contains?(usage, command)
-      end
-
-      for command <- excluded do
-        refute contains?(usage, command)
-      end
-    end
-
-    defp contains?([], _string), do: false
-
-    defp contains?([h | t], string) do
-      contains?(h, string) || contains?(t, string)
-    end
-
-    defp contains?(usage, string) when is_binary(usage) do
-      usage == string
     end
   end
 end
