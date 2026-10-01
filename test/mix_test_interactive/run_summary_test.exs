@@ -12,20 +12,20 @@ defmodule MixTestInteractive.RunSummaryTest do
     end
 
     test "ran failed tests" do
-      settings = Settings.only_failed(%Settings{})
+      settings = Settings.toggle_failed(%Settings{})
 
       assert RunSummary.from_settings(settings) == "Ran only failed tests"
     end
 
     test "ran stale tests" do
-      settings = Settings.only_stale(%Settings{})
+      settings = Settings.toggle_stale(%Settings{})
 
       assert RunSummary.from_settings(settings) == "Ran only stale tests"
     end
 
     test "ran specific patterns" do
       settings =
-        Settings.only_patterns(%Settings{}, ["p1", "p2"])
+        Settings.patterns(%Settings{}, ["p1", "p2"])
 
       assert RunSummary.from_settings(settings) == "Ran all test files matching p1, p2"
     end
@@ -71,7 +71,7 @@ defmodule MixTestInteractive.RunSummaryTest do
     test "includes only relevant information with no extra blank lines" do
       settings =
         %Settings{}
-        |> Settings.only_stale()
+        |> Settings.toggle_stale()
         |> Settings.toggle_tracing()
         |> Settings.with_only(["tag1", "tag2"])
         |> Settings.with_seed("4258")

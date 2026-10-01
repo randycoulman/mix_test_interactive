@@ -74,7 +74,7 @@ defmodule MixTestInteractive.InteractiveMode do
         {:noreply, %{state | settings: new_settings}}
 
       :help ->
-        show_help(state.settings)
+        show_help()
         {:noreply, state}
 
       :unknown ->
@@ -137,11 +137,9 @@ defmodule MixTestInteractive.InteractiveMode do
     |> IO.puts()
   end
 
-  defp show_help(settings) do
+  defp show_help do
     IO.puts("")
 
-    settings
-    |> CommandProcessor.usage()
-    |> IO.puts()
+    IO.puts(CommandProcessor.usage())
   end
 end

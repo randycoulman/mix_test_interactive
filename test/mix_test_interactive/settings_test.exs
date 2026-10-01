@@ -3,14 +3,72 @@ defmodule MixTestInteractive.SettingsTest do
 
   alias MixTestInteractive.Settings
 
-  describe "filtering test files" do
+  describe "running only failed tests" do
+    test "toggles failed tests on" do
+      settings = Settings.toggle_failed(%Settings{initial_cli_args: ["--color"]})
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--color", "--failed"]
+    end
+
+    test "toggles failed tests off" do
+      settings =
+        %Settings{}
+        |> Settings.toggle_failed()
+        |> Settings.toggle_failed()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+
+    test "all tests removes failed flag" do
+      settings =
+        %Settings{}
+        |> Settings.toggle_failed()
+        |> Settings.all_tests()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+  end
+
+  describe "running only stale tests" do
+    test "toggles stale tests on" do
+      settings = Settings.toggle_stale(%Settings{initial_cli_args: ["--color"]})
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--color", "--stale"]
+    end
+
+    test "toggles stale tests off" do
+      settings =
+        %Settings{}
+        |> Settings.toggle_stale()
+        |> Settings.toggle_stale()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+
+    test "all tests removes stale flag" do
+      settings =
+        %Settings{}
+        |> Settings.toggle_stale()
+        |> Settings.all_tests()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+  end
+
+  describe "filtering tests by filename patterns" do
     test "filters to files matching patterns" do
       all_files = ~w(file1 file2 no_match other)
 
       settings =
         %Settings{initial_cli_args: ["--color"]}
         |> with_fake_file_list(all_files)
-        |> Settings.only_patterns(["file", "other"])
+        |> Settings.patterns(["file", "other"])
 
       {:ok, args} = Settings.cli_args(settings)
       assert args == ["--color", "file1", "file2", "other"]
@@ -20,113 +78,25 @@ defmodule MixTestInteractive.SettingsTest do
       settings =
         %Settings{}
         |> with_fake_file_list([])
-        |> Settings.only_patterns(["file"])
+        |> Settings.patterns(["file"])
 
       assert {:error, :no_matching_files} = Settings.cli_args(settings)
     end
 
-    test "restricts to failed tests" do
-      settings =
-        Settings.only_failed(%Settings{initial_cli_args: ["--color"]})
-
-      {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--color", "--failed"]
-    end
-
-    test "restricts to stale tests" do
-      settings =
-        Settings.only_stale(%Settings{initial_cli_args: ["--color"]})
-
-      {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--color", "--stale"]
-    end
-
-    test "pattern filter clears failed flag" do
+    test "empty pattern list clears patterns" do
       settings =
         %Settings{}
-        |> with_fake_file_list(["file"])
-        |> Settings.only_failed()
-        |> Settings.only_patterns(["f"])
+        |> Settings.patterns(["pattern"])
+        |> Settings.patterns([])
 
       {:ok, args} = Settings.cli_args(settings)
-      assert args == ["file"]
-    end
-
-    test "pattern filter clears stale flag" do
-      settings =
-        %Settings{}
-        |> with_fake_file_list(["file"])
-        |> Settings.only_stale()
-        |> Settings.only_patterns(["f"])
-
-      {:ok, args} = Settings.cli_args(settings)
-      assert args == ["file"]
-    end
-
-    test "failed flag clears pattern filters" do
-      settings =
-        %Settings{}
-        |> Settings.only_patterns(["file"])
-        |> Settings.only_failed()
-
-      {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--failed"]
-    end
-
-    test "failed flag clears stale flag" do
-      settings =
-        %Settings{}
-        |> Settings.only_stale()
-        |> Settings.only_failed()
-
-      {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--failed"]
-    end
-
-    test "stale flag clears pattern filters" do
-      settings =
-        %Settings{}
-        |> Settings.only_patterns(["file"])
-        |> Settings.only_stale()
-
-      {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--stale"]
-    end
-
-    test "stale flag clears failed flag" do
-      settings =
-        %Settings{}
-        |> Settings.only_failed()
-        |> Settings.only_stale()
-
-      {:ok, args} = Settings.cli_args(settings)
-      assert args == ["--stale"]
+      assert args == []
     end
 
     test "all tests clears pattern filters" do
       settings =
         %Settings{}
-        |> Settings.only_patterns(["pattern"])
-        |> Settings.all_tests()
-
-      {:ok, args} = Settings.cli_args(settings)
-      assert args == []
-    end
-
-    test "all tests removes stale flag" do
-      settings =
-        %Settings{}
-        |> Settings.only_stale()
-        |> Settings.all_tests()
-
-      {:ok, args} = Settings.cli_args(settings)
-      assert args == []
-    end
-
-    test "all tests removes failed flag" do
-      settings =
-        %Settings{}
-        |> Settings.only_failed()
+        |> Settings.patterns(["pattern"])
         |> Settings.all_tests()
 
       {:ok, args} = Settings.cli_args(settings)
@@ -157,6 +127,16 @@ defmodule MixTestInteractive.SettingsTest do
       assert args == []
     end
 
+    test "all tests clears excludes" do
+      settings =
+        %Settings{}
+        |> Settings.with_excludes(["tag1"])
+        |> Settings.all_tests()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+
     test "includes specified tags" do
       tags = ["tag1", "tag2"]
       settings = Settings.with_includes(%Settings{initial_cli_args: ["--color"]}, tags)
@@ -175,6 +155,16 @@ defmodule MixTestInteractive.SettingsTest do
       assert args == []
     end
 
+    test "all tests clears includes" do
+      settings =
+        %Settings{}
+        |> Settings.with_includes(["tag1"])
+        |> Settings.all_tests()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+
     test "runs only specified tags" do
       tags = ["tag1", "tag2"]
       settings = Settings.with_only(%Settings{initial_cli_args: ["--color"]}, tags)
@@ -183,11 +173,21 @@ defmodule MixTestInteractive.SettingsTest do
       assert args == ["--color", "--only", "tag1", "--only", "tag2"]
     end
 
-    test "clears only tags" do
+    test "clears 'only' tags" do
       settings =
         %Settings{}
         |> Settings.with_only(["tag1"])
         |> Settings.clear_only()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+
+    test "all tests clears 'only' tags" do
+      settings =
+        %Settings{}
+        |> Settings.with_only(["tag1"])
+        |> Settings.all_tests()
 
       {:ok, args} = Settings.cli_args(settings)
       assert args == []
