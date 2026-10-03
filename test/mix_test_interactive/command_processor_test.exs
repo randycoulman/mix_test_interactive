@@ -230,4 +230,26 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert is_binary(message) and message != ""
     end
   end
+
+  describe "argument validation" do
+    for command <- ~w(d m n r) do
+      test "#{command} rejects more than one argument" do
+        assert {:error, %CommandError{message: "Usage: " <> _usage}} =
+                 process_command(unquote(command) <> " 1 2")
+      end
+    end
+
+    for command <- ~w(a f q s t w ?) do
+      test "#{command} rejects arguments" do
+        assert {:error, %CommandError{message: "Usage: " <> _usage}} =
+                 process_command(unquote(command) <> " extra")
+      end
+    end
+
+    test "does not mask function clause errors raised beyond the command itself" do
+      assert_raise FunctionClauseError, ~r/Settings.toggle_failed/, fn ->
+        process_command("f", %{})
+      end
+    end
+  end
 end

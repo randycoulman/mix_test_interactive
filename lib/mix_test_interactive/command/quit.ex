@@ -8,5 +8,5 @@ defmodule MixTestInteractive.Command.Quit do
   alias MixTestInteractive.Command
 
   @impl Command
-  def run(_args, _settings), do: :quit
+  def run([], _settings), do: :quit
 end

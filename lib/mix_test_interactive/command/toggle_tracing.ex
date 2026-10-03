@@ -13,7 +13,7 @@ defmodule MixTestInteractive.Command.ToggleTracing do
   alias MixTestInteractive.Settings
 
   @impl Command
-  def run(_args, settings) do
+  def run([], settings) do
     {:ok, Settings.toggle_tracing(settings)}
   end
 end

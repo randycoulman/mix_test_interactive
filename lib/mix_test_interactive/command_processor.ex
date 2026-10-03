@@ -86,7 +86,20 @@ defmodule MixTestInteractive.CommandProcessor do
   defp process_command(command, args, settings) do
     case Enum.find(@commands, nil, &(&1.command() == command)) do
       nil -> :unknown
-      cmd -> cmd.run(args, settings)
+      cmd -> run_command(cmd, args, settings)
     end
+  end
+
+  defp run_command(cmd, args, settings) do
+    cmd.run(args, settings)
+  rescue
+    error in FunctionClauseError ->
+      case error do
+        %FunctionClauseError{module: ^cmd, function: :run, arity: 2} ->
+          {:error, CommandError.exception("Usage: #{cmd.name()}")}
+
+        _other ->
+          reraise error, __STACKTRACE__
+      end
   end
 end

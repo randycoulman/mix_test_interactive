@@ -9,7 +9,7 @@ defmodule MixTestInteractive.Command.AllTests do
   alias MixTestInteractive.Settings
 
   @impl Command
-  def run(_args, settings) do
+  def run([], settings) do
     {:ok, Settings.all_tests(settings)}
   end
 end

@@ -13,7 +13,7 @@ defmodule MixTestInteractive.Command.ToggleStale do
   alias MixTestInteractive.Settings
 
   @impl Command
-  def run(_args, settings) do
+  def run([], settings) do
     {:ok, Settings.toggle_stale(settings)}
   end
 end
