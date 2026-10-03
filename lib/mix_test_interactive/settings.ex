@@ -38,6 +38,15 @@ defmodule MixTestInteractive.Settings do
   end
 
   @doc """
+  Return whether the settings run all tests; that is, whether `all_tests/1`
+  would leave them unchanged.
+  """
+  @spec all_tests?(t()) :: boolean()
+  def all_tests?(%__MODULE__{} = settings) do
+    all_tests(settings) == settings
+  end
+
+  @doc """
   Update settings to clear any excluded tags.
   """
   @spec clear_excludes(t()) :: t()
@@ -113,76 +122,6 @@ defmodule MixTestInteractive.Settings do
   @spec patterns(t(), [String.t()]) :: t()
   def patterns(%__MODULE__{} = settings, patterns) do
     %{settings | patterns: patterns}
-  end
-
-  @doc """
-  Return a text summary of the current interactive mode settings.
-  """
-  @spec summary(t()) :: String.t()
-  def summary(%__MODULE__{} = settings) do
-    run_summary =
-      cond do
-        settings.failed? ->
-          "Ran only failed tests"
-
-        settings.stale? ->
-          "Ran only stale tests"
-
-        !Enum.empty?(settings.patterns) ->
-          "Ran all test files matching #{Enum.join(settings.patterns, ", ")}"
-
-        true ->
-          "Ran all tests"
-      end
-
-    with_seed =
-      case settings.seed do
-        nil -> run_summary
-        seed -> run_summary <> " with seed: #{seed}"
-      end
-
-    with_seed
-    |> append_tag_filters(settings)
-    |> append_max_failures(settings)
-    |> append_repeat_count(settings)
-    |> append_tracing(settings)
-  end
-
-  defp append_max_failures(summary, %__MODULE__{max_failures: nil} = _settings) do
-    summary
-  end
-
-  defp append_max_failures(summary, %__MODULE__{} = settings) do
-    summary <> "\nMax failures: #{settings.max_failures}"
-  end
-
-  defp append_repeat_count(summary, %__MODULE__{repeat_count: nil}), do: summary
-
-  defp append_repeat_count(summary, %__MODULE__{} = settings) do
-    summary <> "\nRepeat until failure: #{settings.repeat_count}"
-  end
-
-  defp append_tag_filters(summary, %__MODULE__{} = settings) do
-    [
-      summary,
-      tag_filters("Excluding tags", settings.excludes),
-      tag_filters("Including tags", settings.includes),
-      tag_filters("Only tags", settings.only)
-    ]
-    |> Enum.reject(&is_nil/1)
-    |> Enum.join("\n")
-  end
-
-  defp append_tracing(summary, %__MODULE__{tracing?: false}), do: summary
-
-  defp append_tracing(summary, %__MODULE__{tracing?: true}) do
-    summary <> "\nTracing: ON"
-  end
-
-  defp tag_filters(_label, []), do: nil
-
-  defp tag_filters(label, tags) do
-    label <> ": " <> inspect(tags)
   end
 
   @doc """
