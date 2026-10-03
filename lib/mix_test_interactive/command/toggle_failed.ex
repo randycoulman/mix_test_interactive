@@ -2,7 +2,7 @@ defmodule MixTestInteractive.Command.ToggleFailed do
   @moduledoc """
   Toggle running of only failed tests on or off.
 
-  Runs only previously-failed tests when on; otherwise runs all tests.
+  When on, runs only previously-failed tests.
 
   Equivalent to `mix test --failed`.
   """

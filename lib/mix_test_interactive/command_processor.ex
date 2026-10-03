@@ -56,8 +56,6 @@ defmodule MixTestInteractive.CommandProcessor do
 
   @doc """
   Returns an ANSI-formatted usage summary.
-
-  Includes only commands that are applicable to the current configuration.
   """
   @spec usage :: IO.chardata()
   def usage do

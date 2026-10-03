@@ -171,7 +171,6 @@ defmodule MixTestInteractive.CommandLineParser do
   end
 
   defp build_settings(mti_opts, mix_test_opts, patterns) do
-    no_patterns? = Enum.empty?(patterns)
     {excludes, mix_test_opts} = Keyword.pop_values(mix_test_opts, :exclude)
     {failed?, mix_test_opts} = Keyword.pop(mix_test_opts, :failed, false)
     {includes, mix_test_opts} = Keyword.pop_values(mix_test_opts, :include)
@@ -185,7 +184,7 @@ defmodule MixTestInteractive.CommandLineParser do
 
     %Settings{
       excludes: excludes,
-      failed?: no_patterns? && failed?,
+      failed?: failed?,
       includes: includes,
       initial_cli_args: OptionParser.to_argv(mix_test_opts),
       max_failures: max_failures && to_string(max_failures),
@@ -193,7 +192,7 @@ defmodule MixTestInteractive.CommandLineParser do
       patterns: patterns,
       repeat_count: repeat_count && to_string(repeat_count),
       seed: seed && to_string(seed),
-      stale?: no_patterns? && !failed? && stale?,
+      stale?: stale?,
       tracing?: trace?,
       watching?: watching?
     }
