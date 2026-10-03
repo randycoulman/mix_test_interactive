@@ -67,7 +67,7 @@ defmodule MixTestInteractive.EndToEndTest do
     assert_ran_tests()
   end
 
-  test "pattern workflow", %{pid: pid} do
+  test "filename pattern workflow", %{pid: pid} do
     assert_ran_tests()
 
     assert :ok = InteractiveMode.process_command(pid, "p test_file:42")

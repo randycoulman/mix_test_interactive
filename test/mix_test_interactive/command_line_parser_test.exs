@@ -304,23 +304,23 @@ defmodule MixTestInteractive.CommandLineParserTest do
       assert settings.initial_cli_args == ["--color", "--raise"]
     end
 
-    test "extracts patterns from arguments" do
+    test "extracts filename patterns from arguments" do
       {:ok, %{settings: settings}} = CommandLineParser.parse(["pattern1", "--color", "pattern2"])
-      assert settings.patterns == ["pattern1", "pattern2"]
+      assert settings.filename_patterns == ["pattern1", "pattern2"]
       assert settings.initial_cli_args == ["--color"]
     end
 
-    test "extracts patterns even when no other flags are present" do
+    test "extracts filename patterns even when no other flags are present" do
       {:ok, %{settings: settings}} = CommandLineParser.parse(["pattern1", "pattern2"])
-      assert settings.patterns == ["pattern1", "pattern2"]
+      assert settings.filename_patterns == ["pattern1", "pattern2"]
       assert settings.initial_cli_args == []
     end
 
-    test "extracts failed, stale, and patterns together from arguments" do
+    test "extracts failed, stale, and filename patterns together from arguments" do
       {:ok, %{settings: settings}} = CommandLineParser.parse(["--failed", "--color", "--stale", "pattern"])
       assert settings.failed?
       assert settings.stale?
-      assert settings.patterns == ["pattern"]
+      assert settings.filename_patterns == ["pattern"]
       assert settings.initial_cli_args == ["--color"]
     end
   end

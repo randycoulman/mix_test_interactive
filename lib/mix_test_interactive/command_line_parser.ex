@@ -124,7 +124,7 @@ defmodule MixTestInteractive.CommandLineParser do
   @spec parse([String.t()]) :: parse_result()
   def parse(cli_args \\ []) do
     with {:ok, mti_opts, mix_test_args} <- parse_mti_args(cli_args),
-         {:ok, mix_test_opts, patterns} <- parse_mix_test_args(mix_test_args) do
+         {:ok, mix_test_opts, filename_patterns} <- parse_mix_test_args(mix_test_args) do
       cond do
         Keyword.get(mti_opts, :help, false) ->
           {:ok, :help}
@@ -134,7 +134,7 @@ defmodule MixTestInteractive.CommandLineParser do
 
         true ->
           with {:ok, config} <- build_config(mti_opts) do
-            settings = build_settings(mti_opts, mix_test_opts, patterns)
+            settings = build_settings(mti_opts, mix_test_opts, filename_patterns)
             {:ok, %{config: config, settings: settings}}
           end
       end
@@ -170,7 +170,7 @@ defmodule MixTestInteractive.CommandLineParser do
     end
   end
 
-  defp build_settings(mti_opts, mix_test_opts, patterns) do
+  defp build_settings(mti_opts, mix_test_opts, filename_patterns) do
     {excludes, mix_test_opts} = Keyword.pop_values(mix_test_opts, :exclude)
     {failed?, mix_test_opts} = Keyword.pop(mix_test_opts, :failed, false)
     {includes, mix_test_opts} = Keyword.pop_values(mix_test_opts, :include)
@@ -185,11 +185,11 @@ defmodule MixTestInteractive.CommandLineParser do
     %Settings{
       excludes: excludes,
       failed?: failed?,
+      filename_patterns: filename_patterns,
       includes: includes,
       initial_cli_args: OptionParser.to_argv(mix_test_opts),
       max_failures: max_failures && to_string(max_failures),
       only: only,
-      patterns: patterns,
       repeat_count: repeat_count && to_string(repeat_count),
       seed: seed && to_string(seed),
       stale?: stale?,
@@ -199,10 +199,10 @@ defmodule MixTestInteractive.CommandLineParser do
   end
 
   defp parse_mix_test_args(mix_test_args) do
-    {mix_test_opts, patterns} =
+    {mix_test_opts, filename_patterns} =
       OptionParser.parse!(mix_test_args, aliases: @mix_test_aliases, switches: @mix_test_options)
 
-    {:ok, mix_test_opts, patterns}
+    {:ok, mix_test_opts, filename_patterns}
   end
 
   defp parse_mti_args(cli_args) do
@@ -239,10 +239,10 @@ defmodule MixTestInteractive.CommandLineParser do
   end
 
   defp try_parse_as_mti_args(args) do
-    {mti_opts, patterns, invalid} = OptionParser.parse(args, strict: @options)
+    {mti_opts, rest, invalid} = OptionParser.parse(args, strict: @options)
 
     cond do
-      invalid == [] and patterns == [] -> {:ok, mti_opts}
+      invalid == [] and rest == [] -> {:ok, mti_opts}
       mti_opts[:help] || mti_opts[:version] -> {:ok, mti_opts}
       mti_opts == [] -> {:error, :maybe_mix_test_args}
       true -> force_parse_as_mti_args(args)

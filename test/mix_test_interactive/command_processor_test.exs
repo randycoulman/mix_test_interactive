@@ -93,22 +93,22 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("o", settings)
     end
 
-    test "p filters test files to those matching provided pattern" do
+    test "p filters test files to those matching provided filename pattern" do
       settings = %Settings{}
-      expected = Settings.patterns(settings, ["pattern"])
+      expected = Settings.with_filename_patterns(settings, ["pattern"])
 
       assert {:ok, ^expected} = process_command("p pattern", settings)
     end
 
-    test "p a second time replaces patterns with new ones" do
+    test "p a second time replaces filename patterns with new ones" do
       settings = %Settings{}
       {:ok, first_config} = process_command("p first", %Settings{})
-      expected = Settings.patterns(settings, ["second"])
+      expected = Settings.with_filename_patterns(settings, ["second"])
 
       assert {:ok, ^expected} = process_command("p second", first_config)
     end
 
-    test "p with no patterns clears patterns" do
+    test "p with no filename patterns clears filename patterns" do
       {:ok, settings} = process_command("p pattern", %Settings{})
       expected = %Settings{}
 

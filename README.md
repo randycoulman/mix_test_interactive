@@ -114,19 +114,19 @@ run.
 `mix test.interactive` will detect the `--exclude`, `--failed`, `--include`,
 `--only`, `--seed`, and `--stale` options and use those as initial settings in
 interactive mode. You can then use the interactive mode commands to adjust those
-options as needed. It will also detect any filename or pattern arguments and use
-those as initial settings. Note that if you specify a pattern on the
+options as needed. It will also detect any filename pattern arguments and use
+those as initial settings. Note that if you specify a filename pattern on the
 command-line, `mix test.interactive` will find all test files matching that
 pattern and pass those to `mix test` as if you had used the `p` command.
 
-### Patterns and filenames
+### Filename patterns
 
 `mix test.interactive` can take the same filename or filename:line_number
-patterns that `mix test` understands. It also allows you to specify one or more
-"patterns" - strings that match one or more test files. When you provide one or
-more patterns on the command-line, `mix test.interactive` will find all test
-files matching those patterns and pass them to `mix test` as if you had used the
-`p` command (described below).
+arguments that `mix test` understands. It also allows you to specify one or more
+"filename patterns" - strings that match one or more test files. When you
+provide one or more filename patterns on the command-line, `mix
+test.interactive` will find all test files matching those patterns and
+pass them to `mix test` as if you had used the `p` command (described below).
 
 ## Interactive Commands
 
@@ -148,12 +148,12 @@ will run.
 - `o <tags...>`: Run only tests tagged with the listed tags (equivalent to the
   `--only` option of `mix test`).
 - `o`: Clear any "only" tags.
-- `p`: Run only test files that match one or more provided patterns. A pattern
-  is the project-root-relative path to a test file (with or without a line
-  number specification) or a string that matches a portion of full pathname.
-  e.g. `test/my_project/my_test.exs`, `test/my_project/my_test.exs:12:24` or
-  `my`. `p` with no patterns clears all pattern filters and runs all test
-  files.
+- `p`: Run only test files that match one or more provided filename patterns. A
+  filename pattern is the project-root-relative path to a test file (with or
+  without a line number specification) or a string that matches a portion of
+  a full pathname. e.g. `test/my_project/my_test.exs`,
+  `test/my_project/my_test.exs:12:24` or `my`. `p` with no filename patterns
+  clears all filename patterns and runs all test files.
 - `q`: Exit the program. (Can also use `Ctrl-D`.)
 - `r <count>`: (Elixir 1.17.0 and later) Run tests up to <count> times until a
   failure occurs (equivalent to the `--repeat-until-failure` option of `mix

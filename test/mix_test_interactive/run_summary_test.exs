@@ -24,7 +24,7 @@ defmodule MixTestInteractive.RunSummaryTest do
     end
 
     test "ran selected tests with filename patterns" do
-      settings = Settings.patterns(%Settings{}, ["p1"])
+      settings = Settings.with_filename_patterns(%Settings{}, ["p1"])
 
       assert RunSummary.from_settings(settings) =~ ~r/\ARan selected tests:\n/
     end
@@ -62,7 +62,7 @@ defmodule MixTestInteractive.RunSummaryTest do
     end
 
     test "includes filename patterns" do
-      settings = Settings.patterns(%Settings{}, ["p1", "p2"])
+      settings = Settings.with_filename_patterns(%Settings{}, ["p1", "p2"])
 
       assert RunSummary.from_settings(settings) =~ ~s(Filename patterns: ["p1", "p2"])
     end
@@ -129,7 +129,7 @@ defmodule MixTestInteractive.RunSummaryTest do
         %Settings{}
         |> Settings.toggle_failed()
         |> Settings.toggle_stale()
-        |> Settings.patterns(["p1", "p2"])
+        |> Settings.with_filename_patterns(["p1", "p2"])
         |> Settings.with_excludes(["tag1"])
         |> Settings.with_includes(["tag2"])
         |> Settings.with_only(["tag3"])
