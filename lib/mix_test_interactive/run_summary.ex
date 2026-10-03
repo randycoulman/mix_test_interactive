@@ -7,7 +7,17 @@ defmodule MixTestInteractive.RunSummary do
   """
   @spec from_settings(Settings.t()) :: String.t()
   def from_settings(%Settings{} = settings) do
-    [&base_summary/1, &all_tag_filters/1, &max_failures/1, &repeat_count/1, &seed/1, &tracing/1]
+    [
+      &header/1,
+      &failed/1,
+      &stale/1,
+      &patterns/1,
+      &all_tag_filters/1,
+      &max_failures/1,
+      &repeat_count/1,
+      &seed/1,
+      &tracing/1
+    ]
     |> Enum.flat_map(fn fun -> List.wrap(fun.(settings)) end)
     |> Enum.join("\n")
   end
@@ -23,20 +33,11 @@ defmodule MixTestInteractive.RunSummary do
     )
   end
 
-  defp base_summary(%Settings{} = settings) do
-    cond do
-      settings.failed? ->
-        "Ran only failed tests"
+  defp failed(%Settings{failed?: false}), do: nil
+  defp failed(%Settings{failed?: true}), do: "Failed tests"
 
-      settings.stale? ->
-        "Ran only stale tests"
-
-      !Enum.empty?(settings.patterns) ->
-        "Ran all test files matching #{Enum.join(settings.patterns, ", ")}"
-
-      true ->
-        "Ran all tests"
-    end
+  defp header(%Settings{} = settings) do
+    if Settings.all_tests?(settings), do: "Ran all tests", else: "Ran selected tests:"
   end
 
   defp max_failures(%Settings{max_failures: nil}), do: nil
@@ -45,17 +46,26 @@ defmodule MixTestInteractive.RunSummary do
     "Max failures: #{settings.max_failures}"
   end
 
+  defp patterns(%Settings{patterns: []}), do: nil
+
+  defp patterns(%Settings{} = settings) do
+    "Filename patterns: " <> inspect(settings.patterns)
+  end
+
   defp repeat_count(%Settings{repeat_count: nil}), do: nil
 
   defp repeat_count(%Settings{} = settings) do
     "Repeat until failure: #{settings.repeat_count}"
   end
 
-  def seed(%Settings{seed: nil}), do: nil
+  defp seed(%Settings{seed: nil}), do: nil
 
-  def seed(%Settings{} = settings) do
+  defp seed(%Settings{} = settings) do
     "Seed: #{settings.seed}"
   end
+
+  defp stale(%Settings{stale?: false}), do: nil
+  defp stale(%Settings{stale?: true}), do: "Stale tests"
 
   defp tracing(%Settings{tracing?: false}), do: nil
 

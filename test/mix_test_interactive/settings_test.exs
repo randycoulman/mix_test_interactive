@@ -272,4 +272,36 @@ defmodule MixTestInteractive.SettingsTest do
       assert args == []
     end
   end
+
+  describe "checking whether all tests run" do
+    test "runs all tests by default" do
+      assert Settings.all_tests?(%Settings{})
+    end
+
+    test "does not run all tests when a selection setting is active" do
+      refute Settings.all_tests?(Settings.toggle_failed(%Settings{}))
+    end
+
+    test "runs all tests after all tests clears selection settings" do
+      settings =
+        %Settings{}
+        |> Settings.toggle_stale()
+        |> Settings.with_only(["tag1"])
+        |> Settings.all_tests()
+
+      assert Settings.all_tests?(settings)
+    end
+
+    test "ignores settings that don't select tests" do
+      settings =
+        %Settings{}
+        |> Settings.with_max_failures("3")
+        |> Settings.with_repeat_count("10")
+        |> Settings.with_seed("4258")
+        |> Settings.toggle_tracing()
+        |> Settings.toggle_watch_mode()
+
+      assert Settings.all_tests?(settings)
+    end
+  end
 end
