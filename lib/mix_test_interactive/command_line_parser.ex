@@ -99,6 +99,9 @@ defmodule MixTestInteractive.CommandLineParser do
     max_cases: :integer,
     max_failures: :integer,
     max_requires: :integer,
+    # Change to `:regex` (matching `mix test`) once Elixir 1.19 is the minimum
+    # supported version; `OptionParser` doesn't support `:regex` before then.
+    name_pattern: :string,
     only: :keep,
     partitions: :integer,
     preload_modules: :boolean,
@@ -116,7 +119,8 @@ defmodule MixTestInteractive.CommandLineParser do
   ]
 
   @mix_test_aliases [
-    b: :breakpoints
+    b: :breakpoints,
+    n: :name_pattern
   ]
 
   @type parse_result :: {:ok, %{config: Config.t(), settings: Settings.t()} | :help | :version} | {:error, UsageError.t()}
@@ -176,6 +180,7 @@ defmodule MixTestInteractive.CommandLineParser do
     {includes, mix_test_opts} = Keyword.pop_values(mix_test_opts, :include)
     {only, mix_test_opts} = Keyword.pop_values(mix_test_opts, :only)
     {max_failures, mix_test_opts} = Keyword.pop(mix_test_opts, :max_failures)
+    {name_pattern, mix_test_opts} = Keyword.pop(mix_test_opts, :name_pattern)
     {repeat_count, mix_test_opts} = Keyword.pop(mix_test_opts, :repeat_until_failure)
     {seed, mix_test_opts} = Keyword.pop(mix_test_opts, :seed)
     {stale?, mix_test_opts} = Keyword.pop(mix_test_opts, :stale, false)
@@ -189,6 +194,7 @@ defmodule MixTestInteractive.CommandLineParser do
       includes: includes,
       initial_cli_args: OptionParser.to_argv(mix_test_opts),
       max_failures: max_failures && to_string(max_failures),
+      name_pattern: name_pattern,
       only: only,
       repeat_count: repeat_count && to_string(repeat_count),
       seed: seed && to_string(seed),

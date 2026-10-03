@@ -29,6 +29,12 @@ defmodule MixTestInteractive.RunSummaryTest do
       assert RunSummary.from_settings(settings) =~ ~r/\ARan selected tests:\n/
     end
 
+    test "ran selected tests with name pattern" do
+      settings = Settings.with_name_pattern(%Settings{}, "does a thing")
+
+      assert RunSummary.from_settings(settings) =~ ~r/\ARan selected tests:\n/
+    end
+
     test "ran selected tests with excluded tags" do
       settings = Settings.with_excludes(%Settings{}, ["tag1"])
 
@@ -65,6 +71,12 @@ defmodule MixTestInteractive.RunSummaryTest do
       settings = Settings.with_filename_patterns(%Settings{}, ["p1", "p2"])
 
       assert RunSummary.from_settings(settings) =~ ~s(Filename patterns: ["p1", "p2"])
+    end
+
+    test "includes name pattern" do
+      settings = Settings.with_name_pattern(%Settings{}, "does a thing")
+
+      assert RunSummary.from_settings(settings) =~ ~s(Name pattern: "does a thing")
     end
 
     test "includes max failures" do
@@ -130,6 +142,7 @@ defmodule MixTestInteractive.RunSummaryTest do
         |> Settings.toggle_failed()
         |> Settings.toggle_stale()
         |> Settings.with_filename_patterns(["p1", "p2"])
+        |> Settings.with_name_pattern("does a thing")
         |> Settings.with_excludes(["tag1"])
         |> Settings.with_includes(["tag2"])
         |> Settings.with_only(["tag3"])
@@ -143,6 +156,7 @@ defmodule MixTestInteractive.RunSummaryTest do
       Failed tests
       Stale tests
       Filename patterns: ["p1", "p2"]
+      Name pattern: "does a thing"
       Excluding tags: ["tag1"]
       Including tags: ["tag2"]
       Only tags: ["tag3"]

@@ -108,6 +108,35 @@ defmodule MixTestInteractive.SettingsTest do
     end
   end
 
+  describe "filtering tests by name pattern" do
+    test "runs tests matching the name pattern" do
+      settings = Settings.with_name_pattern(%Settings{initial_cli_args: ["--color"]}, "does a thing")
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == ["--color", "--name-pattern", "does a thing"]
+    end
+
+    test "clears the name pattern" do
+      settings =
+        %Settings{}
+        |> Settings.with_name_pattern("does a thing")
+        |> Settings.clear_name_pattern()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+
+    test "all tests clears the name pattern" do
+      settings =
+        %Settings{}
+        |> Settings.with_name_pattern("does a thing")
+        |> Settings.all_tests()
+
+      {:ok, args} = Settings.cli_args(settings)
+      assert args == []
+    end
+  end
+
   describe "filtering tests by tags" do
     test "excludes specified tags" do
       tags = ["tag1", "tag2"]

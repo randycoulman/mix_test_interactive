@@ -5,10 +5,11 @@ defmodule Mix.Tasks.Test.Interactive do
 
   `mix test.interactive` allows you to easily switch between running all tests,
   stale tests, or failed tests. Or, you can run only the tests whose filenames
-  contain a substring. You can also control which tags are included or excluded,
-  modify the maximum number of failures allowed, repeat the test suite until a
-  failure occurs, specify the test seed to use, and toggle tracing on and off.
-  Includes an optional "watch mode" which runs tests after every file change.
+  contain a substring or whose names match a regular expression. You can also
+  control which tags are included or excluded, modify the maximum number of
+  failures allowed, repeat the test suite until a failure occurs, specify the
+  test seed to use, and toggle tracing on and off. Includes an optional "watch
+  mode" which runs tests after every file change.
 
   ## Usage
 
@@ -56,13 +57,13 @@ defmodule Mix.Tasks.Test.Interactive do
   test run.
 
   `mix test.interactive` will detect the `--exclude`, `--failed`, `--include`,
-  `--only`, `--seed`, and `--stale` options and use those as initial settings in
-  interactive mode. You can then use the interactive mode commands to adjust
-  those options as needed. It will also detect any filename pattern arguments
-  and use those as initial settings. Note that if you specify a filename pattern
-  on the command-line, `mix test.interactive` will find all test files matching
-  that pattern and pass those to `mix test` as if you had used the `p`
-  command.
+  `-n`/`--name-pattern` (Elixir 1.19.0 and later), `--only`, `--seed`, and
+  `--stale` options and use those as initial settings in interactive mode. You
+  can then use the interactive mode commands to adjust those options as needed.
+  It will also detect any filename pattern arguments and use those as initial
+  settings. Note that if you specify a filename pattern on the command-line,
+  `mix test.interactive` will find all test files matching that pattern and pass
+  those to `mix test` as if you had used the `p` command.
 
   ### Filename patterns
 
@@ -80,7 +81,7 @@ defmodule Mix.Tasks.Test.Interactive do
   tests will run.
 
   - `a`: Run all tests. Clears the `--failed` and `--stale` options as well as
-    any filename patterns or tag filters.
+    any filename patterns, name pattern, or tag filters.
   - `d <seed>`: Run the tests with a specific seed.
   - `d`: Clear any previously specified seed.
   - `f`: Toggle running of only tests that failed on the last run (equivalent to
@@ -91,6 +92,10 @@ defmodule Mix.Tasks.Test.Interactive do
   - `m <max>`: Specify the maximum number of failures allowed (equivalent to the
     `--max-failures` option of `mix test`).
   - `m`: Clear any previously specified maximum number of failures.
+  - `n <name pattern>`: (Elixir 1.19.0 and later) Run only tests whose names
+    match the given regular expression (equivalent to the `--name-pattern`
+    option of `mix test`).
+  - `n`: (Elixir 1.19.0 and later) Clear any previously specified name pattern.
   - `o <tags...>`: Run only tests tagged with the listed tags (equivalent to the
     `--only` option of `mix test`).
   - `o`: Clear any "only" tags.

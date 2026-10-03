@@ -89,6 +89,19 @@ defmodule MixTestInteractive.EndToEndTest do
     assert_ran_tests()
   end
 
+  test "name pattern workflow", %{pid: pid} do
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, "n does a thing")
+    assert_ran_tests(["--name-pattern", "does a thing"])
+
+    assert :ok = InteractiveMode.note_file_changed(pid)
+    assert_ran_tests(["--name-pattern", "does a thing"])
+
+    assert :ok = InteractiveMode.process_command(pid, "n")
+    assert_ran_tests()
+  end
+
   test "max failures workflow", %{pid: pid} do
     assert_ran_tests()
 

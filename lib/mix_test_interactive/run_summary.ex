@@ -12,6 +12,7 @@ defmodule MixTestInteractive.RunSummary do
       &failed/1,
       &stale/1,
       &filename_patterns/1,
+      &name_pattern/1,
       &all_tag_filters/1,
       &max_failures/1,
       &repeat_count/1,
@@ -36,6 +37,12 @@ defmodule MixTestInteractive.RunSummary do
   defp failed(%Settings{failed?: false}), do: nil
   defp failed(%Settings{failed?: true}), do: "Failed tests"
 
+  defp filename_patterns(%Settings{filename_patterns: []}), do: nil
+
+  defp filename_patterns(%Settings{} = settings) do
+    "Filename patterns: " <> inspect(settings.filename_patterns)
+  end
+
   defp header(%Settings{} = settings) do
     if Settings.all_tests?(settings), do: "Ran all tests", else: "Ran selected tests:"
   end
@@ -46,10 +53,10 @@ defmodule MixTestInteractive.RunSummary do
     "Max failures: #{settings.max_failures}"
   end
 
-  defp filename_patterns(%Settings{filename_patterns: []}), do: nil
+  defp name_pattern(%Settings{name_pattern: nil}), do: nil
 
-  defp filename_patterns(%Settings{} = settings) do
-    "Filename patterns: " <> inspect(settings.filename_patterns)
+  defp name_pattern(%Settings{} = settings) do
+    "Name pattern: " <> inspect(settings.name_pattern)
   end
 
   defp repeat_count(%Settings{repeat_count: nil}), do: nil
