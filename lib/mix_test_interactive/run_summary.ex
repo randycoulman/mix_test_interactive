@@ -11,7 +11,7 @@ defmodule MixTestInteractive.RunSummary do
       &header/1,
       &failed/1,
       &stale/1,
-      &patterns/1,
+      &filename_patterns/1,
       &all_tag_filters/1,
       &max_failures/1,
       &repeat_count/1,
@@ -46,10 +46,10 @@ defmodule MixTestInteractive.RunSummary do
     "Max failures: #{settings.max_failures}"
   end
 
-  defp patterns(%Settings{patterns: []}), do: nil
+  defp filename_patterns(%Settings{filename_patterns: []}), do: nil
 
-  defp patterns(%Settings{} = settings) do
-    "Filename patterns: " <> inspect(settings.patterns)
+  defp filename_patterns(%Settings{} = settings) do
+    "Filename patterns: " <> inspect(settings.filename_patterns)
   end
 
   defp repeat_count(%Settings{repeat_count: nil}), do: nil

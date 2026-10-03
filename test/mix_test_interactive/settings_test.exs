@@ -62,41 +62,41 @@ defmodule MixTestInteractive.SettingsTest do
   end
 
   describe "filtering tests by filename patterns" do
-    test "filters to files matching patterns" do
+    test "filters to files matching filename patterns" do
       all_files = ~w(file1 file2 no_match other)
 
       settings =
         %Settings{initial_cli_args: ["--color"]}
         |> with_fake_file_list(all_files)
-        |> Settings.patterns(["file", "other"])
+        |> Settings.with_filename_patterns(["file", "other"])
 
       {:ok, args} = Settings.cli_args(settings)
       assert args == ["--color", "file1", "file2", "other"]
     end
 
-    test "returns error if no files match pattern" do
+    test "returns error if no files match filename pattern" do
       settings =
         %Settings{}
         |> with_fake_file_list([])
-        |> Settings.patterns(["file"])
+        |> Settings.with_filename_patterns(["file"])
 
       assert {:error, :no_matching_files} = Settings.cli_args(settings)
     end
 
-    test "empty pattern list clears patterns" do
+    test "empty filename pattern list clears filename patterns" do
       settings =
         %Settings{}
-        |> Settings.patterns(["pattern"])
-        |> Settings.patterns([])
+        |> Settings.with_filename_patterns(["pattern"])
+        |> Settings.with_filename_patterns([])
 
       {:ok, args} = Settings.cli_args(settings)
       assert args == []
     end
 
-    test "all tests clears pattern filters" do
+    test "all tests clears filename patterns" do
       settings =
         %Settings{}
-        |> Settings.patterns(["pattern"])
+        |> Settings.with_filename_patterns(["pattern"])
         |> Settings.all_tests()
 
       {:ok, args} = Settings.cli_args(settings)

@@ -8,7 +8,7 @@ defmodule MixTestInteractive.Settings do
 
   use TypedStruct
 
-  alias MixTestInteractive.PatternFilter
+  alias MixTestInteractive.FilenamePatternFilter
   alias MixTestInteractive.TestFiles
 
   @default_list_all_files &TestFiles.list/0
@@ -16,12 +16,12 @@ defmodule MixTestInteractive.Settings do
   typedstruct do
     field :excludes, [String.t()], default: []
     field :failed?, boolean(), default: false
+    field :filename_patterns, [String.t()], default: []
     field :includes, [String.t()], default: []
     field :initial_cli_args, [String.t()], default: []
     field :list_all_files, (-> [String.t()]), default: @default_list_all_files
     field :max_failures, String.t()
     field :only, [String.t()], default: []
-    field :patterns, [String.t()], default: []
     field :repeat_count, String.t()
     field :seed, String.t()
     field :stale?, boolean(), default: false
@@ -30,11 +30,11 @@ defmodule MixTestInteractive.Settings do
   end
 
   @doc """
-  Update settings to run all tests, removing any flags or filter patterns.
+  Update settings to run all tests, removing any flags, filename patterns, or tag filters.
   """
   @spec all_tests(t()) :: t()
   def all_tests(%__MODULE__{} = settings) do
-    %{settings | excludes: [], failed?: false, includes: [], only: [], patterns: [], stale?: false}
+    %{settings | excludes: [], failed?: false, filename_patterns: [], includes: [], only: [], stale?: false}
   end
 
   @doc """
@@ -115,16 +115,6 @@ defmodule MixTestInteractive.Settings do
   end
 
   @doc """
-  Provide a list of file-name filter patterns.
-
-  Only test filenames matching one or more patterns will be run.
-  """
-  @spec patterns(t(), [String.t()]) :: t()
-  def patterns(%__MODULE__{} = settings, patterns) do
-    %{settings | patterns: patterns}
-  end
-
-  @doc """
   Toggle running of only failing tests on or off.
 
   Corresponds to `mix test --failed`.
@@ -168,6 +158,14 @@ defmodule MixTestInteractive.Settings do
   @spec with_excludes(t(), [String.t()]) :: t()
   def with_excludes(%__MODULE__{} = settings, excludes) do
     %{settings | excludes: excludes}
+  end
+
+  @doc """
+  Run only test files matching one or more filename patterns.
+  """
+  @spec with_filename_patterns(t(), [String.t()]) :: t()
+  def with_filename_patterns(%__MODULE__{} = settings, filename_patterns) do
+    %{settings | filename_patterns: filename_patterns}
   end
 
   @doc """
@@ -221,17 +219,17 @@ defmodule MixTestInteractive.Settings do
   end
 
   defp args_from_settings(%__MODULE{} = settings) do
-    with {:ok, files} <- files_from_patterns(settings) do
+    with {:ok, files} <- files_from_filename_patterns(settings) do
       {:ok, opts_from_settings(settings) ++ files}
     end
   end
 
-  defp files_from_patterns(%__MODULE__{patterns: []} = _settings) do
+  defp files_from_filename_patterns(%__MODULE__{filename_patterns: []} = _settings) do
     {:ok, []}
   end
 
-  defp files_from_patterns(%__MODULE__{patterns: patterns} = settings) do
-    case PatternFilter.matches(settings.list_all_files.(), patterns) do
+  defp files_from_filename_patterns(%__MODULE__{filename_patterns: filename_patterns} = settings) do
+    case FilenamePatternFilter.matches(settings.list_all_files.(), filename_patterns) do
       [] -> {:error, :no_matching_files}
       files -> {:ok, files}
     end

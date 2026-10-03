@@ -5,8 +5,8 @@ defmodule MixTestInteractive.TestFiles do
   List available test files
 
   Respects the configured `:test_paths` and `:test_pattern` settings.
-  Used internally to filter test files by pattern on each test run.
-  That way, any new files that match an existing pattern will be picked
+  Used internally to filter test files by filename pattern on each test run.
+  That way, any new files that match an existing filename pattern will be picked
   up immediately.
   """
   @spec list() :: [String.t()]
