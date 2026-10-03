@@ -10,6 +10,7 @@ defmodule MixTestInteractive.CommandProcessor do
   alias MixTestInteractive.Command.Help
   alias MixTestInteractive.Command.Include
   alias MixTestInteractive.Command.MaxFailures
+  alias MixTestInteractive.Command.NamePattern
   alias MixTestInteractive.Command.Only
   alias MixTestInteractive.Command.Quit
   alias MixTestInteractive.Command.RepeatUntilFailure
@@ -30,6 +31,7 @@ defmodule MixTestInteractive.CommandProcessor do
     Help,
     Include,
     MaxFailures,
+    NamePattern,
     Only,
     Quit,
     RepeatUntilFailure,

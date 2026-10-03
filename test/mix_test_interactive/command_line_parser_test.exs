@@ -272,6 +272,18 @@ defmodule MixTestInteractive.CommandLineParserTest do
       assert settings.initial_cli_args == ["--color", "--raise"]
     end
 
+    test "extracts name pattern from arguments with -n" do
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--color", "-n", "does a thing", "--raise"])
+      assert settings.name_pattern == "does a thing"
+      assert settings.initial_cli_args == ["--color", "--raise"]
+    end
+
+    test "extracts name pattern from arguments with --name-pattern" do
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--color", "--name-pattern", "does a thing", "--raise"])
+      assert settings.name_pattern == "does a thing"
+      assert settings.initial_cli_args == ["--color", "--raise"]
+    end
+
     test "extracts only from arguments" do
       {:ok, %{settings: settings}} =
         CommandLineParser.parse(["--only", "tag1", "--color", "--only", "tag2", "--failed", "--raise", "--only", "tag3"])

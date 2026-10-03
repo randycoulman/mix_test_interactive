@@ -79,6 +79,20 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("m", settings)
     end
 
+    test "n <name pattern> sets the name pattern, joining words with single spaces" do
+      settings = %Settings{}
+      expected = Settings.with_name_pattern(settings, "does a thing")
+
+      assert {:ok, ^expected} = process_command("n  does   a thing", settings)
+    end
+
+    test "n with no pattern clears the name pattern" do
+      {:ok, settings} = process_command("n thing", %Settings{})
+      expected = Settings.clear_name_pattern(settings)
+
+      assert {:ok, ^expected} = process_command("n", settings)
+    end
+
     test "o <tag...> runs with only the given tags" do
       settings = %Settings{}
       expected = Settings.with_only(settings, ["tag1", "tag2"])

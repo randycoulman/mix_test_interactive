@@ -21,6 +21,7 @@ defmodule MixTestInteractive.Settings do
     field :initial_cli_args, [String.t()], default: []
     field :list_all_files, (-> [String.t()]), default: @default_list_all_files
     field :max_failures, String.t()
+    field :name_pattern, String.t()
     field :only, [String.t()], default: []
     field :repeat_count, String.t()
     field :seed, String.t()
@@ -30,11 +31,20 @@ defmodule MixTestInteractive.Settings do
   end
 
   @doc """
-  Update settings to run all tests, removing any flags, filename patterns, or tag filters.
+  Update settings to run all tests, removing any flags, filename patterns, name pattern, or tag filters.
   """
   @spec all_tests(t()) :: t()
   def all_tests(%__MODULE__{} = settings) do
-    %{settings | excludes: [], failed?: false, filename_patterns: [], includes: [], only: [], stale?: false}
+    %{
+      settings
+      | excludes: [],
+        failed?: false,
+        filename_patterns: [],
+        includes: [],
+        name_pattern: nil,
+        only: [],
+        stale?: false
+    }
   end
 
   @doc """
@@ -69,6 +79,14 @@ defmodule MixTestInteractive.Settings do
   @spec clear_max_failures(t()) :: t()
   def clear_max_failures(%__MODULE__{} = settings) do
     %{settings | max_failures: nil}
+  end
+
+  @doc """
+  Update settings to run tests regardless of their names, clearing any name pattern.
+  """
+  @spec clear_name_pattern(t()) :: t()
+  def clear_name_pattern(%__MODULE__{} = settings) do
+    %{settings | name_pattern: nil}
   end
 
   @doc """
@@ -189,6 +207,16 @@ defmodule MixTestInteractive.Settings do
   end
 
   @doc """
+  Run only the tests whose names match a regular expression.
+
+  Corresponds to `mix test --name-pattern <name pattern>` (Elixir 1.19.0 and later).
+  """
+  @spec with_name_pattern(t(), String.t()) :: t()
+  def with_name_pattern(%__MODULE__{} = settings, name_pattern) do
+    %{settings | name_pattern: name_pattern}
+  end
+
+  @doc """
   Run only the tests with the specified tags.
 
   Corresponds to `mix test --only <tag1> --only <tag2> ...`.
@@ -255,6 +283,9 @@ defmodule MixTestInteractive.Settings do
 
   defp opts_from_single_setting({:max_failures, nil}), do: []
   defp opts_from_single_setting({:max_failures, max}), do: ["--max-failures", max]
+
+  defp opts_from_single_setting({:name_pattern, nil}), do: []
+  defp opts_from_single_setting({:name_pattern, name_pattern}), do: ["--name-pattern", name_pattern]
 
   defp opts_from_single_setting({:only, only}) do
     Enum.flat_map(only, &["--only", &1])
