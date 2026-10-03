@@ -3,9 +3,8 @@ defmodule MixTestInteractive.Command.NamePattern do
   Specify or clear the name pattern for test runs.
 
   Runs only the tests whose names match the given regular expression if
-  provided. The words of the name pattern are joined with single spaces, so the
-  name pattern doesn't need to be quoted. If not provided, the name pattern is
-  cleared and tests run regardless of their names.
+  provided. If not provided, the name pattern is cleared and tests run
+  regardless of their names.
 
   Corresponds to `mix test --name-pattern <name pattern>` (Elixir 1.19.0 and later).
   """
@@ -23,7 +22,7 @@ defmodule MixTestInteractive.Command.NamePattern do
   end
 
   @impl Command
-  def run(words, %Settings{} = settings) do
-    {:ok, Settings.with_name_pattern(settings, Enum.join(words, " "))}
+  def run([name_pattern], %Settings{} = settings) do
+    {:ok, Settings.with_name_pattern(settings, name_pattern)}
   end
 end

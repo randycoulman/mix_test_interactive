@@ -1,6 +1,7 @@
 defmodule MixTestInteractive.CommandProcessorTest do
   use ExUnit.Case, async: true
 
+  alias MixTestInteractive.CommandError
   alias MixTestInteractive.CommandProcessor
   alias MixTestInteractive.Settings
 
@@ -79,11 +80,18 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("m", settings)
     end
 
-    test "n <name pattern> sets the name pattern, joining words with single spaces" do
+    test "n <name pattern> sets the name pattern" do
       settings = %Settings{}
-      expected = Settings.with_name_pattern(settings, "does a thing")
+      expected = Settings.with_name_pattern(settings, "thing")
 
-      assert {:ok, ^expected} = process_command("n  does   a thing", settings)
+      assert {:ok, ^expected} = process_command("n thing", settings)
+    end
+
+    test "n <name pattern> preserves whitespace within a quoted name pattern" do
+      settings = %Settings{}
+      expected = Settings.with_name_pattern(settings, " does   a thing ")
+
+      assert {:ok, ^expected} = process_command(~s(n " does   a thing "), settings)
     end
 
     test "n with no pattern clears the name pattern" do
@@ -112,6 +120,27 @@ defmodule MixTestInteractive.CommandProcessorTest do
       expected = Settings.with_filename_patterns(settings, ["pattern"])
 
       assert {:ok, ^expected} = process_command("p pattern", settings)
+    end
+
+    test "p accepts quoted filename patterns containing spaces" do
+      settings = %Settings{}
+      expected = Settings.with_filename_patterns(settings, ["my dir/a_test.exs", "other dir", "plain"])
+
+      assert {:ok, ^expected} = process_command(~s(p "my dir/a_test.exs" 'other dir' plain), settings)
+    end
+
+    test "p accepts backslash-escaped spaces in filename patterns" do
+      settings = %Settings{}
+      expected = Settings.with_filename_patterns(settings, ["my dir"])
+
+      assert {:ok, ^expected} = process_command("p my\\ dir", settings)
+    end
+
+    test "p passes Windows-style paths through unchanged" do
+      settings = %Settings{}
+      expected = Settings.with_filename_patterns(settings, ["test\\foo_test.exs"])
+
+      assert {:ok, ^expected} = process_command("p test\\foo_test.exs", settings)
     end
 
     test "p a second time replaces filename patterns with new ones" do
@@ -187,6 +216,18 @@ defmodule MixTestInteractive.CommandProcessorTest do
 
     test "trims whitespace from commands" do
       assert :quit = process_command("\t  q   \n   \t")
+    end
+
+    test "trims a trailing newline before splitting arguments" do
+      settings = %Settings{}
+      expected = Settings.with_name_pattern(settings, "a thing")
+
+      assert {:ok, ^expected} = process_command(~s(n "a thing"\n), settings)
+    end
+
+    test "returns an error for an unclosed quote" do
+      assert {:error, %CommandError{message: message}} = process_command(~s(p "unclosed\n))
+      assert is_binary(message) and message != ""
     end
   end
 end

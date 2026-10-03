@@ -80,6 +80,10 @@ defmodule Mix.Tasks.Test.Interactive do
   After the tests run, you can use the interactive commands to change which
   tests will run.
 
+  Command arguments follow shell-style quoting, as on the command line: wrap an
+  argument containing spaces in double or single quotes (e.g. `p "my dir"`), or
+  escape each space with a backslash (e.g. `p my\\ dir`).
+
   - `a`: Run all tests. Clears the `--failed` and `--stale` options as well as
     any filename patterns, name pattern, or tag filters.
   - `d <seed>`: Run the tests with a specific seed.
