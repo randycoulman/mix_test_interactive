@@ -10,5 +10,5 @@ defmodule MixTestInteractive.Command.Help do
   alias MixTestInteractive.Command
 
   @impl Command
-  def run(_args, _settings), do: :help
+  def run([], _settings), do: :help
 end

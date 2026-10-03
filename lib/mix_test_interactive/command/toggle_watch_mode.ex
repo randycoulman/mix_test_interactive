@@ -16,7 +16,7 @@ defmodule MixTestInteractive.Command.ToggleWatchMode do
   alias MixTestInteractive.Settings
 
   @impl Command
-  def run(_args, settings) do
+  def run([], settings) do
     {:no_run, Settings.toggle_watch_mode(settings)}
   end
 end

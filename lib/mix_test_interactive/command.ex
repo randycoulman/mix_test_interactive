@@ -27,9 +27,11 @@ defmodule MixTestInteractive.Command do
   usage output: `<command> to <description>`. For example, `a to run all tests`.
   """
 
+  alias MixTestInteractive.CommandError
   alias MixTestInteractive.Settings
 
-  @type response :: {:ok, Settings.t()} | {:no_run, Settings.t()} | :help | :quit | :unknown
+  @type response ::
+          {:ok, Settings.t()} | {:no_run, Settings.t()} | {:error, CommandError.t()} | :help | :quit | :unknown
 
   @doc """
   The command's description.
@@ -76,6 +78,13 @@ defmodule MixTestInteractive.Command do
 
   A command can return `:help` to show detailed usage information, or `:quit` to
   exit `mix test.interactive`.
+
+  A command can return an `:error` tuple to report a problem with the command to the user.
+
+  The function heads define which arguments a command accepts: for example, match `[]` for a
+  command that takes no arguments, or `[]` and `[arg]` for one with an optional argument. When
+  the user's arguments match no head, `MixTestInteractive.CommandProcessor` reports a usage error
+  based on `name/0`. Match any list only if the command accepts any number of arguments.
 
   No default provided.
   """
