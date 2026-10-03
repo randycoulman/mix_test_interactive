@@ -72,7 +72,7 @@ defmodule MixTestInteractive.CommandProcessorTest do
       assert {:ok, ^expected} = process_command("m 4", settings)
     end
 
-    test "m with no seed clears max-failures" do
+    test "m with no max clears max-failures" do
       {:ok, settings} = process_command("m 1", %Settings{})
       expected = Settings.clear_max_failures(settings)
 

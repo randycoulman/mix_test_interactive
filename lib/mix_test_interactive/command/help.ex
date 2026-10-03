@@ -2,7 +2,7 @@ defmodule MixTestInteractive.Command.Help do
   @moduledoc """
   Show detailed usage information.
 
-  Lists all commands applicable to the current context.
+  Lists all commands.
   """
 
   use MixTestInteractive.Command, command: "?", desc: "show help"

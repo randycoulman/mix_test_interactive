@@ -316,18 +316,12 @@ defmodule MixTestInteractive.CommandLineParserTest do
       assert settings.initial_cli_args == []
     end
 
-    test "failed takes precedence over stale" do
-      {:ok, %{settings: settings}} = CommandLineParser.parse(["--failed", "--stale"])
-      refute settings.stale?
+    test "extracts failed, stale, and patterns together from arguments" do
+      {:ok, %{settings: settings}} = CommandLineParser.parse(["--failed", "--color", "--stale", "pattern"])
       assert settings.failed?
-    end
-
-    test "patterns take precedence over stale/failed flags" do
-      {:ok, %{settings: settings}} = CommandLineParser.parse(["--failed", "--stale", "pattern"])
+      assert settings.stale?
       assert settings.patterns == ["pattern"]
-      refute settings.failed?
-      refute settings.stale?
-      assert settings.initial_cli_args == []
+      assert settings.initial_cli_args == ["--color"]
     end
   end
 
