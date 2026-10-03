@@ -92,7 +92,7 @@ defmodule MixTestInteractive.EndToEndTest do
   test "name pattern workflow", %{pid: pid} do
     assert_ran_tests()
 
-    assert :ok = InteractiveMode.process_command(pid, "n does a thing")
+    assert :ok = InteractiveMode.process_command(pid, ~s(n "does a thing"))
     assert_ran_tests(["--name-pattern", "does a thing"])
 
     assert :ok = InteractiveMode.note_file_changed(pid)
@@ -233,6 +233,16 @@ defmodule MixTestInteractive.EndToEndTest do
     refute_ran_tests()
 
     assert :ok = InteractiveMode.process_command(pid, "w")
+    refute_ran_tests()
+
+    assert :ok = InteractiveMode.note_file_changed(pid)
+    assert_ran_tests()
+  end
+
+  test "unclosed quote workflow", %{pid: pid} do
+    assert_ran_tests()
+
+    assert :ok = InteractiveMode.process_command(pid, ~s(p "unclosed))
     refute_ran_tests()
 
     assert :ok = InteractiveMode.note_file_changed(pid)

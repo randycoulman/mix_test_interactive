@@ -80,6 +80,13 @@ defmodule MixTestInteractive.InteractiveMode do
       :unknown ->
         {:noreply, state}
 
+      {:error, error} ->
+        [:red, Exception.message(error)]
+        |> IO.ANSI.format()
+        |> IO.puts()
+
+        {:noreply, state}
+
       :quit ->
         IO.puts("Shutting down...")
         System.stop(0)

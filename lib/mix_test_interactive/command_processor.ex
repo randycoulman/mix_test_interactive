@@ -20,9 +20,10 @@ defmodule MixTestInteractive.CommandProcessor do
   alias MixTestInteractive.Command.ToggleStale
   alias MixTestInteractive.Command.ToggleTracing
   alias MixTestInteractive.Command.ToggleWatchMode
+  alias MixTestInteractive.CommandError
   alias MixTestInteractive.Settings
 
-  @type response :: Command.response()
+  @type response :: Command.response() | {:error, CommandError.t()}
 
   @commands [
     AllTests,
@@ -45,14 +46,17 @@ defmodule MixTestInteractive.CommandProcessor do
 
   @doc """
   Processes a single interactive mode command.
+
+  Arguments follow shell-style quoting, as on the command line.
   """
   @spec call(String.t() | :eof, Settings.t()) :: response()
   def call(:eof, _settings), do: :quit
 
   def call(command_line, settings) when is_binary(command_line) do
-    case String.split(command_line) do
-      [] -> process_command("", [], settings)
-      [command | args] -> process_command(command, args, settings)
+    case command_line |> String.trim() |> split() do
+      {:ok, []} -> process_command("", [], settings)
+      {:ok, [command | args]} -> process_command(command, args, settings)
+      {:error, _error} = error -> error
     end
   end
 
@@ -71,6 +75,12 @@ defmodule MixTestInteractive.CommandProcessor do
 
   defp usage_line(command) do
     IO.ANSI.format_fragment(["› ", :bright, command.name(), :normal, " to ", command.description(), ".\n"])
+  end
+
+  defp split(command_line) do
+    {:ok, OptionParser.split(command_line)}
+  rescue
+    error -> {:error, CommandError.exception(error)}
   end
 
   defp process_command(command, args, settings) do
