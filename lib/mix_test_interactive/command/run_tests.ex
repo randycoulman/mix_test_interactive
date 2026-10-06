@@ -1,7 +1,5 @@
 defmodule MixTestInteractive.Command.RunTests do
-  @moduledoc """
-  Run all tests matching the current flags and filter settings.
-  """
+  @moduledoc false
 
   use MixTestInteractive.Command, command: "", desc: "trigger a test run"
 

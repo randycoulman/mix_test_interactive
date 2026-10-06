@@ -1,7 +1,5 @@
 defmodule MixTestInteractive.Command.AllTests do
-  @moduledoc """
-  Run all tests, removing any flags or filters.
-  """
+  @moduledoc false
 
   use MixTestInteractive.Command, command: "a", desc: "run all tests"
 

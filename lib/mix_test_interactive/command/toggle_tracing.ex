@@ -1,11 +1,5 @@
 defmodule MixTestInteractive.Command.ToggleTracing do
-  @moduledoc """
-  Toggle test tracing on or off.
-
-  Runs the tests in trace mode when tracing is on and normally when off.
-
-  Corresponds to `mix test --trace`.
-  """
+  @moduledoc false
 
   use MixTestInteractive.Command, command: "t", desc: "turn test tracing on/off"
 

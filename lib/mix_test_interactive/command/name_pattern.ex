@@ -1,13 +1,5 @@
 defmodule MixTestInteractive.Command.NamePattern do
-  @moduledoc """
-  Specify or clear the name pattern for test runs.
-
-  Runs only the tests whose names match the given regular expression if
-  provided. If not provided, the name pattern is cleared and tests run
-  regardless of their names.
-
-  Corresponds to `mix test --name-pattern <name pattern>` (Elixir 1.19.0 and later).
-  """
+  @moduledoc false
   use MixTestInteractive.Command, command: "n", desc: "set or clear the name pattern"
 
   alias MixTestInteractive.Command

@@ -18,9 +18,7 @@ defmodule MixTestInteractive.Config do
     field :verbose?, boolean(), default: false
   end
 
-  @doc """
-  Create a new config struct, taking values from the application environment.
-  """
+  @doc false
   @spec load_from_environment :: t()
   def load_from_environment do
     new()

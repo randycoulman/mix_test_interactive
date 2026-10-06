@@ -1,10 +1,5 @@
 defmodule MixTestInteractive.Settings do
-  @moduledoc """
-  Interactive mode settings.
-
-  Keeps track of the current settings of `MixTestInteractive.InteractiveMode`, making changes
-  in response to user commands.
-  """
+  @moduledoc false
 
   use TypedStruct
 

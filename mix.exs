@@ -48,10 +48,8 @@ defmodule MixTestInteractive.MixProject do
         "README.md": [title: "Overview"]
       ],
       formatters: ["html"],
-      groups_for_modules: [
-        Commands: [~r/^MixTestInteractive\.Command\..*/]
-      ],
       main: "readme",
+      skip_code_autolink_to: ["MixTestInteractive.PortRunner"],
       source_ref: "v#{@version}"
     ]
   end

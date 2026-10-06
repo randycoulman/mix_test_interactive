@@ -1,7 +1,5 @@
 defmodule MixTestInteractive do
-  @moduledoc """
-  Interactively run your Elixir project's tests.
-  """
+  @moduledoc false
   alias MixTestInteractive.CommandLineParser
   alias MixTestInteractive.InitialSupervisor
   alias MixTestInteractive.InteractiveMode
