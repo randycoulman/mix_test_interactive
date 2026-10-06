@@ -1,7 +1,5 @@
 defmodule MixTestInteractive.Command.Quit do
-  @moduledoc """
-  Exit mix test.interactive.
-  """
+  @moduledoc false
 
   use MixTestInteractive.Command, command: "q", desc: "quit"
 

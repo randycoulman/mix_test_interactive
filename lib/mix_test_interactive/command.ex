@@ -1,31 +1,31 @@
 defmodule MixTestInteractive.Command do
-  @moduledoc """
-  Behaviour for interactive mode commands.
+  @moduledoc false
 
-  All commands must implement this behaviour.
-
-  It is recommended to `use` this module in the command's module:
-
-  ```
-  defmodule MyCommand do
-    use MixTestInteractive.Command,
-      command: "c",
-      desc: "do the thing"
-
-    # ...
-  end
-  ```
-
-  This will provide overridable implementations of most of the callbacks.
-
-  `:command` is the key sequence the user will use to invoke the command. If a more appropriate
-  command name is required in the help text, you can override the `name/0` callback.
-
-  `:desc` is the command's description.
-
-  `:command` and `:desc` should be written so that the following pattern reads nicely in the
-  usage output: `<command> to <description>`. For example, `a to run all tests`.
-  """
+  # Behaviour for interactive mode commands.
+  #
+  # All commands must implement this behaviour.
+  #
+  # It is recommended to `use` this module in the command's module:
+  #
+  # ```
+  # defmodule MyCommand do
+  #   use MixTestInteractive.Command,
+  #     command: "c",
+  #     desc: "do the thing"
+  #
+  #   # ...
+  # end
+  # ```
+  #
+  # This will provide overridable implementations of most of the callbacks.
+  #
+  # `:command` is the key sequence the user will use to invoke the command. If a more appropriate
+  # command name is required in the help text, you can override the `name/0` callback.
+  #
+  # `:desc` is the command's description.
+  #
+  # `:command` and `:desc` should be written so that the following pattern reads nicely in the
+  # usage output: `<command> to <description>`. For example, `a to run all tests`.
 
   alias MixTestInteractive.CommandError
   alias MixTestInteractive.Settings

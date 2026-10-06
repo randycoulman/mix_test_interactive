@@ -1,7 +1,5 @@
 defmodule MixTestInteractive.CommandProcessor do
-  @moduledoc """
-  Processes interactive mode commands.
-  """
+  @moduledoc false
 
   alias MixTestInteractive.Command
   alias MixTestInteractive.Command.AllTests

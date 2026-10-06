@@ -1,9 +1,5 @@
 defmodule MixTestInteractive.Runner do
-  @moduledoc """
-  Runs tests based on current configuration.
-
-  Also responsible for optionally clearing the terminal and printing the current time.
-  """
+  @moduledoc false
 
   alias MixTestInteractive.Config
 

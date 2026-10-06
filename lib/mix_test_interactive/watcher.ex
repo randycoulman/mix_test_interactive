@@ -1,7 +1,5 @@
 defmodule MixTestInteractive.Watcher do
-  @moduledoc """
-  A server that runs tests whenever source files change.
-  """
+  @moduledoc false
 
   use GenServer
 

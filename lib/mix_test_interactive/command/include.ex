@@ -1,11 +1,5 @@
 defmodule MixTestInteractive.Command.Include do
-  @moduledoc """
-  Specify or clear tags to include.
-
-  Runs the tests excluding the given tags if provided. If not provided, the
-  includes are cleared and the tests will run with any includes configured in
-  your `ExUnit.configure/1` call (if any).
-  """
+  @moduledoc false
   use MixTestInteractive.Command, command: "i", desc: "set or clear included tags"
 
   alias MixTestInteractive.Command

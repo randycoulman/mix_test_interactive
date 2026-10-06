@@ -1,11 +1,5 @@
 defmodule MixTestInteractive.Command.Exclude do
-  @moduledoc """
-  Specify or clear tags to exclude.
-
-  Runs the tests excluding the given tags if provided. If not provided, the
-  excludes are cleared and the tests will run with any excludes configured in
-  your `ExUnit.configure/1` call (if any).
-  """
+  @moduledoc false
   use MixTestInteractive.Command, command: "x", desc: "set or clear excluded tags"
 
   alias MixTestInteractive.Command

@@ -1,10 +1,5 @@
 defmodule MixTestInteractive.Command.MaxFailures do
-  @moduledoc """
-  Specify or clear the maximum number of failures during a test run.
-
-  Runs the tests with the given maximum failures if provided. If not provided,
-  the max is cleared and the tests will run until completion as usual.
-  """
+  @moduledoc false
   use MixTestInteractive.Command, command: "m", desc: "set or clear the maximum number of failures"
 
   alias MixTestInteractive.Command

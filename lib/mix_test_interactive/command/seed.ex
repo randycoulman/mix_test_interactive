@@ -1,10 +1,5 @@
 defmodule MixTestInteractive.Command.Seed do
-  @moduledoc """
-  Specify or clear the random number seed for test runs.
-
-  Runs the tests with the given seed if provided. If not provided, the seed is
-  cleared and the tests will run with a random seed as usual.
-  """
+  @moduledoc false
   use MixTestInteractive.Command, command: "d", desc: "set or clear the test seed"
 
   alias MixTestInteractive.Command

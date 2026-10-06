@@ -1,14 +1,15 @@
 defmodule MixTestInteractive.PortRunner do
-  @moduledoc """
-  Run the tasks in a new OS process via `Port`s.
+  @moduledoc false
 
-  On Unix-like operating systems, it runs the tests using a `zombie_killer` script
-  as described in https://hexdocs.pm/elixir/Port.html#module-zombie-operating-system-processes.
-  It also enables ANSI output mode.
+  # Run the tasks in a new OS process via `Port`s.
+  #
+  # On Unix-like operating systems, it runs the tests using a `zombie_killer` script
+  # as described in https://hexdocs.pm/elixir/Port.html#module-zombie-operating-system-processes.
+  # It also enables ANSI output mode.
+  #
+  # On Windows, `mix` is run directly and ANSI mode is not enabled, as it is not always
+  # supported by Windows command processors.
 
-  On Windows, `mix` is run directly and ANSI mode is not enabled, as it is not always
-  supported by Windows command processors.
-  """
   @behaviour MixTestInteractive.TestRunner
 
   alias MixTestInteractive.CommandLineFormatter
