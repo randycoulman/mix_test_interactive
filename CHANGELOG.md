@@ -5,7 +5,85 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v5.2.0...HEAD)
+## [Unreleased](https://github.com/randycoulman/mix_test_interactive/compare/v6.0.0...HEAD)
+
+## [v6.0.0](https://github.com/randycoulman/mix_test_interactive/compare/v5.2.0...v6.0.0) - 2026-10-05
+
+### 💥 BREAKING CHANGES 💥
+
+- In this release, we eliminate interactions between commands. Previously, you
+  could only have one of the `(s)tale`, `(f)ailed`, or `(p)attern` options
+  enabled at the same time. We now eliminate that restriction, so you can now
+  run all stale tests matching a filename pattern, for example. Note that `mix
+test` itself currently does not allow `--failed` and `--stale` to be provided
+  together, but we don't implement that restriction in `mix test.interactive`.
+  Instead, we allow `mix test` to report the issue itself.
+  ([#155](https://github.com/randycoulman/mix_test_interactive/pull/155),
+  [#158](https://github.com/randycoulman/mix_test_interactive/pull/158),
+  [#159](https://github.com/randycoulman/mix_test_interactive/pull/159))
+- The `(a)ll tests` command now also clears any `(i)nclude`, `e(x)clude`, or
+  `(o)nly` tags in addition to clearing the `(s)tale`, `(f)ailed`, and
+  `(p)attern` options.
+  ([#155](https://github.com/randycoulman/mix_test_interactive/pull/155))
+- We change how we process the arguments to interactive commands. In order to
+  properly support filename patterns, tags, and name patterns that might have
+  embedded spaces or other special characters, we now respect quoting of the
+  arguments using single- or double-quotes, or backslash escapes before
+  whitespace characters. While this is an improvement in functionality, it is a
+  change to how argument parsing used to work.
+  ([#162](https://github.com/randycoulman/mix_test_interactive/pull/162))
+- We are now strict about the number of arguments passed to the various
+  commands. Previously, some commands would accept any number of arguments while
+  others would crash and restart the interactive loop when given the wrong
+  number of arguments. We now report an error when any command is given an
+  incorrect number of arguments and no longer crash.
+  ([#163](https://github.com/randycoulman/mix_test_interactive/pull/163))
+- We remove most of the modules from the public API, leaving only the mix task,
+  the `TestRunner` behaviour and the `Config` struct that is used by that
+  behaviour. This library is primarily intended as a mix task and there should
+  be no need to interact with its internals.
+  ([#164](https://github.com/randycoulman/mix_test_interactive/pull/164))
+- This release drops support for Elixir 1.14 and 1.15. We officially support the
+  [same versions as Elixir itself](https://hexdocs.pm/elixir/compatibility-and-deprecations.html),
+  so support for Elixir 1.14 and 1.15 is no longer provided.
+  ([#156](https://github.com/randycoulman/mix_test_interactive/pull/156))
+
+### Updated
+
+- (Elixir 1.19 and above) We now support and allow adjustments to the new
+  `-n`/`--name-pattern` option to `mix test`. You can specify a name pattern on
+  the command line when starting `mix test.interactive`. You can later use the
+  `n <name pattern>` command to specify or change the name pattern or the `n`
+  command to clear the name pattern. Name patterns allow you to run only tests
+  whose names match the pattern. These are similar to the filename patterns we
+  already supported (via the `p` command), which do the same kind of matching on
+  test filenames. We update the API and documentation to better distinguish
+  between filename patterns and (test) name patterns.
+  ([#160](https://github.com/randycoulman/mix_test_interactive/pull/160),
+  [#161](https://github.com/randycoulman/mix_test_interactive/pull/161))
+- We now recognize the `--max-requires` (Elixir 1.18 and later) and `--dry-run`
+  (Elixir 1.19 and later) command-line options and pass them along to `mix test`
+  on every test run. We do not support managing them via `mix test.interactive`
+  commands, however.
+  ([#157](https://github.com/randycoulman/mix_test_interactive/pull/157))
+- We now allow the `--failed` or `--stale` options to co-exist with filename
+  patterns as well as name patterns and tags. See above for more details.
+  ([#155](https://github.com/randycoulman/mix_test_interactive/pull/155),
+  [#158](https://github.com/randycoulman/mix_test_interactive/pull/158),
+  [#159](https://github.com/randycoulman/mix_test_interactive/pull/159))
+- The `(a)ll tests` command now also clears any `(i)nclude`, `e(x)clude`, or
+  `(o)nly` tags in addition to clearing the `(s)tale`, `(f)ailed`, and
+  `(p)attern` options.
+  ([#155](https://github.com/randycoulman/mix_test_interactive/pull/155))
+- We now respect quoting of command arguments using single- or double-quotes, or
+  backslash escapes before whitespace characters. See above for more details.
+  ([#162](https://github.com/randycoulman/mix_test_interactive/pull/162))
+
+### Bug Fixes
+
+- We no longer crash when additional arguments are passed to commands which only
+  allow a single argument. See above for more details.
+  ([#163](https://github.com/randycoulman/mix_test_interactive/pull/163))
 
 ## [v5.2.0](https://github.com/randycoulman/mix_test_interactive/compare/v5.1.0...v5.2.0) - 2026-09-30
 

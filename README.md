@@ -37,7 +37,7 @@ list of dependencies in your project's `mix.exs` file:
 ```elixir
 def deps do
   [
-    {:mix_test_interactive, "~> 5.2", only: :dev, runtime: false}
+    {:mix_test_interactive, "~> 6.0", only: :dev, runtime: false}
   ]
 end
 ```
@@ -55,7 +55,7 @@ executable.
 #!/usr/bin/env elixir
 
 Mix.install([
-  {:mix_test_interactive, "~> 5.2"}
+  {:mix_test_interactive, "~> 6.0"}
 ])
 
 MixTestInteractive.run(System.argv())
