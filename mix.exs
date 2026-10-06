@@ -6,6 +6,7 @@ defmodule MixTestInteractive.MixProject do
 
   def project do
     [
+      aliases: aliases(),
       app: :mix_test_interactive,
       deps: deps(),
       description: description(),
@@ -26,18 +27,34 @@ defmodule MixTestInteractive.MixProject do
     ]
   end
 
-  defp description do
-    "Interactive test runner for mix test with watch mode."
+  def cli do
+    [preferred_envs: [precommit: :test]]
+  end
+
+  defp aliases do
+    [
+      precommit: [
+        "compile --warnings-as-errors",
+        "deps.unlock --unused",
+        "format",
+        "docs --warnings-as-errors",
+        "test"
+      ]
+    ]
   end
 
   defp deps do
     [
-      {:ex_doc, "~> 0.40.3", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.40.3", only: [:dev, :test], runtime: false},
       {:file_system, "~> 0.2 or ~> 1.0"},
       {:process_tree, ">= 0.1.3"},
       {:styler, "~> 1.11", only: [:dev, :test], runtime: false},
       {:typed_struct, "~> 0.3.0"}
     ]
+  end
+
+  defp description do
+    "Interactive test runner for mix test with watch mode."
   end
 
   defp docs do

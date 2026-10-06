@@ -79,12 +79,20 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
+      - name: Check for unused dependencies
+        if: ${{matrix.elixir == '1.19'}}
+        run: mix deps.unlock --check-unused
+
       - name: Compile
         run: mix compile --warnings-as-errors
 
       - name: Check formatting
         if: ${{matrix.elixir == '1.19'}}
         run: mix format --check-formatted
+
+      - name: Check docs
+        if: ${{matrix.elixir == '1.19'}}
+        run: mix docs --warnings-as-errors
 
       - name: Run tests
         run: mix test
